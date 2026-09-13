@@ -18,8 +18,8 @@
     },
     {
       "file": "README.md",
-      "bytes": 3731,
-      "sha256": "a90d920437d1f0204998e590db2a6e621bfcf2f3147c437ccf44d8d62443dd0d"
+      "bytes": 4257,
+      "sha256": "198a0d343d69b286e7e4ec00669282c0b54d5d846060197e3e1c524bccd0d530"
     },
     {
       "file": "audit/build-repair-case.mjs",
@@ -48,13 +48,13 @@
     },
     {
       "file": "docs/index.html",
-      "bytes": 2202,
-      "sha256": "1364e070dfecfb22d0afb25b233168cde73f0a8d43e219919e5e2fa9292312ff"
+      "bytes": 2310,
+      "sha256": "63c78fb6d91821bb85cb2cef75c5792c909a7651f58ec79e7a4c028b2c1ac995"
     },
     {
       "file": "docs/modelscope-deployment.md",
-      "bytes": 913,
-      "sha256": "bf5a56df3139876422b02671b815266d5d2c68346741d9ceb1fa3fa22ced4451"
+      "bytes": 1087,
+      "sha256": "33c267b0f2065993593327acc3c7df545fb5cd6b146021e436c5b9c68d3d5ae5"
     },
     {
       "file": "docs/subtitles.srt",
