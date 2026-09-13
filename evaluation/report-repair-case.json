@@ -1,0 +1,694 @@
+{
+  "version": 1,
+  "title": "报告详情默认展开，修复后重新验收",
+  "scope": "受控修复验证，不是个人历史 A/B，不是真人效率实验",
+  "flow": "用户打开报告 → 详情直接铺开 → 不符合先看问题的要求 → 移除默认展开 → 按原要求复检",
+  "change": "仅移除 details 的 open 属性，保留报告内容及证据链接。",
+  "criteria": [
+    {
+      "id": "entry",
+      "name": "页面入口"
+    },
+    {
+      "id": "report-expand-76b6f2454531",
+      "name": "展开：查看详细说明"
+    },
+    {
+      "id": "report-document-7f9012faa059",
+      "name": "查看：查看证据记录"
+    },
+    {
+      "id": "report-document-de5a1456d916",
+      "name": "下载：下载证据记录"
+    },
+    {
+      "id": "personal-6dc4ab128992014f",
+      "name": "详细正文默认隐藏"
+    }
+  ],
+  "repetitions": 2,
+  "before": {
+    "phase": "before",
+    "sourceHash": "5f4b512913c91ced26eb73830536f7e0d580fb5dd5639f1444e1f0218d165a7a",
+    "sourceHTML": "<meta charset=\"utf-8\"><title>验收报告</title><style>body{font:18px/1.6 system-ui;max-width:800px;margin:40px auto;padding:24px}article{border-top:1px solid #ddd}label{font-weight:bold}</style><h1>验收报告</h1><article><p id=\"problem\">问题：导出清单遗漏记录</p><p id=\"location\">位置：阅读清单导出</p><p id=\"trigger\">触发操作：新增记录后点击导出</p><details open><summary>查看详细说明</summary><div id=\"detail-body\"><p id=\"explanation\">详细说明：本例为受控报告呈现样例，导出证据和技术解释置于此处。</p><p><a href=\"record.json\" target=\"_blank\">查看证据记录</a> · <a href=\"record.json\" download>下载证据记录</a></p></div></details></article>",
+    "taskId": "task-fb54c532-f920-4d42-ab52-fb4d26a43f3a",
+    "elapsedMs": 3956,
+    "issues": 1,
+    "checks": [
+      {
+        "id": "entry",
+        "name": "页面入口",
+        "status": "pass",
+        "records": [
+          {
+            "id": "entry-0",
+            "status": "pass",
+            "checks": [
+              {
+                "pathId": "entry",
+                "setup": false,
+                "label": "页面主体可见（只证明入口）",
+                "expected": true,
+                "actual": true,
+                "pass": true,
+                "status": "pass",
+                "conditionRefs": []
+              }
+            ],
+            "outputs": []
+          },
+          {
+            "id": "entry-1",
+            "status": "pass",
+            "checks": [
+              {
+                "pathId": "entry",
+                "setup": false,
+                "label": "页面主体可见（只证明入口）",
+                "expected": true,
+                "actual": true,
+                "pass": true,
+                "status": "pass",
+                "conditionRefs": []
+              }
+            ],
+            "outputs": []
+          }
+        ]
+      },
+      {
+        "id": "report-expand-76b6f2454531",
+        "name": "展开：查看详细说明",
+        "status": "pass",
+        "records": [
+          {
+            "id": "report-expand-76b6f2454531-0",
+            "status": "pass",
+            "checks": [
+              {
+                "pathId": "report-expand-76b6f2454531",
+                "setup": false,
+                "label": "详情正文存在",
+                "expected": 1,
+                "actual": 1,
+                "pass": true,
+                "status": "pass",
+                "conditionRefs": []
+              },
+              {
+                "pathId": "report-expand-76b6f2454531",
+                "setup": false,
+                "label": "展开后正文可见",
+                "expected": true,
+                "actual": true,
+                "pass": true,
+                "status": "pass",
+                "conditionRefs": []
+              }
+            ],
+            "outputs": []
+          },
+          {
+            "id": "report-expand-76b6f2454531-1",
+            "status": "pass",
+            "checks": [
+              {
+                "pathId": "report-expand-76b6f2454531",
+                "setup": false,
+                "label": "详情正文存在",
+                "expected": 1,
+                "actual": 1,
+                "pass": true,
+                "status": "pass",
+                "conditionRefs": []
+              },
+              {
+                "pathId": "report-expand-76b6f2454531",
+                "setup": false,
+                "label": "展开后正文可见",
+                "expected": true,
+                "actual": true,
+                "pass": true,
+                "status": "pass",
+                "conditionRefs": []
+              }
+            ],
+            "outputs": []
+          }
+        ]
+      },
+      {
+        "id": "report-document-7f9012faa059",
+        "name": "查看：查看证据记录",
+        "status": "pass",
+        "records": [
+          {
+            "id": "report-document-7f9012faa059-0",
+            "status": "pass",
+            "checks": [
+              {
+                "pathId": "report-document-7f9012faa059",
+                "setup": false,
+                "label": "打开的记录与选定证据文件一致",
+                "expected": {
+                  "case": "REPORT-DEMO-20260913",
+                  "problem": "导出清单遗漏记录",
+                  "location": "阅读清单导出",
+                  "trigger": "新增记录后点击导出",
+                  "expectedCount": 3,
+                  "actualCount": 2,
+                  "scope": "受控样例，不代表新的真实项目故障"
+                },
+                "actual": {
+                  "case": "REPORT-DEMO-20260913",
+                  "problem": "导出清单遗漏记录",
+                  "location": "阅读清单导出",
+                  "trigger": "新增记录后点击导出",
+                  "expectedCount": 3,
+                  "actualCount": 2,
+                  "scope": "受控样例，不代表新的真实项目故障"
+                },
+                "pass": true,
+                "status": "pass",
+                "conditionRefs": []
+              }
+            ],
+            "outputs": []
+          },
+          {
+            "id": "report-document-7f9012faa059-1",
+            "status": "pass",
+            "checks": [
+              {
+                "pathId": "report-document-7f9012faa059",
+                "setup": false,
+                "label": "打开的记录与选定证据文件一致",
+                "expected": {
+                  "case": "REPORT-DEMO-20260913",
+                  "problem": "导出清单遗漏记录",
+                  "location": "阅读清单导出",
+                  "trigger": "新增记录后点击导出",
+                  "expectedCount": 3,
+                  "actualCount": 2,
+                  "scope": "受控样例，不代表新的真实项目故障"
+                },
+                "actual": {
+                  "case": "REPORT-DEMO-20260913",
+                  "problem": "导出清单遗漏记录",
+                  "location": "阅读清单导出",
+                  "trigger": "新增记录后点击导出",
+                  "expectedCount": 3,
+                  "actualCount": 2,
+                  "scope": "受控样例，不代表新的真实项目故障"
+                },
+                "pass": true,
+                "status": "pass",
+                "conditionRefs": []
+              }
+            ],
+            "outputs": []
+          }
+        ]
+      },
+      {
+        "id": "report-document-de5a1456d916",
+        "name": "下载：下载证据记录",
+        "status": "pass",
+        "records": [
+          {
+            "id": "report-document-de5a1456d916-0",
+            "status": "pass",
+            "checks": [
+              {
+                "pathId": "report-document-de5a1456d916",
+                "setup": false,
+                "label": "下载内容与选定证据文件一致",
+                "expected": {
+                  "case": "REPORT-DEMO-20260913",
+                  "problem": "导出清单遗漏记录",
+                  "location": "阅读清单导出",
+                  "trigger": "新增记录后点击导出",
+                  "expectedCount": 3,
+                  "actualCount": 2,
+                  "scope": "受控样例，不代表新的真实项目故障"
+                },
+                "actual": {
+                  "case": "REPORT-DEMO-20260913",
+                  "problem": "导出清单遗漏记录",
+                  "location": "阅读清单导出",
+                  "trigger": "新增记录后点击导出",
+                  "expectedCount": 3,
+                  "actualCount": 2,
+                  "scope": "受控样例，不代表新的真实项目故障"
+                },
+                "pass": true,
+                "status": "pass",
+                "conditionRefs": []
+              }
+            ],
+            "outputs": [
+              "report-document-de5a1456d916-0-evidence.json"
+            ]
+          },
+          {
+            "id": "report-document-de5a1456d916-1",
+            "status": "pass",
+            "checks": [
+              {
+                "pathId": "report-document-de5a1456d916",
+                "setup": false,
+                "label": "下载内容与选定证据文件一致",
+                "expected": {
+                  "case": "REPORT-DEMO-20260913",
+                  "problem": "导出清单遗漏记录",
+                  "location": "阅读清单导出",
+                  "trigger": "新增记录后点击导出",
+                  "expectedCount": 3,
+                  "actualCount": 2,
+                  "scope": "受控样例，不代表新的真实项目故障"
+                },
+                "actual": {
+                  "case": "REPORT-DEMO-20260913",
+                  "problem": "导出清单遗漏记录",
+                  "location": "阅读清单导出",
+                  "trigger": "新增记录后点击导出",
+                  "expectedCount": 3,
+                  "actualCount": 2,
+                  "scope": "受控样例，不代表新的真实项目故障"
+                },
+                "pass": true,
+                "status": "pass",
+                "conditionRefs": []
+              }
+            ],
+            "outputs": [
+              "report-document-de5a1456d916-1-evidence.json"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "personal-6dc4ab128992014f",
+        "name": "详细正文默认隐藏",
+        "status": "issue",
+        "records": [
+          {
+            "id": "personal-6dc4ab128992014f-0",
+            "status": "issue",
+            "checks": [
+              {
+                "pathId": "personal-6dc4ab128992014f",
+                "setup": false,
+                "label": "要求对应的控件仍存在",
+                "expected": 1,
+                "actual": 1,
+                "pass": true,
+                "status": "pass",
+                "conditionRefs": []
+              },
+              {
+                "pathId": "personal-6dc4ab128992014f",
+                "setup": false,
+                "label": "详细正文默认隐藏",
+                "expected": false,
+                "actual": true,
+                "pass": false,
+                "status": "issue",
+                "conditionRefs": []
+              }
+            ],
+            "outputs": []
+          },
+          {
+            "id": "personal-6dc4ab128992014f-1",
+            "status": "issue",
+            "checks": [
+              {
+                "pathId": "personal-6dc4ab128992014f",
+                "setup": false,
+                "label": "要求对应的控件仍存在",
+                "expected": 1,
+                "actual": 1,
+                "pass": true,
+                "status": "pass",
+                "conditionRefs": []
+              },
+              {
+                "pathId": "personal-6dc4ab128992014f",
+                "setup": false,
+                "label": "详细正文默认隐藏",
+                "expected": false,
+                "actual": true,
+                "pass": false,
+                "status": "issue",
+                "conditionRefs": []
+              }
+            ],
+            "outputs": []
+          }
+        ]
+      }
+    ],
+    "description": "打开报告就展开详情，不符合明确呈现要求。"
+  },
+  "after": {
+    "phase": "after",
+    "sourceHash": "289836809f04375b3ee3d816eb431fbd06362766e96f2309c78fa81e4c8aa58e",
+    "sourceHTML": "<meta charset=\"utf-8\"><title>验收报告</title><style>body{font:18px/1.6 system-ui;max-width:800px;margin:40px auto;padding:24px}article{border-top:1px solid #ddd}label{font-weight:bold}</style><h1>验收报告</h1><article><p id=\"problem\">问题：导出清单遗漏记录</p><p id=\"location\">位置：阅读清单导出</p><p id=\"trigger\">触发操作：新增记录后点击导出</p><details><summary>查看详细说明</summary><div id=\"detail-body\"><p id=\"explanation\">详细说明：本例为受控报告呈现样例，导出证据和技术解释置于此处。</p><p><a href=\"record.json\" target=\"_blank\">查看证据记录</a> · <a href=\"record.json\" download>下载证据记录</a></p></div></details></article>",
+    "taskId": "task-114594a4-5284-496c-b1d8-324cc95b0fbc",
+    "elapsedMs": 5809,
+    "issues": 0,
+    "checks": [
+      {
+        "id": "entry",
+        "name": "页面入口",
+        "status": "pass",
+        "records": [
+          {
+            "id": "entry-0",
+            "status": "pass",
+            "checks": [
+              {
+                "pathId": "entry",
+                "setup": false,
+                "label": "页面主体可见（只证明入口）",
+                "expected": true,
+                "actual": true,
+                "pass": true,
+                "status": "pass",
+                "conditionRefs": []
+              }
+            ],
+            "outputs": []
+          },
+          {
+            "id": "entry-1",
+            "status": "pass",
+            "checks": [
+              {
+                "pathId": "entry",
+                "setup": false,
+                "label": "页面主体可见（只证明入口）",
+                "expected": true,
+                "actual": true,
+                "pass": true,
+                "status": "pass",
+                "conditionRefs": []
+              }
+            ],
+            "outputs": []
+          }
+        ]
+      },
+      {
+        "id": "report-expand-76b6f2454531",
+        "name": "展开：查看详细说明",
+        "status": "pass",
+        "records": [
+          {
+            "id": "report-expand-76b6f2454531-0",
+            "status": "pass",
+            "checks": [
+              {
+                "pathId": "report-expand-76b6f2454531",
+                "setup": false,
+                "label": "详情正文存在",
+                "expected": 1,
+                "actual": 1,
+                "pass": true,
+                "status": "pass",
+                "conditionRefs": []
+              },
+              {
+                "pathId": "report-expand-76b6f2454531",
+                "setup": false,
+                "label": "展开后正文可见",
+                "expected": true,
+                "actual": true,
+                "pass": true,
+                "status": "pass",
+                "conditionRefs": []
+              }
+            ],
+            "outputs": []
+          },
+          {
+            "id": "report-expand-76b6f2454531-1",
+            "status": "pass",
+            "checks": [
+              {
+                "pathId": "report-expand-76b6f2454531",
+                "setup": false,
+                "label": "详情正文存在",
+                "expected": 1,
+                "actual": 1,
+                "pass": true,
+                "status": "pass",
+                "conditionRefs": []
+              },
+              {
+                "pathId": "report-expand-76b6f2454531",
+                "setup": false,
+                "label": "展开后正文可见",
+                "expected": true,
+                "actual": true,
+                "pass": true,
+                "status": "pass",
+                "conditionRefs": []
+              }
+            ],
+            "outputs": []
+          }
+        ]
+      },
+      {
+        "id": "report-document-7f9012faa059",
+        "name": "查看：查看证据记录",
+        "status": "pass",
+        "records": [
+          {
+            "id": "report-document-7f9012faa059-0",
+            "status": "pass",
+            "checks": [
+              {
+                "pathId": "report-document-7f9012faa059",
+                "setup": false,
+                "label": "打开的记录与选定证据文件一致",
+                "expected": {
+                  "case": "REPORT-DEMO-20260913",
+                  "problem": "导出清单遗漏记录",
+                  "location": "阅读清单导出",
+                  "trigger": "新增记录后点击导出",
+                  "expectedCount": 3,
+                  "actualCount": 2,
+                  "scope": "受控样例，不代表新的真实项目故障"
+                },
+                "actual": {
+                  "case": "REPORT-DEMO-20260913",
+                  "problem": "导出清单遗漏记录",
+                  "location": "阅读清单导出",
+                  "trigger": "新增记录后点击导出",
+                  "expectedCount": 3,
+                  "actualCount": 2,
+                  "scope": "受控样例，不代表新的真实项目故障"
+                },
+                "pass": true,
+                "status": "pass",
+                "conditionRefs": []
+              }
+            ],
+            "outputs": []
+          },
+          {
+            "id": "report-document-7f9012faa059-1",
+            "status": "pass",
+            "checks": [
+              {
+                "pathId": "report-document-7f9012faa059",
+                "setup": false,
+                "label": "打开的记录与选定证据文件一致",
+                "expected": {
+                  "case": "REPORT-DEMO-20260913",
+                  "problem": "导出清单遗漏记录",
+                  "location": "阅读清单导出",
+                  "trigger": "新增记录后点击导出",
+                  "expectedCount": 3,
+                  "actualCount": 2,
+                  "scope": "受控样例，不代表新的真实项目故障"
+                },
+                "actual": {
+                  "case": "REPORT-DEMO-20260913",
+                  "problem": "导出清单遗漏记录",
+                  "location": "阅读清单导出",
+                  "trigger": "新增记录后点击导出",
+                  "expectedCount": 3,
+                  "actualCount": 2,
+                  "scope": "受控样例，不代表新的真实项目故障"
+                },
+                "pass": true,
+                "status": "pass",
+                "conditionRefs": []
+              }
+            ],
+            "outputs": []
+          }
+        ]
+      },
+      {
+        "id": "report-document-de5a1456d916",
+        "name": "下载：下载证据记录",
+        "status": "pass",
+        "records": [
+          {
+            "id": "report-document-de5a1456d916-0",
+            "status": "pass",
+            "checks": [
+              {
+                "pathId": "report-document-de5a1456d916",
+                "setup": false,
+                "label": "下载内容与选定证据文件一致",
+                "expected": {
+                  "case": "REPORT-DEMO-20260913",
+                  "problem": "导出清单遗漏记录",
+                  "location": "阅读清单导出",
+                  "trigger": "新增记录后点击导出",
+                  "expectedCount": 3,
+                  "actualCount": 2,
+                  "scope": "受控样例，不代表新的真实项目故障"
+                },
+                "actual": {
+                  "case": "REPORT-DEMO-20260913",
+                  "problem": "导出清单遗漏记录",
+                  "location": "阅读清单导出",
+                  "trigger": "新增记录后点击导出",
+                  "expectedCount": 3,
+                  "actualCount": 2,
+                  "scope": "受控样例，不代表新的真实项目故障"
+                },
+                "pass": true,
+                "status": "pass",
+                "conditionRefs": []
+              }
+            ],
+            "outputs": [
+              "report-document-de5a1456d916-0-evidence.json"
+            ]
+          },
+          {
+            "id": "report-document-de5a1456d916-1",
+            "status": "pass",
+            "checks": [
+              {
+                "pathId": "report-document-de5a1456d916",
+                "setup": false,
+                "label": "下载内容与选定证据文件一致",
+                "expected": {
+                  "case": "REPORT-DEMO-20260913",
+                  "problem": "导出清单遗漏记录",
+                  "location": "阅读清单导出",
+                  "trigger": "新增记录后点击导出",
+                  "expectedCount": 3,
+                  "actualCount": 2,
+                  "scope": "受控样例，不代表新的真实项目故障"
+                },
+                "actual": {
+                  "case": "REPORT-DEMO-20260913",
+                  "problem": "导出清单遗漏记录",
+                  "location": "阅读清单导出",
+                  "trigger": "新增记录后点击导出",
+                  "expectedCount": 3,
+                  "actualCount": 2,
+                  "scope": "受控样例，不代表新的真实项目故障"
+                },
+                "pass": true,
+                "status": "pass",
+                "conditionRefs": []
+              }
+            ],
+            "outputs": [
+              "report-document-de5a1456d916-1-evidence.json"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "personal-6dc4ab128992014f",
+        "name": "详细正文默认隐藏",
+        "status": "pass",
+        "records": [
+          {
+            "id": "personal-6dc4ab128992014f-0",
+            "status": "pass",
+            "checks": [
+              {
+                "pathId": "personal-6dc4ab128992014f",
+                "setup": false,
+                "label": "要求对应的控件仍存在",
+                "expected": 1,
+                "actual": 1,
+                "pass": true,
+                "status": "pass",
+                "conditionRefs": []
+              },
+              {
+                "pathId": "personal-6dc4ab128992014f",
+                "setup": false,
+                "label": "详细正文默认隐藏",
+                "expected": false,
+                "actual": false,
+                "pass": true,
+                "status": "pass",
+                "conditionRefs": []
+              }
+            ],
+            "outputs": []
+          },
+          {
+            "id": "personal-6dc4ab128992014f-1",
+            "status": "pass",
+            "checks": [
+              {
+                "pathId": "personal-6dc4ab128992014f",
+                "setup": false,
+                "label": "要求对应的控件仍存在",
+                "expected": 1,
+                "actual": 1,
+                "pass": true,
+                "status": "pass",
+                "conditionRefs": []
+              },
+              {
+                "pathId": "personal-6dc4ab128992014f",
+                "setup": false,
+                "label": "详细正文默认隐藏",
+                "expected": false,
+                "actual": false,
+                "pass": true,
+                "status": "pass",
+                "conditionRefs": []
+              }
+            ],
+            "outputs": []
+          }
+        ]
+      }
+    ],
+    "description": "详情默认收起；展开、查看与下载证据仍然通过。"
+  },
+  "result": "确认修复 1 项呈现偏差，未出现已覆盖路径回归。",
+  "userTimeSavedMs": null,
+  "economicLossSaved": null,
+  "evidenceDocument": {
+    "sha256": "789ba62b14e51a93667fb62df3f5e54c55c9142a573a670c2281df9d9558f4dc",
+    "content": {
+      "case": "REPORT-DEMO-20260913",
+      "problem": "导出清单遗漏记录",
+      "location": "阅读清单导出",
+      "trigger": "新增记录后点击导出",
+      "expectedCount": 3,
+      "actualCount": 2,
+      "scope": "受控样例，不代表新的真实项目故障"
+    }
+  },
+  "artifactDirectory": "runs/repair-case-2026-09-13T04-17-14-104Z"
+}

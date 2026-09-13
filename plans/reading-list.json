@@ -1,0 +1,315 @@
+{
+  "project": "阅读清单",
+  "goal": "新增和更新书目，按状态筛选，刷新保留，并导出与当前清单一致的最终记录。",
+  "planSource": "助手结合 README 正常要求与页面代码分析后生成；非运行时 AI 自动规划。",
+  "policy": {
+    "normalRuns": 2,
+    "failureExtraRetries": 3
+  },
+  "paths": [
+    {
+      "id": "add",
+      "name": "新增书目",
+      "location": "阅读清单 → 新增",
+      "trigger": "输入两本书的名称，分别点击添加书目。",
+      "basis": [
+        "README.md:7"
+      ],
+      "steps": [
+        {
+          "type": "goto",
+          "path": "index.html"
+        },
+        {
+          "type": "fill",
+          "target": {
+            "label": "书名"
+          },
+          "value": "山海笔记"
+        },
+        {
+          "type": "click",
+          "target": {
+            "role": "button",
+            "name": "添加书目"
+          }
+        },
+        {
+          "type": "fill",
+          "target": {
+            "label": "书名"
+          },
+          "value": "城市观察"
+        },
+        {
+          "type": "click",
+          "target": {
+            "role": "button",
+            "name": "添加书目"
+          }
+        }
+      ],
+      "checks": [
+        {
+          "type": "count",
+          "target": {
+            "css": "#books li"
+          },
+          "expected": 2,
+          "label": "两本书均保存",
+          "problem": "提示保存成功，但书目没有出现在清单中"
+        },
+        {
+          "type": "text",
+          "target": {
+            "testId": "summary"
+          },
+          "expected": "共 2 本，已读 0 本",
+          "label": "初始状态为未读"
+        }
+      ]
+    },
+    {
+      "id": "read",
+      "name": "标记已读",
+      "location": "阅读清单 → 阅读状态",
+      "trigger": "将山海笔记标记为已读。",
+      "dependsOn": [
+        "add"
+      ],
+      "basis": [
+        "README.md:8"
+      ],
+      "steps": [
+        {
+          "type": "click",
+          "target": {
+            "role": "button",
+            "name": "标记已读 山海笔记"
+          }
+        }
+      ],
+      "checks": [
+        {
+          "type": "text",
+          "target": {
+            "testId": "summary"
+          },
+          "expected": "共 2 本，已读 1 本",
+          "label": "已读状态和统计一致"
+        },
+        {
+          "type": "text",
+          "target": {
+            "css": "#books li span >> nth=0"
+          },
+          "expected": "山海笔记 · 已读",
+          "label": "目标书目状态正确"
+        }
+      ]
+    },
+    {
+      "id": "unread",
+      "name": "改回未读",
+      "location": "阅读清单 → 阅读状态",
+      "trigger": "将已读的山海笔记改回未读。",
+      "dependsOn": [
+        "read"
+      ],
+      "basis": [
+        "README.md:8"
+      ],
+      "steps": [
+        {
+          "type": "click",
+          "target": {
+            "role": "button",
+            "name": "标记未读 山海笔记"
+          }
+        }
+      ],
+      "checks": [
+        {
+          "type": "text",
+          "target": {
+            "testId": "summary"
+          },
+          "expected": "共 2 本，已读 0 本",
+          "label": "状态可以改回未读"
+        }
+      ]
+    },
+    {
+      "id": "filter",
+      "name": "已读筛选与返回全部",
+      "location": "阅读清单 → 查看状态",
+      "trigger": "筛选已读书目，再切回全部。",
+      "dependsOn": [
+        "read"
+      ],
+      "basis": [
+        "README.md:9"
+      ],
+      "steps": [
+        {
+          "type": "select",
+          "target": {
+            "css": "#filter"
+          },
+          "value": "read"
+        }
+      ],
+      "checks": [
+        {
+          "type": "count",
+          "target": {
+            "css": "#books li"
+          },
+          "expected": 1,
+          "label": "已读筛选只保留一项"
+        },
+        {
+          "type": "text",
+          "target": {
+            "css": "#books li span"
+          },
+          "expected": "山海笔记 · 已读",
+          "label": "筛选对象正确"
+        }
+      ]
+    },
+    {
+      "id": "all",
+      "name": "切回全部",
+      "location": "阅读清单 → 查看状态",
+      "trigger": "从已读筛选切回全部，检查两本书仍在。",
+      "dependsOn": [
+        "filter"
+      ],
+      "basis": [
+        "README.md:9"
+      ],
+      "steps": [
+        {
+          "type": "select",
+          "target": {
+            "css": "#filter"
+          },
+          "value": "all"
+        }
+      ],
+      "checks": [
+        {
+          "type": "count",
+          "target": {
+            "css": "#books li"
+          },
+          "expected": 2,
+          "label": "恢复显示全部书目"
+        }
+      ]
+    },
+    {
+      "id": "persist",
+      "name": "刷新保留记录",
+      "location": "阅读清单 → 刷新后",
+      "trigger": "保存书目与阅读状态后刷新页面。",
+      "dependsOn": [
+        "read"
+      ],
+      "basis": [
+        "README.md:10"
+      ],
+      "steps": [
+        {
+          "type": "reload"
+        }
+      ],
+      "checks": [
+        {
+          "type": "text",
+          "target": {
+            "testId": "summary"
+          },
+          "expected": "共 2 本，已读 1 本",
+          "label": "刷新后记录和状态保留"
+        },
+        {
+          "type": "text",
+          "target": {
+            "css": "#books li span >> nth=0"
+          },
+          "expected": "山海笔记 · 已读",
+          "label": "刷新后目标状态正确"
+        }
+      ]
+    },
+    {
+      "id": "export",
+      "name": "导出当前清单",
+      "location": "阅读清单 → 导出清单",
+      "trigger": "新增两本书，将山海笔记标记已读，再点击导出清单。",
+      "dependsOn": [
+        "read"
+      ],
+      "basis": [
+        "README.md:11"
+      ],
+      "steps": [
+        {
+          "type": "download",
+          "target": {
+            "role": "button",
+            "name": "导出清单"
+          },
+          "as": "books"
+        }
+      ],
+      "checks": [
+        {
+          "type": "json",
+          "artifact": "books",
+          "expected": {
+            "books": [
+              {
+                "title": "山海笔记",
+                "read": true
+              },
+              {
+                "title": "城市观察",
+                "read": false
+              }
+            ]
+          },
+          "label": "最终导出与当前书目及状态一致",
+          "problem": "界面显示已读，但导出文件把该书写成未读"
+        }
+      ]
+    },
+    {
+      "id": "help",
+      "name": "独立使用说明",
+      "location": "使用说明",
+      "trigger": "打开独立说明页。",
+      "basis": [
+        "README.md:12"
+      ],
+      "steps": [
+        {
+          "type": "goto",
+          "path": "help.html"
+        }
+      ],
+      "checks": [
+        {
+          "type": "text",
+          "target": {
+            "css": "main p"
+          },
+          "expected": "书目保存在当前浏览器。支持新增、更新阅读状态、筛选和导出。",
+          "label": "独立说明可访问"
+        }
+      ]
+    }
+  ]
+}

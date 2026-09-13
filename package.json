@@ -1,0 +1,19 @@
+{
+  "name": "acceptance-assistant",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "start": "node v3/auto-demo.mjs",
+    "start:personal": "ACCEPTANCE_SEMANTIC_PROVIDER=codex node v3/auto-demo.mjs",
+    "start:controlled": "node v3/public-demo.mjs",
+    "test": "node --test v3/*.test.mjs",
+    "verify:repair": "node audit/build-repair-case.mjs"
+  },
+  "dependencies": {
+    "playwright": "1.62.1"
+  }
+}

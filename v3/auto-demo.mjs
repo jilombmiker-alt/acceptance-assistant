@@ -1,0 +1,10 @@
+import path from 'node:path';
+import {fileURLToPath} from 'node:url';
+import {startWorkbench} from './workbench.mjs';
+import {startStaticProject} from '../v2/static-server.mjs';
+const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
+const projectPath=path.join(root,'projects/report-feedback');
+const site=await startStaticProject(projectPath,4396);
+const examples=[['index.html','报告呈现 · 默认折叠'],['expanded.html','报告呈现 · 详情默认展开的故障样例']].map(([file,label])=>({label,mode:'basic',projectPath,url:new URL(file,site.url).href,goal:'检查这个报告页面，便于快速定位问题。',materialFiles:['纠正.md']}));
+const app=await startWorkbench({allowedRoot:root,stateDir:path.join(root,'state/auto-demo'),port:Number(process.argv[2]||4395),examples});
+console.log('个人经验主动帮助：'+app.origin+'；语义连接由 ACCEPTANCE_SEMANTIC_PROVIDER 配置');

@@ -1,0 +1,1 @@
+{"case":"REPORT-DEMO-20260913","problem":"导出清单遗漏记录","location":"阅读清单导出","trigger":"新增记录后点击导出","expectedCount":3,"actualCount":2,"scope":"受控样例，不代表新的真实项目故障"}
