@@ -6,6 +6,10 @@
 
 ![单对话框入口](docs/home.png)
 
+## 产品验收资料
+
+[脱敏后的验收说明与记录](docs/acceptance/README.md)：使用指南、审评标准、历史检查摘要和受控记录。
+
 ## 下一版计划
 
 [公开迭代看板](https://jilombmiker-alt.github.io/acceptance-assistant/iterations.html) · [产品框架](docs/next-version/01-product-framework.md) · [开发任务书](docs/next-version/02-next-development-brief.md) · [开发 SOP](docs/next-version/03-development-sop.md) · [状态与验收清单](docs/next-version/04-iteration-checklist.md)

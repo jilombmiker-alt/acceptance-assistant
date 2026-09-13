@@ -1,0 +1,22 @@
+{
+  "kind": "redacted-historical-record",
+  "sourceDate": "2026-09-13",
+  "reexecutedForPublication": false,
+  "pageCount": 7,
+  "requiredPhrases": [
+    "个人历史有没有帮上忙",
+    "重复解释",
+    "重复犯错",
+    "纠错返工",
+    "不必要绕行",
+    "人工盯守",
+    "实际节省：未测得",
+    "同版本重复检查",
+    "尚未证明用户收益"
+  ],
+  "nonblankPages": true,
+  "replacementGlyphs": false,
+  "visualReview": "已查看 7 页渲染图，无裁切或重叠；保留分页中的内容延续",
+  "scope": "沿用原模型任务执行证据生成新版摘要；未新测真人收益",
+  "redaction": "Source task identifier and original document fingerprint omitted; original PDF is not included."
+}

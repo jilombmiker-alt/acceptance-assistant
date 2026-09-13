@@ -18,8 +18,8 @@
     },
     {
       "file": "README.md",
-      "bytes": 4757,
-      "sha256": "5402fbc3d35722dc9e90c45601e6d8c1088f13e35666cf3ad85f716dc5b5f871"
+      "bytes": 4913,
+      "sha256": "1d2ca694812477ea9704b7447fb0f3c4283c931d888b124bdc448c66da4846da"
     },
     {
       "file": "audit/build-repair-case.mjs",
@@ -30,6 +30,51 @@
       "file": "audit/check-cloud-api.mjs",
       "bytes": 2850,
       "sha256": "216df06de186d6e29c7ce07d3652507514f584bf6360136a4515ef7405a4a334"
+    },
+    {
+      "file": "docs/acceptance/01-usage-and-results.md",
+      "bytes": 2586,
+      "sha256": "24215f2a600607569610c6dfbb8963749a986fcbbd58a05e23d58db0082808da"
+    },
+    {
+      "file": "docs/acceptance/02-help-evaluation-standard.md",
+      "bytes": 7981,
+      "sha256": "97cf11f598baaa4ebacaaa56ef81c94a2343fab3c4b263d630a902eb8fca794d"
+    },
+    {
+      "file": "docs/acceptance/03-validation-records.md",
+      "bytes": 2564,
+      "sha256": "99251a21b5940b4d0905624eac1b57ae9dc1ee60a9258a72af5164c6f7f6ce5a"
+    },
+    {
+      "file": "docs/acceptance/README.md",
+      "bytes": 1946,
+      "sha256": "3d44ea7acda1e1da23c0abd2b7d6d0db763e40e1874ab804ed34bb722eebd45a"
+    },
+    {
+      "file": "docs/acceptance/evidence/help-evaluation.json",
+      "bytes": 2400,
+      "sha256": "c3b631d6ece1db1015ca7321027bf11e3ed496b5cf95d746994001d8aee13ad7"
+    },
+    {
+      "file": "docs/acceptance/evidence/isolated-demo.json",
+      "bytes": 2000,
+      "sha256": "5a12cd3c416f882fd9f79bbf9e1f7b073ecd2e31de253eacdfcc4d37a4ec1e80"
+    },
+    {
+      "file": "docs/acceptance/evidence/pdf-review.json",
+      "bytes": 748,
+      "sha256": "ca4674864b35000314f4c5067932d4e22356d06a09005f0371fdae389a344367"
+    },
+    {
+      "file": "docs/acceptance/evidence/public-controlled-check.json",
+      "bytes": 19473,
+      "sha256": "84e54c0bf62a359a38e3b735a32fbc8561d341d4b4ca7b7ab58b1612ceef05e8"
+    },
+    {
+      "file": "docs/acceptance/evidence/report-repair-summary.json",
+      "bytes": 530,
+      "sha256": "a14ba1f1fee532a2a83dc166aef6df1f5fc3971640c208e99b585ed06a1a39c5"
     },
     {
       "file": "docs/comparison.png",

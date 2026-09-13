@@ -1,0 +1,19 @@
+{
+  "kind": "derived-historical-summary",
+  "sourceDate": "2026-09-13",
+  "scope": "独立受控报告的详情默认呈现修复，不是阅读清单导出业务修复。",
+  "reexecutedForPublication": false,
+  "repetitions": 2,
+  "criteriaCount": 5,
+  "before": {
+    "issues": 1,
+    "elapsedMs": 3956
+  },
+  "after": {
+    "issues": 0,
+    "elapsedMs": 5809
+  },
+  "userTimeSavedMs": null,
+  "economicLossSaved": null,
+  "redaction": "Omitted task identifiers, source HTML, material excerpts and local artifact locations."
+}

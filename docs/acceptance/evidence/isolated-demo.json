@@ -1,0 +1,81 @@
+{
+  "kind": "redacted-historical-record",
+  "scope": "独立演示本机验证；未部署公网",
+  "sourceDate": "2026-09-13",
+  "reexecutedForPublication": false,
+  "redaction": "Removed runtime task identifiers and non-required context; assertion values retained.",
+  "checks": [
+    {
+      "id": "fresh-visitors-and-restricted-entry",
+      "status": "pass",
+      "evidence": {
+        "visitors": 2,
+        "arbitraryTargetsRejected": true,
+        "privateCaseAbsent": true,
+        "crossOriginAndTokenRejected": true
+      }
+    },
+    {
+      "id": "visible-normal-flow-and-capacity-retry",
+      "status": "pass",
+      "evidence": {
+        "paths": 8,
+        "executions": 16,
+        "capacityRejectedBeforeStart": true
+      }
+    },
+    {
+      "id": "second-visitor-fault-report-and-evidence-isolation",
+      "status": "pass",
+      "evidence": {
+        "issue": "export",
+        "repetitions": 2,
+        "evidenceLinks": 41,
+        "firstVisitorStillNormal": true
+      }
+    },
+    {
+      "id": "narrow-screen-and-task-quota",
+      "status": "pass",
+      "evidence": {
+        "mobileOverflow": false,
+        "maxTasks": 3
+      }
+    },
+    {
+      "id": "packaged-add-failure-blocks-dependencies-only",
+      "status": "pass",
+      "evidence": {
+        "add": "issue",
+        "dependentPathsBlocked": 6,
+        "independentHelp": "pass"
+      }
+    },
+    {
+      "id": "session-quota-and-missing-cookie",
+      "status": "pass",
+      "evidence": {
+        "maxSessions": 3,
+        "anonymousReportDenied": true
+      }
+    },
+    {
+      "id": "run-time-limit-ends-paused-task",
+      "status": "pass",
+      "evidence": {
+        "deadlineMs": 2000,
+        "pausedTaskEnded": true,
+        "workerExited": true
+      }
+    },
+    {
+      "id": "expiry-clears-session-and-rejects-old-cookie",
+      "status": "pass",
+      "evidence": {
+        "expiredCookieRejected": true,
+        "filesRemoved": true,
+        "newSessionEmpty": true
+      }
+    }
+  ]
+}

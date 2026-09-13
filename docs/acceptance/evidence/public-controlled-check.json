@@ -1,0 +1,601 @@
+{
+  "kind": "redacted-historical-record",
+  "sourceDate": "2026-09-13",
+  "scope": "公开部署的受控阅读清单代表路径；新增、阅读状态、导出各重复两次。",
+  "reexecutedForPublication": false,
+  "continuousSourceRepair": false,
+  "userTimeSaved": null,
+  "redaction": "Controlled sample titles replaced consistently; video-related checks and unrelated log content omitted.",
+  "runs": [
+    {
+      "variant": "controlled-export-mismatch",
+      "groups": [
+        {
+          "id": "add",
+          "status": "pass",
+          "records": [
+            {
+              "status": "pass",
+              "checks": [
+                {
+                  "pathId": "add",
+                  "setup": false,
+                  "label": "两本书均保存",
+                  "expected": 2,
+                  "actual": 2,
+                  "pass": true,
+                  "status": "pass"
+                },
+                {
+                  "pathId": "add",
+                  "setup": false,
+                  "label": "初始状态为未读",
+                  "expected": "共 2 本，已读 0 本",
+                  "actual": "共 2 本，已读 0 本",
+                  "pass": true,
+                  "status": "pass"
+                }
+              ]
+            },
+            {
+              "status": "pass",
+              "checks": [
+                {
+                  "pathId": "add",
+                  "setup": false,
+                  "label": "两本书均保存",
+                  "expected": 2,
+                  "actual": 2,
+                  "pass": true,
+                  "status": "pass"
+                },
+                {
+                  "pathId": "add",
+                  "setup": false,
+                  "label": "初始状态为未读",
+                  "expected": "共 2 本，已读 0 本",
+                  "actual": "共 2 本，已读 0 本",
+                  "pass": true,
+                  "status": "pass"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "read",
+          "status": "pass",
+          "records": [
+            {
+              "status": "pass",
+              "checks": [
+                {
+                  "pathId": "add",
+                  "setup": true,
+                  "label": "两本书均保存",
+                  "expected": 2,
+                  "actual": 2,
+                  "pass": true,
+                  "status": "pass"
+                },
+                {
+                  "pathId": "add",
+                  "setup": true,
+                  "label": "初始状态为未读",
+                  "expected": "共 2 本，已读 0 本",
+                  "actual": "共 2 本，已读 0 本",
+                  "pass": true,
+                  "status": "pass"
+                },
+                {
+                  "pathId": "read",
+                  "setup": false,
+                  "label": "已读状态和统计一致",
+                  "expected": "共 2 本，已读 1 本",
+                  "actual": "共 2 本，已读 1 本",
+                  "pass": true,
+                  "status": "pass"
+                },
+                {
+                  "pathId": "read",
+                  "setup": false,
+                  "label": "目标书目状态正确",
+                  "expected": "样例记录 A · 已读",
+                  "actual": "样例记录 A · 已读",
+                  "pass": true,
+                  "status": "pass"
+                }
+              ]
+            },
+            {
+              "status": "pass",
+              "checks": [
+                {
+                  "pathId": "add",
+                  "setup": true,
+                  "label": "两本书均保存",
+                  "expected": 2,
+                  "actual": 2,
+                  "pass": true,
+                  "status": "pass"
+                },
+                {
+                  "pathId": "add",
+                  "setup": true,
+                  "label": "初始状态为未读",
+                  "expected": "共 2 本，已读 0 本",
+                  "actual": "共 2 本，已读 0 本",
+                  "pass": true,
+                  "status": "pass"
+                },
+                {
+                  "pathId": "read",
+                  "setup": false,
+                  "label": "已读状态和统计一致",
+                  "expected": "共 2 本，已读 1 本",
+                  "actual": "共 2 本，已读 1 本",
+                  "pass": true,
+                  "status": "pass"
+                },
+                {
+                  "pathId": "read",
+                  "setup": false,
+                  "label": "目标书目状态正确",
+                  "expected": "样例记录 A · 已读",
+                  "actual": "样例记录 A · 已读",
+                  "pass": true,
+                  "status": "pass"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "export",
+          "status": "issue",
+          "records": [
+            {
+              "status": "issue",
+              "checks": [
+                {
+                  "pathId": "add",
+                  "setup": true,
+                  "label": "两本书均保存",
+                  "expected": 2,
+                  "actual": 2,
+                  "pass": true,
+                  "status": "pass"
+                },
+                {
+                  "pathId": "add",
+                  "setup": true,
+                  "label": "初始状态为未读",
+                  "expected": "共 2 本，已读 0 本",
+                  "actual": "共 2 本，已读 0 本",
+                  "pass": true,
+                  "status": "pass"
+                },
+                {
+                  "pathId": "read",
+                  "setup": true,
+                  "label": "已读状态和统计一致",
+                  "expected": "共 2 本，已读 1 本",
+                  "actual": "共 2 本，已读 1 本",
+                  "pass": true,
+                  "status": "pass"
+                },
+                {
+                  "pathId": "read",
+                  "setup": true,
+                  "label": "目标书目状态正确",
+                  "expected": "样例记录 A · 已读",
+                  "actual": "样例记录 A · 已读",
+                  "pass": true,
+                  "status": "pass"
+                },
+                {
+                  "pathId": "export",
+                  "setup": false,
+                  "label": "最终导出与当前书目及状态一致",
+                  "expected": {
+                    "books": [
+                      {
+                        "title": "样例记录 A",
+                        "read": true
+                      },
+                      {
+                        "title": "样例记录 B",
+                        "read": false
+                      }
+                    ]
+                  },
+                  "actual": {
+                    "books": [
+                      {
+                        "title": "样例记录 A",
+                        "read": false
+                      },
+                      {
+                        "title": "样例记录 B",
+                        "read": false
+                      }
+                    ]
+                  },
+                  "pass": false,
+                  "status": "issue"
+                }
+              ]
+            },
+            {
+              "status": "issue",
+              "checks": [
+                {
+                  "pathId": "add",
+                  "setup": true,
+                  "label": "两本书均保存",
+                  "expected": 2,
+                  "actual": 2,
+                  "pass": true,
+                  "status": "pass"
+                },
+                {
+                  "pathId": "add",
+                  "setup": true,
+                  "label": "初始状态为未读",
+                  "expected": "共 2 本，已读 0 本",
+                  "actual": "共 2 本，已读 0 本",
+                  "pass": true,
+                  "status": "pass"
+                },
+                {
+                  "pathId": "read",
+                  "setup": true,
+                  "label": "已读状态和统计一致",
+                  "expected": "共 2 本，已读 1 本",
+                  "actual": "共 2 本，已读 1 本",
+                  "pass": true,
+                  "status": "pass"
+                },
+                {
+                  "pathId": "read",
+                  "setup": true,
+                  "label": "目标书目状态正确",
+                  "expected": "样例记录 A · 已读",
+                  "actual": "样例记录 A · 已读",
+                  "pass": true,
+                  "status": "pass"
+                },
+                {
+                  "pathId": "export",
+                  "setup": false,
+                  "label": "最终导出与当前书目及状态一致",
+                  "expected": {
+                    "books": [
+                      {
+                        "title": "样例记录 A",
+                        "read": true
+                      },
+                      {
+                        "title": "样例记录 B",
+                        "read": false
+                      }
+                    ]
+                  },
+                  "actual": {
+                    "books": [
+                      {
+                        "title": "样例记录 A",
+                        "read": false
+                      },
+                      {
+                        "title": "样例记录 B",
+                        "read": false
+                      }
+                    ]
+                  },
+                  "pass": false,
+                  "status": "issue"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "variant": "controlled-normal",
+      "groups": [
+        {
+          "id": "add",
+          "status": "pass",
+          "records": [
+            {
+              "status": "pass",
+              "checks": [
+                {
+                  "pathId": "add",
+                  "setup": false,
+                  "label": "两本书均保存",
+                  "expected": 2,
+                  "actual": 2,
+                  "pass": true,
+                  "status": "pass"
+                },
+                {
+                  "pathId": "add",
+                  "setup": false,
+                  "label": "初始状态为未读",
+                  "expected": "共 2 本，已读 0 本",
+                  "actual": "共 2 本，已读 0 本",
+                  "pass": true,
+                  "status": "pass"
+                }
+              ]
+            },
+            {
+              "status": "pass",
+              "checks": [
+                {
+                  "pathId": "add",
+                  "setup": false,
+                  "label": "两本书均保存",
+                  "expected": 2,
+                  "actual": 2,
+                  "pass": true,
+                  "status": "pass"
+                },
+                {
+                  "pathId": "add",
+                  "setup": false,
+                  "label": "初始状态为未读",
+                  "expected": "共 2 本，已读 0 本",
+                  "actual": "共 2 本，已读 0 本",
+                  "pass": true,
+                  "status": "pass"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "read",
+          "status": "pass",
+          "records": [
+            {
+              "status": "pass",
+              "checks": [
+                {
+                  "pathId": "add",
+                  "setup": true,
+                  "label": "两本书均保存",
+                  "expected": 2,
+                  "actual": 2,
+                  "pass": true,
+                  "status": "pass"
+                },
+                {
+                  "pathId": "add",
+                  "setup": true,
+                  "label": "初始状态为未读",
+                  "expected": "共 2 本，已读 0 本",
+                  "actual": "共 2 本，已读 0 本",
+                  "pass": true,
+                  "status": "pass"
+                },
+                {
+                  "pathId": "read",
+                  "setup": false,
+                  "label": "已读状态和统计一致",
+                  "expected": "共 2 本，已读 1 本",
+                  "actual": "共 2 本，已读 1 本",
+                  "pass": true,
+                  "status": "pass"
+                },
+                {
+                  "pathId": "read",
+                  "setup": false,
+                  "label": "目标书目状态正确",
+                  "expected": "样例记录 A · 已读",
+                  "actual": "样例记录 A · 已读",
+                  "pass": true,
+                  "status": "pass"
+                }
+              ]
+            },
+            {
+              "status": "pass",
+              "checks": [
+                {
+                  "pathId": "add",
+                  "setup": true,
+                  "label": "两本书均保存",
+                  "expected": 2,
+                  "actual": 2,
+                  "pass": true,
+                  "status": "pass"
+                },
+                {
+                  "pathId": "add",
+                  "setup": true,
+                  "label": "初始状态为未读",
+                  "expected": "共 2 本，已读 0 本",
+                  "actual": "共 2 本，已读 0 本",
+                  "pass": true,
+                  "status": "pass"
+                },
+                {
+                  "pathId": "read",
+                  "setup": false,
+                  "label": "已读状态和统计一致",
+                  "expected": "共 2 本，已读 1 本",
+                  "actual": "共 2 本，已读 1 本",
+                  "pass": true,
+                  "status": "pass"
+                },
+                {
+                  "pathId": "read",
+                  "setup": false,
+                  "label": "目标书目状态正确",
+                  "expected": "样例记录 A · 已读",
+                  "actual": "样例记录 A · 已读",
+                  "pass": true,
+                  "status": "pass"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "export",
+          "status": "pass",
+          "records": [
+            {
+              "status": "pass",
+              "checks": [
+                {
+                  "pathId": "add",
+                  "setup": true,
+                  "label": "两本书均保存",
+                  "expected": 2,
+                  "actual": 2,
+                  "pass": true,
+                  "status": "pass"
+                },
+                {
+                  "pathId": "add",
+                  "setup": true,
+                  "label": "初始状态为未读",
+                  "expected": "共 2 本，已读 0 本",
+                  "actual": "共 2 本，已读 0 本",
+                  "pass": true,
+                  "status": "pass"
+                },
+                {
+                  "pathId": "read",
+                  "setup": true,
+                  "label": "已读状态和统计一致",
+                  "expected": "共 2 本，已读 1 本",
+                  "actual": "共 2 本，已读 1 本",
+                  "pass": true,
+                  "status": "pass"
+                },
+                {
+                  "pathId": "read",
+                  "setup": true,
+                  "label": "目标书目状态正确",
+                  "expected": "样例记录 A · 已读",
+                  "actual": "样例记录 A · 已读",
+                  "pass": true,
+                  "status": "pass"
+                },
+                {
+                  "pathId": "export",
+                  "setup": false,
+                  "label": "最终导出与当前书目及状态一致",
+                  "expected": {
+                    "books": [
+                      {
+                        "title": "样例记录 A",
+                        "read": true
+                      },
+                      {
+                        "title": "样例记录 B",
+                        "read": false
+                      }
+                    ]
+                  },
+                  "actual": {
+                    "books": [
+                      {
+                        "title": "样例记录 A",
+                        "read": true
+                      },
+                      {
+                        "title": "样例记录 B",
+                        "read": false
+                      }
+                    ]
+                  },
+                  "pass": true,
+                  "status": "pass"
+                }
+              ]
+            },
+            {
+              "status": "pass",
+              "checks": [
+                {
+                  "pathId": "add",
+                  "setup": true,
+                  "label": "两本书均保存",
+                  "expected": 2,
+                  "actual": 2,
+                  "pass": true,
+                  "status": "pass"
+                },
+                {
+                  "pathId": "add",
+                  "setup": true,
+                  "label": "初始状态为未读",
+                  "expected": "共 2 本，已读 0 本",
+                  "actual": "共 2 本，已读 0 本",
+                  "pass": true,
+                  "status": "pass"
+                },
+                {
+                  "pathId": "read",
+                  "setup": true,
+                  "label": "已读状态和统计一致",
+                  "expected": "共 2 本，已读 1 本",
+                  "actual": "共 2 本，已读 1 本",
+                  "pass": true,
+                  "status": "pass"
+                },
+                {
+                  "pathId": "read",
+                  "setup": true,
+                  "label": "目标书目状态正确",
+                  "expected": "样例记录 A · 已读",
+                  "actual": "样例记录 A · 已读",
+                  "pass": true,
+                  "status": "pass"
+                },
+                {
+                  "pathId": "export",
+                  "setup": false,
+                  "label": "最终导出与当前书目及状态一致",
+                  "expected": {
+                    "books": [
+                      {
+                        "title": "样例记录 A",
+                        "read": true
+                      },
+                      {
+                        "title": "样例记录 B",
+                        "read": false
+                      }
+                    ]
+                  },
+                  "actual": {
+                    "books": [
+                      {
+                        "title": "样例记录 A",
+                        "read": true
+                      },
+                      {
+                        "title": "样例记录 B",
+                        "read": false
+                      }
+                    ]
+                  },
+                  "pass": true,
+                  "status": "pass"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

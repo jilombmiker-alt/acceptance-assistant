@@ -1,0 +1,94 @@
+{
+  "kind": "redacted-historical-record",
+  "scope": "真实浏览器与下载复检；语义使用受控替身，不是实际用户收益实验",
+  "sourceDate": "2026-09-13",
+  "reexecutedForPublication": false,
+  "redaction": "Removed runtime task identifiers and non-required context; assertion values retained.",
+  "checks": [
+    {
+      "id": "plan-no-fabricated-savings",
+      "status": "pass",
+      "evidence": {
+        "verdict": "insufficient-evidence",
+        "acceptance": "unverified",
+        "metrics": [
+          {
+            "id": "repeatExplanationCount",
+            "status": "unmeasured",
+            "value": null
+          },
+          {
+            "id": "recurringErrorCount",
+            "status": "unmeasured",
+            "value": null
+          },
+          {
+            "id": "correctionReworkCount",
+            "status": "unmeasured",
+            "value": null
+          },
+          {
+            "id": "detourCount",
+            "status": "unmeasured",
+            "value": null
+          },
+          {
+            "id": "supervisionCount",
+            "status": "unmeasured",
+            "value": null
+          }
+        ]
+      }
+    },
+    {
+      "id": "execution-is-not-repair-or-benefit",
+      "status": "pass",
+      "evidence": {
+        "attempts": 10,
+        "acceptance": {
+          "status": "unverified",
+          "label": "最终目标是否完整达成：未验证",
+          "reason": "已覆盖检查不等于完整目标验收，缺项与移除项不算通过。",
+          "covered": 5,
+          "planned": 5,
+          "issues": 1,
+          "gaps": 6,
+          "excluded": 0
+        }
+      }
+    },
+    {
+      "id": "desktop-and-mobile-help-panel",
+      "status": "pass",
+      "evidence": {
+        "desktopWidth": 1440,
+        "mobileWidth": 390,
+        "overflow": false,
+        "pageErrors": []
+      }
+    },
+    {
+      "id": "json-download-and-web-report-agree",
+      "status": "pass",
+      "evidence": {
+        "metrics": 5
+      }
+    },
+    {
+      "id": "pdf-download-and-cache-update-after-feedback",
+      "status": "pass",
+      "evidence": {
+        "feedbackSubmission": 1,
+        "actualRework": null,
+        "pdfUpdated": true
+      }
+    },
+    {
+      "id": "measurement-records-persist-on-restart",
+      "status": "pass",
+      "evidence": {
+        "feedbackSubmission": 1
+      }
+    }
+  ]
+}
