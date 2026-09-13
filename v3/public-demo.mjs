@@ -40,7 +40,10 @@ export async function startPublicDemo({port=0,host='127.0.0.1',publicOrigin,clou
   let s,mutating=false;
   try{
    if(closing)return send(503,{error:'演示正在关闭'});
-   if(req.headers.host!==new URL(origin).host)return send(403,{error:'演示入口不匹配'});
+   // The public cloud proxy rewrites Host and adds embed query parameters.
+   // POST requests still require the exact configured public Origin and per-session token.
+   if(!cloud&&req.headers.host!==new URL(origin).host)return send(403,{error:'演示入口不匹配'});
+   if(cloud&&req.method==='GET')req.url=new URL(req.url,origin).pathname;
    if(req.method==='GET'&&req.url==='/healthz')return send(200,{status:'ready',scope:'controlled-demo'});
    if(cloud&&req.method==='GET'){
     if(req.url==='/cloud.css')return send(200,cloudCSS,'text/css; charset=utf-8');

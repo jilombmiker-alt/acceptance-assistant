@@ -298,8 +298,8 @@
     },
     {
       "file": "v3/public-demo.mjs",
-      "bytes": 11163,
-      "sha256": "57cc49bdd52ef9d95eb79e0f52201da13507fbfb84ce61ce80514a4bb41ce3f7"
+      "bytes": 11413,
+      "sha256": "1bfad49602fabbd564dc83af4bee814033edb326e5f2f35dbfa0c7fcdce0433f"
     },
     {
       "file": "v3/report-export.mjs",
