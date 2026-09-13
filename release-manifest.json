@@ -18,8 +18,8 @@
     },
     {
       "file": "README.md",
-      "bytes": 4257,
-      "sha256": "198a0d343d69b286e7e4ec00669282c0b54d5d846060197e3e1c524bccd0d530"
+      "bytes": 4757,
+      "sha256": "5402fbc3d35722dc9e90c45601e6d8c1088f13e35666cf3ad85f716dc5b5f871"
     },
     {
       "file": "audit/build-repair-case.mjs",
@@ -48,13 +48,38 @@
     },
     {
       "file": "docs/index.html",
-      "bytes": 2310,
-      "sha256": "63c78fb6d91821bb85cb2cef75c5792c909a7651f58ec79e7a4c028b2c1ac995"
+      "bytes": 2364,
+      "sha256": "ee05e8b54637cf6792eee037ac1e54080599072aaf361646fe16762e4b4ae79d"
+    },
+    {
+      "file": "docs/iterations.html",
+      "bytes": 9582,
+      "sha256": "956d7eb1d05e3e8b3e05f88ba8dec5b3b3196a62797a14a2c370472c8839f301"
     },
     {
       "file": "docs/modelscope-deployment.md",
       "bytes": 1087,
       "sha256": "33c267b0f2065993593327acc3c7df545fb5cd6b146021e436c5b9c68d3d5ae5"
+    },
+    {
+      "file": "docs/next-version/01-product-framework.md",
+      "bytes": 31437,
+      "sha256": "65e2c8486831deb447232036d213fe585283cf173aba69af9331312b1e0f4ed7"
+    },
+    {
+      "file": "docs/next-version/02-next-development-brief.md",
+      "bytes": 5010,
+      "sha256": "829ac3533478898f9331e401e51d0a35298d9a4291367f6a5cf86de70338bab6"
+    },
+    {
+      "file": "docs/next-version/03-development-sop.md",
+      "bytes": 6158,
+      "sha256": "e782b04638d1e75354c6417767b756bebba9ae83119722363411e88e48b09706"
+    },
+    {
+      "file": "docs/next-version/04-iteration-checklist.md",
+      "bytes": 8554,
+      "sha256": "ee8d439f8777707cd88273b96c24e23f174033272973700b302b4bc0f635447b"
     },
     {
       "file": "docs/subtitles.srt",

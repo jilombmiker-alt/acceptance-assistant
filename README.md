@@ -6,6 +6,12 @@
 
 ![单对话框入口](docs/home.png)
 
+## 下一版计划
+
+[公开迭代看板](https://jilombmiker-alt.github.io/acceptance-assistant/iterations.html) · [产品框架](docs/next-version/01-product-framework.md) · [开发任务书](docs/next-version/02-next-development-brief.md) · [开发 SOP](docs/next-version/03-development-sop.md) · [状态与验收清单](docs/next-version/04-iteration-checklist.md)
+
+先做深 Web 记录管理与文件导出，完成连续修复、同类迁移和用户收益验证，再扩展相邻能力。
+
 ## 能做什么
 
 用户说清本次目标，系统结合主动提供的项目资料、历史纠正与本项目反馈，整理适用提醒、实际检查和下一步。开始验收后执行支持的本地页面路径，记录问题、位置、触发操作、预期和实际差异；修复后重新检查。可导出网页与 PDF 报告，或把项目上下文交给 Codex 继续使用。
