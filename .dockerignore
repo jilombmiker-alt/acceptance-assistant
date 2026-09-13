@@ -1,0 +1,7 @@
+.git
+node_modules
+runs
+state
+.env
+.env.*
+*.local.json

@@ -1,0 +1,5 @@
+{
+  "$schema": "https://modelscope.cn/api/v1/studios/deploy_schema.json",
+  "sdk_type": "docker",
+  "port": 7860
+}

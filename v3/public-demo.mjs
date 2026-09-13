@@ -2,6 +2,8 @@ import http from 'node:http';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import crypto from 'node:crypto';
+import {createReadStream} from 'node:fs';
+import {cloudPage,cloudCSS,cloudJS,videoPage} from './cloud-page.mjs';
 import {fileURLToPath} from 'node:url';
 import {startWorkbench} from './workbench.mjs';
 import {startReadingServer} from '../v2/reading-server.mjs';
@@ -14,7 +16,7 @@ const variants=[['k2','阅读清单 · 正常版本'],['l8','阅读清单 · 导
 
 // Each visitor owns a separate workbench, authorization ledger and browser run.
 // Neither a client URL nor a client filesystem path is used as an execution target.
-export async function startPublicDemo({port=0,host='127.0.0.1',publicOrigin,stateDir=path.join(root,'state/public-demo'),maxSessions=8,maxConcurrent=2,maxTasks=3,sessionMs=30*60_000,runMs=5*60_000}={}){
+export async function startPublicDemo({port=0,host='127.0.0.1',publicOrigin,cloud=false,stateDir=path.join(root,'state/public-demo'),maxSessions=8,maxConcurrent=2,maxTasks=3,sessionMs=30*60_000,runMs=5*60_000}={}){
  if(host!=='127.0.0.1'&&!publicOrigin)throw Error('公开监听需要明确配置 PUBLIC_ORIGIN');
  for(const n of [maxSessions,maxConcurrent,maxTasks,sessionMs,runMs])if(!Number.isSafeInteger(n)||n<1)throw Error('演示限额必须为正整数');
  if(publicOrigin){const u=new URL(publicOrigin);if(!['http:','https:'].includes(u.protocol)||u.origin!==publicOrigin||u.username||u.password)throw Error('PUBLIC_ORIGIN 必须是完整来源，不含路径或账号');}
@@ -40,16 +42,28 @@ export async function startPublicDemo({port=0,host='127.0.0.1',publicOrigin,stat
    if(closing)return send(503,{error:'演示正在关闭'});
    if(req.headers.host!==new URL(origin).host)return send(403,{error:'演示入口不匹配'});
    if(req.method==='GET'&&req.url==='/healthz')return send(200,{status:'ready',scope:'controlled-demo'});
+   if(cloud&&req.method==='GET'){
+    if(req.url==='/cloud.css')return send(200,cloudCSS,'text/css; charset=utf-8');
+    if(req.url==='/cloud.js')return send(200,cloudJS,'text/javascript; charset=utf-8');
+    if(req.url==='/guide-video')return send(200,videoPage,'text/html; charset=utf-8',{'Content-Security-Policy':"default-src 'none'; style-src 'self' 'unsafe-inline'; media-src 'self'; frame-ancestors 'self' https://modelscope.cn https://www.modelscope.cn"});
+    if(req.url==='/repair-case.json')return send(200,await fs.readFile(path.join(root,'evaluation/report-repair-case.json')));
+    if(req.url==='/guide.mp4'){
+     const file=path.join(root,'media/demo.mp4'),stat=await fs.stat(file),match=req.headers.range?.match(/^bytes=(\d+)-(\d*)$/),start=match?Number(match[1]):0,end=match&&match[2]?Math.min(Number(match[2]),stat.size-1):stat.size-1;
+     if(start>end||start>=stat.size)return send(416,'','video/mp4',{'Content-Range':'bytes */'+stat.size});
+     res.writeHead(match?206:200,{'Content-Type':'video/mp4','Content-Length':end-start+1,'Accept-Ranges':'bytes','Cache-Control':'public, max-age=3600',...(match?{'Content-Range':'bytes '+start+'-'+end+'/'+stat.size}:{})});createReadStream(file,{start,end}).pipe(res);return;
+    }
+   }
    const evidence=req.method==='GET'&&/^\/evidence\/(?:[a-zA-Z0-9_-]+\/)*[a-zA-Z0-9_.-]+\.(?:png|json|csv|txt)$/.test(req.url)&&!req.url.includes('..');
-   if(!(req.method==='GET'&&(getRoutes.has(req.url)||evidence)||req.method==='POST'&&postRoutes.has(req.url)))return send(404,{error:'演示入口未提供'});
+   if(!(req.method==='GET'&&(getRoutes.has(req.url)||evidence||cloud&&req.url==='/workbench')||req.method==='POST'&&postRoutes.has(req.url)))return send(404,{error:'演示入口未提供'});
    const id=(req.headers.cookie||'').split(';').map(x=>x.trim()).find(x=>x.startsWith(cookieName+'='))?.slice(cookieName.length+1);
    s=/^[a-f0-9]{64}$/.test(id||'')?sessions.get(id):null;
    if(s&&(s.expired||Date.now()-s.created>sessionMs)){if(!s.mutating)void destroy(s).catch(()=>{});s=null;}
    if(!s){
     if(req.method!=='GET'||req.url!=='/')return send(401,{error:'会话已过期，请重新打开演示首页'});
     // A cross-site embedded request cannot allocate a visitor session.
-    if(['cross-site'].includes(req.headers['sec-fetch-site']))return send(403,{error:'请直接打开演示入口'});
-    s=await create();res.setHeader('Set-Cookie',cookieName+'='+s.id+'; Path=/; HttpOnly; SameSite=Strict'+(origin.startsWith('https:')?'; Secure':'')+'; Max-Age='+Math.ceil(sessionMs/1000));
+    let platformFrame=false;try{platformFrame=cloud&&['https://modelscope.cn','https://www.modelscope.cn'].includes(new URL(req.headers.referer).origin);}catch{}
+    if(['cross-site'].includes(req.headers['sec-fetch-site'])&&!platformFrame)return send(403,{error:'请直接打开演示入口'});
+    s=await create();res.setHeader('Set-Cookie',cookieName+'='+s.id+'; Path=/; HttpOnly; '+(cloud&&origin.startsWith('https:')?'SameSite=None; Secure; Partitioned':'SameSite=Strict'+(origin.startsWith('https:')?'; Secure':''))+'; Max-Age='+Math.ceil(sessionMs/1000));
    }
    let body;
    if(req.method==='POST'){
@@ -71,12 +85,16 @@ export async function startPublicDemo({port=0,host='127.0.0.1',publicOrigin,stat
      s.reserved=true;s.runningSince=Date.now();
     }
    }
-   const response=await fetch(s.app.origin+req.url,{method:req.method,headers:req.method==='POST'?{'Content-Type':'application/json',Origin:s.app.origin,'X-Task-Token':req.headers['x-task-token']||''}:{},...(body?{body:JSON.stringify(body)}:{}),signal:AbortSignal.timeout(25_000)});
+   const response=await fetch(s.app.origin+(cloud&&req.url==='/workbench'?'/':req.url),{method:req.method,headers:req.method==='POST'?{'Content-Type':'application/json',Origin:s.app.origin,'X-Task-Token':req.headers['x-task-token']||''}:{},...(body?{body:JSON.stringify(body)}:{}),signal:AbortSignal.timeout(25_000)});
    if(req.url==='/prepare'&&req.method==='POST'&&response.ok)s.tasks++;
    if(req.url==='/prepare'||req.url==='/start'&&!response.ok||!response.ok&&!s.app.executionState()?.worker?.running)s.reserved=false;
    const type=response.headers.get('content-type')||'application/octet-stream';
    if(type.startsWith('image/'))return send(response.status,Buffer.from(await response.arrayBuffer()),type);
    let text=await response.text();
+   if(cloud&&req.url==='/'){
+    const token=text.match(/data-task-token="([a-f0-9]+)"/)?.[1];if(!token)throw Error('无法创建页面会话');
+    return send(200,cloudPage(token),'text/html; charset=utf-8',{'Content-Security-Policy':"default-src 'none'; script-src 'self'; style-src 'self'; connect-src 'self'; frame-ancestors 'self' https://modelscope.cn https://www.modelscope.cn; base-uri 'none'; form-action 'self'"});
+   }
    if(req.url!=='/app.js'&&req.url!=='/style.css')text=cleanText(text,s);
    return send(response.status,text,type);
   }catch(e){if(s&&['/prepare','/start'].includes(req.url)&&!s.app.executionState()?.worker?.running)s.reserved=false;send(e.status||400,{error:e.status?e.message:'请求未完成，请刷新当前页面后重试'});}
@@ -94,6 +112,6 @@ export async function startPublicDemo({port=0,host='127.0.0.1',publicOrigin,stat
  return {origin,bootDir,close:async()=>{closing=true;clearInterval(timer);await new Promise(r=>server.close(r));await Promise.all([...sessions.values()].map(destroy));await new Promise(r=>site.server.close(r));await fs.rm(bootDir,{recursive:true,force:true});}};
 }
 if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.url)){
- const app=await startPublicDemo({port:Number(process.env.PORT||4394),host:process.env.DEMO_HOST||'127.0.0.1',publicOrigin:process.env.PUBLIC_ORIGIN||undefined,stateDir:process.env.DEMO_STATE_DIR||undefined});
+ const app=await startPublicDemo({port:Number(process.env.PORT||4394),host:process.env.DEMO_HOST||'127.0.0.1',publicOrigin:process.env.PUBLIC_ORIGIN||undefined,cloud:process.env.CLOUD_DEMO==='1',stateDir:process.env.DEMO_STATE_DIR||undefined});
  console.log('独立演示入口：'+app.origin);for(const signal of ['SIGINT','SIGTERM'])process.once(signal,()=>app.close().then(()=>process.exit(0)));
 }
