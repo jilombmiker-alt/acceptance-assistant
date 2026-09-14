@@ -34,17 +34,18 @@ body[data-chat] #chat-answer button:hover{background:white;color:#111}
 `;
 
 export const chatJS=String.raw`
-let chatActive=false,chatView='task',chatResultKey='',chatCustomBusy=false;
+let chatInitialized=false,chatActive=false,chatView='task',chatResultKey='',chatCustomBusy=false;
 function chatAnswer(html){el('chat-thread').hidden=false;el('chat-answer').innerHTML=html;}
 function renderChat(){
  if(!el('chat-home'))return;
  el('connected-project').textContent=state?.resumeDraft?'当前项目：'+(state.task?.plan?.project||'已接入网页')+' · 修改源码后，重新选择文件夹接入新版本。':'未接入个人项目。先选择文件夹，再写检查目标。';
- if(sessionStorage.getItem('project-connected')&&state?.task){sessionStorage.removeItem('project-connected');chatActive=true;chatView='task';}
+ if(!chatInitialized&&state){chatInitialized=true;chatActive=!!state.task;chatView='task';}
  el('chat-send').disabled=busy||chatCustomBusy||!state;el('chat-help').disabled=busy||chatCustomBusy||!state;
  if(!chatActive||chatView!=='task'||!state.task)return;
- const key=JSON.stringify([state.task.id,state.task.revision,state.automatic,state.impacts,state.control?.worker?.phase,state.control?.control?.status]);
+ const key=JSON.stringify([state.task.id,state.task.revision,state.automatic,state.impacts,state.control?.worker?.phase,state.control?.control?.status,state.control?.reportAvailable,state.coverage,state.resumeDraft?.available]);
  if(key===chatResultKey)return;chatResultKey=key;
  const t=state.task,s=state.control,ready=s?.reportAvailable,issues=state.impacts||[];
+ if(state.resumeDraft?.kind==='snapshot'&&!state.resumeDraft.available&&!state.receipt){chatAnswer('<p>本地助手已重启，之前的网页服务已停止。请重新选择文件夹接入，再生成本轮检查。</p><a href="/connect">重新选择文件夹</a>');return;}
  if(s?.worker?.running||s?.worker?.phase==='starting'){chatAnswer('<p>正在检查。完成后会告诉你先改哪里。</p><a href="/workbench#execution">查看进度或暂停</a>');return;}
  if(ready){
   const basicIssues=[...new Set((state.coverage||[]).filter(r=>r.status==='issue').flatMap(r=>r.checkIds))];
@@ -65,7 +66,7 @@ if(el('chat-home')){
   const text=el('chat-input').value.trim();if(!text)return;
   chatActive=true;chatView='custom';chatResultKey='';el('chat-user').textContent=text;el('chat-input').value='';el('message').textContent='';
   if(/^(怎么做|怎么用|帮助|使用指南)[？?。！!]*$/.test(text)){
-   chatAnswer('<p>先点下方“检查我的产品”，选择网页文件夹，再写目标，例如：检查输入框和手机适配。</p><p>生成计划后点“开始检查”；修复问题后，输入“重新检查”。</p><p>想先体验，输入“查看案例”。换项目输入“设置项目”；留意见用“纠正：具体要求”。</p><a href="/guide-video">看 3 分半使用演示</a>');return;
+   chatAnswer('<p>先点下方“检查我的产品”，选择网页文件夹，再写目标，例如：检查输入框和手机适配。</p><p>生成计划后点“开始检查”。修复快照项目后，重新选择文件夹；使用原目录和运行地址的项目，可输入“重新检查”。</p><p>想先体验，输入“查看案例”。换项目输入“设置项目”；留意见用“纠正：具体要求”。</p><a href="/guide-video">看 3 分半使用演示</a>');return;
   }
   if(/^(设置项目|项目设置|换项目|上传代码|上传产品|检查我的产品)[。！!]*$/.test(text)){
    chatAnswer('<p>选择网页代码文件夹即可自动接入；已经启动的项目也可以填写地址。</p><a href="/connect">检查我的产品</a>');return;
@@ -81,6 +82,7 @@ if(el('chat-home')){
   const correction=text.match(/^(?:纠正|记住)[：:]\s*([\s\S]+)$/);
   if(correction){if(!state.task){chatAnswer('<p>先写下本次目标。建立任务后，我才能把这条纠正记到对应项目。</p>');return;}const count=state.opinions.length;await post('/opinion',{text:correction[1]});chatAnswer(state.opinions.length>count?'<p>已记到本项目。下一轮会重新判断它是否适用。</p>':'<p>这条纠正还没有保存，请按下方提示重试。</p>');return;}
   if(!el('project-path').value||!el('url').value){chatAnswer('<p>先告诉我需要检查哪个项目。</p><a href="/connect">选择我的代码文件夹</a>');return;}
+  if(/^重新检查[。！!]*$/.test(text)&&state.resumeDraft?.kind==='snapshot'){chatAnswer('<p>当前检查的是上次导入的快照。请重新选择文件夹接入修改后的代码，再按原目标复检。</p><a href="/connect">重新选择文件夹</a>');return;}
   const goal=/^重新检查[。！!]*$/.test(text)&&state.task?state.task.goal:text;
   el('goal').value=goal;chatAnswer('<p>正在整理下一步…</p>');
   const previous=state.task?.id;

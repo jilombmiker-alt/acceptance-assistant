@@ -37,6 +37,16 @@
       "sha256": "a22be90f9ace1a71e8e8b2b65c6bc931fcdc1bccb8a743d2c73be6a9f168f1fd"
     },
     {
+      "file": "audit/check-self-ui.mjs",
+      "bytes": 2382,
+      "sha256": "20f729d6d338c834e0a15fb8ccf3d98802786cad85ca562ce1d246e53ed42b66"
+    },
+    {
+      "file": "audit/check-self-workflow.mjs",
+      "bytes": 3237,
+      "sha256": "529cb8bc9d692b3b4ca6701a3b6303fa59c3c97eada7553439be656e1611fe8e"
+    },
+    {
       "file": "docs/acceptance/01-usage-and-results.md",
       "bytes": 2586,
       "sha256": "24215f2a600607569610c6dfbb8963749a986fcbbd58a05e23d58db0082808da"
@@ -57,9 +67,14 @@
       "sha256": "8a7b388d8fe1b190fa956dba8d7e2841e055543ab7440ebedd84dddedb4868e2"
     },
     {
+      "file": "docs/acceptance/05-self-review.md",
+      "bytes": 2743,
+      "sha256": "8e5a9a5cc0ef1183187b4334058a778b7e978e76e09fc4386f2ef22071ef4f8b"
+    },
+    {
       "file": "docs/acceptance/README.md",
-      "bytes": 2047,
-      "sha256": "3aaf6ff51d6df4778c0954cfc25bce1761d1150ec577b5bcc1eedb839acf598c"
+      "bytes": 2157,
+      "sha256": "db4087b0448e157e2d3bdd5f7addd232e69c28519a3778fed85806f51a90c430"
     },
     {
       "file": "docs/acceptance/evidence/help-evaluation.json",
@@ -90,6 +105,11 @@
       "file": "docs/acceptance/evidence/report-repair-summary.json",
       "bytes": 530,
       "sha256": "a14ba1f1fee532a2a83dc166aef6df1f5fc3971640c208e99b585ed06a1a39c5"
+    },
+    {
+      "file": "docs/acceptance/evidence/self-review.json",
+      "bytes": 1673,
+      "sha256": "336aebe8fffcc1172fdb7444884ef11def154bf17cfc3d0bb5b68ee248f21f9f"
     },
     {
       "file": "docs/comparison.png",
@@ -323,8 +343,8 @@
     },
     {
       "file": "v3/chat-entry.mjs",
-      "bytes": 12002,
-      "sha256": "26d2e5f230703b8568878a8972b4298cf5ef955f1125c1be5cd3e40aff7c3534"
+      "bytes": 12674,
+      "sha256": "b05e88a67778b3a7c97c107c863eaf586e8598d57e21ddc4812462343fa6fd3a"
     },
     {
       "file": "v3/cloud-page.mjs",
@@ -343,8 +363,8 @@
     },
     {
       "file": "v3/connect-page.mjs",
-      "bytes": 6727,
-      "sha256": "d843e8f445e59054ebc095bbc0081324aff265708c1039587af868b66213e756"
+      "bytes": 6993,
+      "sha256": "d75401cb320a391013d7c8e13d8ca425e07076a058f0f3bd5bcf69fe1bf00657"
     },
     {
       "file": "v3/discover.mjs",
@@ -370,6 +390,11 @@
       "file": "v3/help-evaluation.test.mjs",
       "bytes": 8921,
       "sha256": "05abbc77d86b76e5d84155b6465e2fda27b51183bc4d51fb758a97c365a7c2db"
+    },
+    {
+      "file": "v3/intake-flow.test.mjs",
+      "bytes": 4117,
+      "sha256": "68d8458f84df1364d7a8453be6f25fa5cf5814e1f7a3dfa2be5fc847d1593540"
     },
     {
       "file": "v3/light-entry.mjs",
@@ -433,8 +458,8 @@
     },
     {
       "file": "v3/workbench.mjs",
-      "bytes": 27869,
-      "sha256": "05242b099dd2db7343eac217a6d4f9642641f70b824618a46c2942f0dbaf7663"
+      "bytes": 28099,
+      "sha256": "20076a205e69694e2cfdbabf75a6a1abca34c0152ab657f03251c7a88164769d"
     }
   ]
 }

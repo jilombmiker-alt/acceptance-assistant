@@ -3,24 +3,27 @@ export function connectPage(token){return `<!doctype html><html lang="zh-CN"><me
 export const connectCSS=`.connect{padding-top:48px}.connect .mark{margin-top:36px}.connect h1{margin-bottom:20px}.connect form{margin-top:28px}.connect label{display:block;font-weight:650;margin-top:18px}.connect input{width:100%;font:inherit;padding:10px 8px;border:1px solid #777;background:white;color:#111;min-height:44px}.connect input[type=file]{border:0;padding:12px 0}.connect textarea{border-bottom:1px solid #777;min-height:90px;margin:10px 0}.connect button{margin-top:20px}.connect code{overflow-wrap:anywhere}.connect #result{border-top:2px solid #111;margin-top:28px;padding-top:20px}.connect a{display:inline-block;min-height:44px}::selection{background:#111;color:white}textarea{caret-color:#111}button:hover:not(:disabled){background:#fff;color:#111}@media(max-width:600px){.connect{padding-top:28px}}`;
 export const connectJS=String.raw`
 const eligible=${importable.toString()},limits=${JSON.stringify(importLimits)},el=id=>document.getElementById(id),token=document.currentScript.dataset.taskToken;
-let draft=null,working=false;
+let draft=null,working=false,attachedProject=null;
 try{draft=JSON.parse(sessionStorage.getItem('project-intake-draft'));}catch{}
 if(draft){el('goal').value=draft.goal||'';el('expected').value=draft.expectedText||'';}
+el('folder').onchange=()=>{attachedProject=null;};
 async function api(route,data){const r=await fetch(route,{method:'POST',headers:{'Content-Type':'application/json','X-Task-Token':token},body:JSON.stringify(data)});const d=await r.json();if(!r.ok)throw Error(d.error||'接入失败，请重新选择。');return d;}
-el('connect').onsubmit=async e=>{e.preventDefault();if(working)return;working=true;el('import').disabled=true;el('result').hidden=true;
+el('connect').onsubmit=async e=>{e.preventDefault();if(working)return;working=true;const controls=['import','folder','goal','expected'];controls.forEach(id=>el(id).disabled=true);el('result').hidden=true;
  try{
+  const goal=el('goal').value.trim(),expectedText=el('expected').value.trim();
+  if(!goal)throw Error('请先写下这次要检查什么，不能只填写空格。');
   const all=[...el('folder').files];if(!all.length)throw Error('请先选择包含 index.html 的网页文件夹。');
   const accepted=all.map(f=>({file:f,path:f.webkitRelativePath.split('/').slice(1).join('/')})).filter(f=>eligible(f.path));
   if(!accepted.length||accepted.length>limits.files||accepted.some(f=>f.file.size>limits.fileBytes)||accepted.reduce((n,f)=>n+f.file.size,0)>limits.totalBytes)throw Error('可接入最多 300 个网页文件、总计 2 MB、单文件 256 KB。请选择较小的网页目录或构建后的 dist / build。');
   el('status').textContent='正在接入 '+accepted.length+' 个网页文件，已跳过 '+(all.length-accepted.length)+' 个不支持或排除的文件…';
-  const files=[];for(const f of accepted){const bytes=new Uint8Array(await f.file.arrayBuffer());let text='';for(let i=0;i<bytes.length;i+=8192)text+=String.fromCharCode(...bytes.subarray(i,i+8192));files.push({path:f.path,data:btoa(text)});}
-  const project=await api('/import-project',{files});
+  if(!attachedProject){const files=[];for(const f of accepted){const bytes=new Uint8Array(await f.file.arrayBuffer());let text='';for(let i=0;i<bytes.length;i+=8192)text+=String.fromCharCode(...bytes.subarray(i,i+8192));files.push({path:f.path,data:btoa(text)});}
+  attachedProject=await api('/import-project',{files});}
+  const project=attachedProject;
   el('status').textContent='已接入 '+project.files+' 个文件，正在打开网页并识别可检查项…';
-  const goal=el('goal').value.trim(),expectedText=el('expected').value.trim();
   const state=await api('/prepare',{projectPath:project.projectPath,url:project.url,mode:'basic',goal,expectedText,normalRuns:2});
-  sessionStorage.setItem('project-intake-draft',JSON.stringify({goal,expectedText}));
-  sessionStorage.setItem('project-connected','1');location.href='/';
- }catch(e){el('status').textContent=e.message;}finally{working=false;el('import').disabled=false;}
+  try{sessionStorage.setItem('project-intake-draft',JSON.stringify({goal,expectedText}));}catch{}
+  location.href='/';
+ }catch(e){el('status').textContent=e.message;}finally{working=false;controls.forEach(id=>el(id).disabled=false);}
 };
 `;
 export const ownProjectGuide=`<p>检查自己的产品需要先在电脑上启动本地版，代码不上传到这个公开演示站。</p><ol><li><a href="https://github.com/jilombmiker-alt/acceptance-assistant/archive/refs/heads/main.zip">下载产品代码 ZIP</a>，解压后在目录里打开终端。需要 Node.js 22 或更新版本。</li><li>依次运行 <code>npm install</code>、<code>npx playwright install chromium</code>、<code>npm start</code>，打开终端显示的本机地址。</li><li>点击“检查我的产品”，选择自己的网页文件夹并写目标，再点“开始检查”。</li></ol><p>支持 index.html 静态网页或构建后的 dist / build；压缩包先解压。React / Vue 源码先构建，已启动项目可填写本机地址。当前只验证列出的基础网页检查，后端业务仍需专门验收。</p><a href="https://github.com/jilombmiker-alt/acceptance-assistant/blob/main/docs/acceptance/04-connect-your-project.md" target="_blank" rel="noopener">查看完整接入指南</a>`;

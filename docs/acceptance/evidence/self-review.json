@@ -1,0 +1,76 @@
+{
+  "scope": "本产品自身的固定自检路径；不代表任意业务全量验收",
+  "criteriaHash": "3db21701891d1cc7798c0ac9e8b904a5ada4e9de63c556ce07bd387dfbf2a3b4",
+  "sameCriteria": true,
+  "repetitions": 2,
+  "workflowBefore": [
+    {
+      "id": "restore-plan",
+      "status": "issue"
+    },
+    {
+      "id": "snapshot-guide",
+      "status": "issue"
+    }
+  ],
+  "workflowAfter": [
+    {
+      "id": "restore-plan",
+      "status": "pass"
+    },
+    {
+      "id": "snapshot-guide",
+      "status": "pass"
+    }
+  ],
+  "baseUI": [
+    {
+      "id": "entry",
+      "status": "pass",
+      "repetitions": 2,
+      "errors": []
+    },
+    {
+      "id": "expected-text",
+      "status": "pass",
+      "repetitions": 2,
+      "errors": []
+    },
+    {
+      "id": "input-0",
+      "status": "pass",
+      "repetitions": 2,
+      "errors": []
+    },
+    {
+      "id": "input-1",
+      "status": "pass",
+      "repetitions": 2,
+      "errors": []
+    },
+    {
+      "id": "layout",
+      "status": "pass",
+      "repetitions": 2,
+      "errors": []
+    }
+  ],
+  "unitTests": {
+    "passed": 58,
+    "failed": 0
+  },
+  "manualReview": [
+    "空白目标提示",
+    "文件夹选择与导入",
+    "生成计划后刷新恢复",
+    "开始检查并取得报告",
+    "旧快照复检引导重新导入",
+    "重启后已失效快照提示"
+  ],
+  "limits": [
+    "基础页面自检使用产品生成的接入页及现有规划器",
+    "两项流程标准由本轮人工明确，交给产品现有执行器运行",
+    "失败重试与存储异常由前端回归测试覆盖",
+    "没有证明任意后端业务、真实用户节省或全产品无缺陷"
+  ]
+}
