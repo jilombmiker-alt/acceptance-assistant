@@ -1,0 +1,55 @@
+{
+  "scope": "Local uploaded static webpage only; same goal and expected text, four checks twice per version",
+  "records": [
+    {
+      "version": "before",
+      "checks": [
+        {
+          "id": "entry",
+          "status": "pass",
+          "repetitions": 2
+        },
+        {
+          "id": "expected-text",
+          "status": "issue",
+          "repetitions": 2
+        },
+        {
+          "id": "input-0",
+          "status": "pass",
+          "repetitions": 2
+        },
+        {
+          "id": "layout",
+          "status": "pass",
+          "repetitions": 2
+        }
+      ]
+    },
+    {
+      "version": "corrected",
+      "checks": [
+        {
+          "id": "entry",
+          "status": "pass",
+          "repetitions": 2
+        },
+        {
+          "id": "expected-text",
+          "status": "pass",
+          "repetitions": 2
+        },
+        {
+          "id": "input-0",
+          "status": "pass",
+          "repetitions": 2
+        },
+        {
+          "id": "layout",
+          "status": "pass",
+          "repetitions": 2
+        }
+      ]
+    }
+  ]
+}

@@ -1,3 +1,6 @@
+import {connectPage,connectJS,connectCSS} from './connect-page.mjs';
+import {cloudCSS} from './cloud-page.mjs';
+import {importStaticProject} from './project-import.mjs';
 import {createReadStream} from 'node:fs';
 import {chatPage} from './chat-entry.mjs';
 import {codexContext} from './codex-context.mjs';
@@ -44,7 +47,8 @@ export async function startWorkbench({allowedRoot=base,stateDir=path.join(base,'
    task.gaps.push({kind:'semantic-unavailable',reason:task.autoExperience.noExperienceReason});task.digest=bodyHash(JSON.stringify({...task,digest:undefined}));return task;
   }
  };
- const checkedRoot=async value=>{const root=await fs.realpath(value);if(root!==allowedRoot&&!root.startsWith(allowedRoot+path.sep))throw Error('项目不在本次启动允许的目录内');return root;};
+ const importedProjects=new Map();
+ const checkedRoot=async value=>{const root=await fs.realpath(value);if(!importedProjects.has(root)&&root!==allowedRoot&&!root.startsWith(allowedRoot+path.sep))throw Error('项目不在本次启动允许的目录内');return root;};
  const token=crypto.randomBytes(32).toString('hex');let origin,current=null,controller=null,controllerPromise=null,busy=false,learningPromise=Promise.resolve(),learningError=null,pdfCache=null;
  const save=async(file,data)=>{const next=file+'.next';await fs.writeFile(next,JSON.stringify(sanitize(data),null,2),{mode:0o600});await fs.rename(next,file);};
  const folder=id=>{if(!/^task-[a-f0-9-]{36}$/.test(id))throw Error('任务标识无效');return path.join(stateDir,id);};
@@ -67,6 +71,9 @@ export async function startWorkbench({allowedRoot=base,stateDir=path.join(base,'
   try{
    if(req.method==='GET'&&req.url==='/')return send(200,demoOnly?workbenchPage(token,{demoOnly}):chatPage(workbenchPage(token)),'text/html');
    if(req.method==='GET'&&req.url==='/workbench'&&!demoOnly)return send(200,workbenchPage(token).replace('class="product-brand" href="#top"','class="product-brand" href="/"'),'text/html');
+   if(!demoOnly&&req.method==='GET'&&req.url==='/connect')return send(200,connectPage(token),'text/html');
+   if(!demoOnly&&req.method==='GET'&&req.url==='/connect.js')return send(200,connectJS,'text/javascript');
+   if(!demoOnly&&req.method==='GET'&&req.url==='/cloud.css')return send(200,cloudCSS+connectCSS,'text/css');
    if(req.method==='GET'&&req.url==='/style.css')return send(200,workbenchCSS,'text/css');
    if(req.method==='GET'&&req.url==='/app.js')return send(200,workbenchJS,'text/javascript');
    if(req.method==='GET'&&req.url==='/guide-video'&&!demoOnly)return send(200,'<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>验收助手 · 使用演示</title><style>body{margin:0;background:white;color:#111;font:16px/1.7 system-ui}main{max-width:1120px;margin:40px auto;padding:0 24px}h1{font-size:26px}video{width:100%;background:#fff;border:2px solid #111;box-sizing:border-box}a{color:inherit;text-underline-offset:4px}p{color:#555}</style><main><a href="/">回到对话</a><h1>从一句目标，到修复复检</h1><video controls preload="metadata" src="/guide.mp4"></video><p>约 3 分半 · 中文合成旁白与字幕 · 实际界面截图讲解，包含独立受控修复对比。</p></main></html>','text/html');
@@ -98,10 +105,10 @@ export async function startWorkbench({allowedRoot=base,stateDir=path.join(base,'
    if(req.method==='GET'&&req.url==='/results.json')return send(200,{helpEvaluation:await helpEvaluation(await result()),execution:await result(),impacts:current?reportImpact(current.task,await result()):[],automatic:current?experienceOutcomes(current.task,await result()):null,coverage:current?coverageResults(current.task,await result()):[]});
    if(req.method==='GET'&&req.url==='/help-evaluation.json')return send(200,await helpEvaluation(await result()));
    if(req.method==='GET'&&req.url==='/evaluation.json')return send(200,{pass:false,scope:'仅依据已检查项报告；七维缺项保留，不自动宣布整体通过',helpEvaluation:await helpEvaluation(await result())});
-   if(req.method!=='POST'||!['/prepare','/revise','/start','/command','/opinion','/suggest','/experience-save','/experience-adopt','/experience-brief','/experience-disable'].includes(req.url))return send(404,{error:'入口不存在'});
+   if(req.method!=='POST'||!['/import-project','/prepare','/revise','/start','/command','/opinion','/suggest','/experience-save','/experience-adopt','/experience-brief','/experience-disable'].includes(req.url))return send(404,{error:'入口不存在'});
    if(req.headers.origin!==origin||req.headers['x-task-token']!==token||req.headers['content-type']!=='application/json')return send(403,{error:'任务页面已失效，请从本机入口重新打开'});
    if(busy)return send(409,{error:'上一项操作正在处理，请等待完成'});
-   let body='';for await(const chunk of req){body+=chunk;if(Buffer.byteLength(body)>32768)return send(413,{error:'任务内容超过本轮容量'});}const data=JSON.parse(body);
+   let body='';for await(const chunk of req){body+=chunk;if(Buffer.byteLength(body)>(!demoOnly&&req.url==='/import-project'?3000000:32768))return send(413,{error:'任务内容超过本轮容量'});}const data=JSON.parse(body);
    if(demoOnly){
     if(!['/prepare','/revise','/start','/command'].includes(req.url))return send(403,{error:'独立演示仅开放受控案例验收'});
     if(req.url==='/prepare'){
@@ -112,7 +119,12 @@ export async function startWorkbench({allowedRoot=base,stateDir=path.join(base,'
    }
    busy=true;const operationStarted=Date.now();let operationSucceeded=false;
    try{
-    if(['/suggest','/experience-adopt','/experience-brief'].includes(req.url)){
+    if(req.url==='/import-project'){
+     if(importedProjects.size>=8)throw Error('本次启动已接入 8 份快照；请完成当前任务后重启本地助手。');
+     if(current?.receipt){const control=(await getController()).state();if(control.worker?.running||control.pending.length||control.canStart)throw Error('原任务还在运行，请先完成或结束当前任务，再接入新版本。');}
+     const project=await importStaticProject(data.files,path.join(stateDir,'imports'));importedProjects.set(project.root,project);
+     return send(200,{projectPath:project.root,url:project.url,files:project.files,bytes:project.bytes,fingerprint:project.fingerprint,scope:'本机网页快照；未执行安装或后端启动脚本'});
+    }else if(['/suggest','/experience-adopt','/experience-brief'].includes(req.url)){
      const root=await checkedRoot(data.projectPath),mode=data.mode||'basic';
      return send(200,req.url==='/suggest'?{suggestions:await experiences.suggest({root,mode,goal:data.goal||''})}:req.url==='/experience-brief'?{brief:await experiences.brief({id:data.id,root,mode,goal:data.goal})}:{experience:await experiences.adopt({id:data.id,root,mode})});
     }else if(req.url==='/prepare'){
@@ -186,6 +198,6 @@ export async function startWorkbench({allowedRoot=base,stateDir=path.join(base,'
   }catch(error){send(400,{error:sanitize(error.message)});}
  });
  await new Promise((resolve,reject)=>{server.once('error',reject);server.listen(port,'127.0.0.1',resolve);});origin='http://127.0.0.1:'+server.address().port;
- return {origin,stateDir,wait:async()=>{await controller?.wait();await learningPromise;},executionState:()=>controller?.state()||null,end:async()=>{if(controller&&!['ended'].includes(controller.state().control.status))await controller.command({command:'end',expectedRevision:controller.state().control.revision});},close:()=>new Promise(r=>server.close(r))};
+ return {origin,stateDir,wait:async()=>{await controller?.wait();await learningPromise;},executionState:()=>controller?.state()||null,end:async()=>{if(controller&&!['ended'].includes(controller.state().control.status))await controller.command({command:'end',expectedRevision:controller.state().control.revision});},close:async()=>{await Promise.all([...importedProjects.values()].map(p=>new Promise(r=>p.server.close(r))));await new Promise(r=>server.close(r));}};
 }
 if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.url)){const app=await startWorkbench({allowedRoot:process.argv[2]||base,port:Number(process.argv[3]||4390)});console.log('本地验收任务入口：'+app.origin);}

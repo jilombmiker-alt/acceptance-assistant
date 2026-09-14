@@ -39,9 +39,10 @@ el('refinement-download').onclick=()=>{const text=el('refinement-output').value;
 el('prepare').addEventListener('submit',e=>{e.preventDefault();post('/prepare',{contextNote:el('context-note').value,automatic:el('auto-personal').checked&&!el('auto-personal').disabled,materialFiles:el('material-files').value.split('\\n').map(x=>x.trim()).filter(Boolean),experienceId,mode:el('mode').value,projectPath:el('project-path').value,url:el('url').value,goal:el('goal').value,endpoint:el('endpoint').value,expectedText:el('expected').value,normalRuns:Number(el('runs').value)});});el('revise').addEventListener('submit',e=>{e.preventDefault();const excludedPaths=[...document.querySelectorAll('[data-check]')].filter(x=>!x.checked).map(x=>x.dataset.check);post('/revise',{excludedPaths,...(state.receipt||state.task.mode==='reviewed-reading'?{}:{goal:el('edit-goal').value,endpoint:el('edit-endpoint').value,expectedText:el('edit-expected').value,fieldValues:Object.fromEntries([...document.querySelectorAll('[data-sample]')].map(x=>[x.dataset.sample,x.value]))})});});el('start').onclick=()=>post('/start',{confirmed:true,digest:state.task.digest});document.querySelectorAll('[data-command]').forEach(b=>b.onclick=()=>post('/command',{command:b.dataset.command,expectedControlRevision:state.control.control.revision,...(b.dataset.command==='restore'?{confirmed:true}:{})}));el('opinion').onsubmit=e=>{e.preventDefault();post('/opinion',{text:el('opinion-text').value});};async function refresh(){if(busy)return;try{const r=await fetch('/state');const value=await r.json();if(!r.ok)throw Error(value.error);state=value;render();}catch(e){el('message').textContent='连接未完成：'+e.message;}}function renderLight(){
  if(!el('light-reply'))return;
  if(!lightInitialized){
-  const d=state.resumeDraft||state.examples?.[0];
+  const d=state.resumeDraft||(!el('chat-home')?state.examples?.[0]:null);
   if(d){el('project-path').value=d.projectPath;el('url').value=d.url;if(!state.resumeDraft)el('material-files').value=(d.materialFiles||[]).join('\\n');}
   else el('project-settings').open=true;
+  if(state.resumeDraft){el('expected').value=state.task.expectedText||'';el('mode').value=state.task.mode||'basic';el('goal').value=state.task.goal||'';}
   lightInitialized=true;
  }
  const root=el('project-path').value,url=el('url').value;
