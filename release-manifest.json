@@ -18,8 +18,8 @@
     },
     {
       "file": "README.md",
-      "bytes": 5388,
-      "sha256": "b178d2ae02b673291d4e2f23784ad730797f0fdc83d096e0f9f50be6773bd444"
+      "bytes": 5655,
+      "sha256": "2be1c3b3134d3e345677faa63afc479683b89d90ae13ad8f74d061dd9af6d456"
     },
     {
       "file": "audit/build-reading-repair-case.mjs",
@@ -105,6 +105,11 @@
       "file": "docs/acceptance/09-snapshot-repair.md",
       "bytes": 2729,
       "sha256": "b3e97a1640e1f320e173c04b885c0e26970fac6902e542ada97a69996e255a84"
+    },
+    {
+      "file": "docs/acceptance/10-release-20260916.md",
+      "bytes": 1486,
+      "sha256": "b198ea935400b081f3a18404944396c1db276cb276308fe91b1f8c8ad6bb8fa0"
     },
     {
       "file": "docs/acceptance/README.md",
@@ -418,8 +423,8 @@
     },
     {
       "file": "v3/connect-page.mjs",
-      "bytes": 8742,
-      "sha256": "668d85eae56e496dc4b02446212d0b1cdb52fbd9452cbb0aa11cb0c85b5a9ff0"
+      "bytes": 9039,
+      "sha256": "a00b1c7beba593af57495ed3a559ed48f8c20afbff1b019048a6b9c75e9e03f6"
     },
     {
       "file": "v3/discover.mjs",
