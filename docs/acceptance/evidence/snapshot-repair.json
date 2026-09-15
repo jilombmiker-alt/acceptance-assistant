@@ -1,0 +1,45 @@
+{
+  "scope": "受控静态网页上传，明确同项目声明；非自动身份识别、非陌生项目迁移",
+  "checks": [
+    "first-upload-independent",
+    "same-project-choice-explicit-default-off",
+    "restart-keeps-completed-baseline",
+    "stale-reference-refused",
+    "changed-standard-not-silently-applied",
+    "other-url-refused",
+    "changed-upload-original-standard-repair",
+    "all-four-original-paths-three-repetitions",
+    "same-upload-not-a-repair",
+    "new-project-without-confirmation-independent"
+  ],
+  "userTimeSavedMs": null,
+  "comparison": {
+    "scope": "用户确认同项目的不同上传快照；原动作与标准不变，仅更新本机入口；不等于自动证明项目身份或整个产品合格",
+    "userTimeSavedMs": null,
+    "status": "verified-repair",
+    "reason": "同一项目的修改版本按原标准重复通过，未见已覆盖路径回归",
+    "fixed": [
+      "expected-text"
+    ],
+    "remaining": [],
+    "regressions": [],
+    "beforeProgramHash": "1539eb6fb05e5b28f9cf8f28bcc8e9ca856d713a9de840bac8ec4e548e4dde79",
+    "afterProgramHash": "1f623454b7ab86ba83ffdb5776310a8cdd6bd7ef2d8e2e7aee8c0192074fd8f9",
+    "beforeCriteriaHash": "ec069914080ad957ea4858026f6fb0abc7deec03b3fee6fd07819fb588e4048c",
+    "afterCriteriaHash": "ec069914080ad957ea4858026f6fb0abc7deec03b3fee6fd07819fb588e4048c",
+    "changedFiles": [
+      "index.html"
+    ]
+  },
+  "moduleTests": {
+    "passed": 73,
+    "total": 73
+  },
+  "uiReview": [
+    "实际浏览器默认未勾选",
+    "勾选带回原目标与预期，只读呈现",
+    "取消恢复新目标与编辑状态",
+    "上下区域截图检查"
+  ],
+  "deployment": "local-only"
+}

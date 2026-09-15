@@ -2,6 +2,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import {bodyHash} from '../lib/authorization.mjs';
 import {readReportFile} from '../lib/report-file.mjs';
+import {rebindSnapshotPlan} from './snapshot-repair.mjs';
 import {compareRepairRuns} from './repair-comparison.mjs';
 
 // All paths and anchors come from the workbench's own session, never request JSON.
@@ -22,7 +23,7 @@ export async function sealRepairEvidence(session,directory,runDirectory) {
  for(const group of result.groups)for(const record of group.records){files.add(record.id+'.json');for(const file of record.outputs||[])files.add(file);for(const shot of record.snapshots||[])files.add(shot.file);}
  const manifest=[];
  for(const file of files)manifest.push({file,sha256:bodyHash(await readReportFile(runDirectory,file))});
- const evidence={schemaVersion:1,taskId:session.task.id,projectId:bodyHash(JSON.stringify([session.intake.root,session.observation.url])),criteriaHash:bodyHash(JSON.stringify(session.executionPlan)),checkIds:session.executionPlan.paths.map(p=>p.id),source:session.repairSource,manifest,resultHash:bodyHash(bytes)};
+ const evidence={schemaVersion:1,taskId:session.task.id,projectId:session.repairProjectId||bodyHash(JSON.stringify([session.intake.root,session.observation.url])),criteriaHash:bodyHash(JSON.stringify(session.repairCanonicalURL?rebindSnapshotPlan(session.executionPlan,session.observation.url,session.repairCanonicalURL):session.executionPlan)),checkIds:session.executionPlan.paths.map(p=>p.id),source:session.repairSource,manifest,resultHash:bodyHash(bytes)};
  if(!evidence.source)throw Error('缺少执行前源码快照');
  const text=JSON.stringify(evidence,null,2);await fs.writeFile(path.join(directory,'repair-evidence.json'),text,{flag:'wx',mode:0o600});
  return bodyHash(text);
@@ -43,7 +44,7 @@ export async function loadRepairEvidence(directory,hash){
 
 export async function repairStatus(session,folder){
  if(!session?.repairBaseline)return null;
- const detail={beforeTaskId:session.repairBaseline.taskId,afterTaskId:session.task.id,scope:'同目录与同页面、已扫描源码及已执行路径；不等于整个产品合格',userTimeSavedMs:null};
+ const detail={beforeTaskId:session.repairBaseline.taskId,afterTaskId:session.task.id,scope:session.repairLinkKind==='user-confirmed-snapshot'?'用户确认同项目的不同上传快照；关联已扫描源码与已执行路径，标准变化另行标明；不等于自动证明项目身份或整个产品合格':'同目录与同页面、已扫描源码及已执行路径；不等于整个产品合格',userTimeSavedMs:null};
  if(session.repairError)return {...detail,status:'unverified',reason:session.repairError};
  if(!session.repairSealHash)return {...detail,status:'pending',reason:'已关联上一轮；等待本轮执行和证据核对'};
  try{

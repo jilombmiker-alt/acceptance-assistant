@@ -3,9 +3,10 @@ import assert from 'node:assert/strict';
 import vm from 'node:vm';
 import {connectJS} from './connect-page.mjs';
 import {chatJS} from './chat-entry.mjs';
-function intake({failPrepare=false,storageBlocked=false}={}){
+function intake({failPrepare=false,storageBlocked=false,repair=false}={}){
  const bytes=Uint8Array.from(Buffer.from('<h1>Test</h1>'));
  const elements=Object.fromEntries(['connect','folder','goal','expected','import','result','status'].map(id=>[id,{value:'',disabled:false}]));
+ if(repair)elements['same-project']={checked:false,disabled:false,dataset:{prior:JSON.stringify({taskId:'old-task',revision:2,goal:'原目标',expectedText:'原文字',normalRuns:3})}};
  elements.goal.value='检查页面';elements.folder.files=[{webkitRelativePath:'site/index.html',size:bytes.length,arrayBuffer:async()=>bytes.buffer}];
  const calls=[],location={href:''};let failures=failPrepare?1:0;
  const context={document:{currentScript:{dataset:{taskToken:'local-test'}},getElementById:id=>elements[id]},sessionStorage:{getItem:()=>null,setItem:()=>{if(storageBlocked)throw Error('storage blocked');}},location,Uint8Array,btoa:s=>Buffer.from(s,'binary').toString('base64'),fetch:async(route,options)=>{calls.push({route,body:JSON.parse(options.body)});const failed=route==='/prepare'&&failures-->0;return {ok:!failed,json:async()=>failed?{error:'本轮尚未生成，请修改目标再试'}:route==='/import-project'?{projectPath:'/local/snapshot',url:'http://127.0.0.1:1234/',files:1}:{task:{id:'new-task'}}};}};
@@ -33,3 +34,8 @@ function chat({available=true,kind='snapshot'}={}){
 test('a fresh page restores the current plan without relying on browser storage',()=>{const h=chat();assert.match(h.el('chat-answer').innerHTML,/id="chat-start"/);});
 test('snapshot retest guides reimport instead of submitting the old version again',async()=>{const h=chat();h.el('project-path').value='/snapshot';h.el('url').value='http://127.0.0.1:1234/';h.el('chat-input').value='重新检查';await h.submit();assert.equal(h.calls.length,0);assert.match(h.el('chat-answer').innerHTML,/重新选择文件夹/);});
 test('after restart an unavailable snapshot prompts reimport instead of showing a start button',()=>{const h=chat({available:false});assert.match(h.el('chat-answer').innerHTML,/网页服务已停止/);assert.doesNotMatch(h.el('chat-answer').innerHTML,/id="chat-start"/);});
+
+test('snapshot choice restores original criteria and explicit lineage, opt-out restores new goal',async()=>{
+ const h=intake({repair:true}),choice=h.elements['same-project'];choice.checked=true;choice.onchange();assert.equal(h.elements.goal.value,'原目标');assert.equal(h.elements.expected.readOnly,true);await h.submit();assert.deepEqual(h.calls.at(-1).body.repairFrom,{taskId:'old-task',revision:2});assert.equal(h.calls.at(-1).body.normalRuns,3);
+ choice.checked=false;choice.onchange();assert.equal(h.elements.goal.value,'检查页面');assert.equal(h.elements.expected.readOnly,false);await h.submit();assert.equal(h.calls.at(-1).body.repairFrom,undefined);
+});

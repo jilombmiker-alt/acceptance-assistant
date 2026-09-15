@@ -1,4 +1,5 @@
-import {captureRepairSource,sealRepairEvidence,repairStatus,repairHTML} from './repair-evidence.mjs';
+import {snapshotRepairEligible,snapshotRepairTask} from './snapshot-repair.mjs';
+import {captureRepairSource,sealRepairEvidence,loadRepairEvidence,repairStatus,repairHTML} from './repair-evidence.mjs';
 import {connectPage,connectJS,connectCSS} from './connect-page.mjs';
 import {cloudCSS} from './cloud-page.mjs';
 import {importStaticProject} from './project-import.mjs';
@@ -72,7 +73,7 @@ export async function startWorkbench({allowedRoot=base,stateDir=path.join(base,'
   try{
    if(req.method==='GET'&&req.url==='/')return send(200,demoOnly?workbenchPage(token,{demoOnly}):chatPage(workbenchPage(token)),'text/html');
    if(req.method==='GET'&&req.url==='/workbench'&&!demoOnly)return send(200,workbenchPage(token).replace('class="product-brand" href="#top"','class="product-brand" href="/"'),'text/html');
-   if(!demoOnly&&req.method==='GET'&&req.url==='/connect')return send(200,connectPage(token),'text/html');
+   if(!demoOnly&&req.method==='GET'&&req.url==='/connect')return send(200,connectPage(token,snapshotRepairEligible(current,path.resolve(stateDir,'imports'))?current.task:null),'text/html');
    if(!demoOnly&&req.method==='GET'&&req.url==='/connect.js')return send(200,connectJS,'text/javascript');
    if(!demoOnly&&req.method==='GET'&&req.url==='/cloud.css')return send(200,cloudCSS+connectCSS,'text/css');
    if(req.method==='GET'&&req.url==='/style.css')return send(200,workbenchCSS,'text/css');
@@ -142,15 +143,23 @@ export async function startWorkbench({allowedRoot=base,stateDir=path.join(base,'
     }else if(req.url==='/prepare'){
      await learningPromise;if(current?.receipt){const state=(await getController()).state();if(state.worker?.running||state.pending.length||state.canStart)throw Error('原任务仍在进行或有待核对动作，请先处理原任务');}
      const root=await checkedRoot(data.projectPath);
+     let snapshotPrior=null,snapshotEvidence=null;
+     if(data.repairFrom){
+      if(demoOnly||!snapshotRepairEligible(current,path.resolve(stateDir,'imports'))||data.repairFrom.taskId!==current.task.id||data.repairFrom.revision!==current.task.revision)throw Error('原任务已变化或不支持快照复检，请重新打开接入页');
+      const imported=importedProjects.get(root);if(!imported||root===current.intake.root||data.url!==imported.url)throw Error('请选择新上传的网页快照，不得替换成其他页面');
+      if((data.mode&&data.mode!=='basic')||data.automatic||data.experienceId||['goal','expectedText','endpoint','normalRuns','fieldValues','excludedPaths'].some(k=>data[k]!==undefined&&JSON.stringify(data[k])!==JSON.stringify(current.task[k])))throw Error('本次复检保留原标准；修改目标或标准请取消同项目复检，建立新任务');
+      snapshotPrior=current;Object.assign(data,{goal:current.task.goal,expectedText:current.task.expectedText,endpoint:current.task.endpoint,normalRuns:current.task.normalRuns,fieldValues:current.task.fieldValues,excludedPaths:current.task.excludedPaths});snapshotEvidence=await loadRepairEvidence(folder(current.task.id),current.repairSealHash);
+     }
      if(data.mode&&!['basic',businessMode].includes(data.mode))throw Error('此任务模式尚未支持');
      localURL(data.url);const intake=await inspectProject(root),observation=await discoverPage(data.url,intake,{semanticTargets:data.automatic===true});
      const experience=data.experienceId?await experiences.adopt({id:data.experienceId,root,mode:data.mode||'basic'}):null;
      const id='task-'+crypto.randomUUID();let task=data.mode===businessMode?await compileBusinessTask({id,normalRuns:data.normalRuns,intake,observation,excludedPaths:experience?.settings.excludedPaths||[]}):compileTask({id,goal:data.goal,endpoint:data.endpoint||'',expectedText:data.expectedText||'',normalRuns:data.normalRuns,intake,observation});
-     if(task.mode!==businessMode)task=compileReportJourneys(task,observation);
+     if(snapshotPrior)task=snapshotRepairTask(snapshotPrior,{id,intake,observation});
+     else if(task.mode!==businessMode)task=compileReportJourneys(task,observation);
      if(experience){if(task.mode===businessMode&&experience.source.templateHash!==task.templateHash)throw Error('历史业务模板已变化，请重新选择本轮路径');task.sources.experience={id:experience.id,taskId:experience.source.taskId,revision:experience.source.revision,note:experience.note,versionChanged:experience.source.fingerprint!==task.fingerprint,adopted:'操作者主动采纳为本轮草稿；当前表单要求优先，旧授权与执行记录不复用'};task.digest=bodyHash(JSON.stringify({...task,digest:undefined}));}
      if(data.automatic===true){if(data.contextNote?.trim()){if(demoOnly)throw Error('公开演示不读取个人资料');await autoStore.feedback(root,{task,text:data.contextNote});}if(demoOnly)throw Error('公开演示不读取个人资料');task=await enhance(task,intake,observation,data.materialFiles||[]);}
-     const repairBaseline=!demoOnly&&current?.repairSealHash&&current.intake.root===root&&current.observation.url===observation.url?{taskId:current.task.id,hash:current.repairSealHash}:null;
-     await fs.mkdir(folder(id),{mode:0o700});current={repairBaseline,task,intake,observation,revisions:[{revision:1,at:new Date().toISOString(),reason:'用户创建本次任务',goal:task.goal,digest:task.digest}],opinions:[],measurements:{version:1,events:[]}};controller=null;controllerPromise=null;
+     const repairBaseline=snapshotPrior?{taskId:snapshotPrior.task.id,hash:snapshotPrior.repairSealHash}:!demoOnly&&current?.repairSealHash&&current.intake.root===root&&current.observation.url===observation.url?{taskId:current.task.id,hash:current.repairSealHash}:null;
+     await fs.mkdir(folder(id),{mode:0o700});current={repairBaseline,...(snapshotPrior?{repairProjectId:snapshotEvidence.projectId,repairCanonicalURL:snapshotPrior.repairCanonicalURL||snapshotPrior.observation.url,repairLinkKind:'user-confirmed-snapshot'}:repairBaseline&&current.repairProjectId?{repairProjectId:current.repairProjectId,repairCanonicalURL:current.repairCanonicalURL,repairLinkKind:current.repairLinkKind}:{}),task,intake,observation,revisions:[{revision:1,at:new Date().toISOString(),reason:'用户创建本次任务',goal:task.goal,digest:task.digest}],opinions:[],measurements:{version:1,events:[]}};controller=null;controllerPromise=null;
      await save(path.join(folder(id),'revision-1.json'),task);await persist();
     }else{
      if(!current||data.taskId!==current.task.id||data.revision!==current.task.revision)throw Error('任务或版本已变化，请刷新后操作');
