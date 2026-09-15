@@ -1,0 +1,62 @@
+{
+  "scope": "真实本机进程中断、同目录同页面基础检查恢复；受控案例",
+  "checks": [
+    "baseline-completed-and-sealed",
+    "live-pause-resume-does-not-wait-for-completion",
+    "real-process-stopped-after-checkpoint",
+    "restart-recognizes-original-interrupted-task",
+    "changed-source-refused-before-resume",
+    "resume-retains-checkpoint-and-completed-records",
+    "resumed-evidence-survives-second-restart",
+    "copied-record-tampering-invalidates-comparison",
+    "next-task-loads-resumed-baseline"
+  ],
+  "beforeRepairStatus": "pending",
+  "afterRepairStatus": "verified-repair",
+  "reason": "同一项目的修改版本按原标准重复通过，未见已覆盖路径回归",
+  "groups": [
+    {
+      "id": "entry",
+      "status": "pass",
+      "recordCount": 2
+    },
+    {
+      "id": "expected-text",
+      "status": "pass",
+      "recordCount": 2
+    },
+    {
+      "id": "input-0",
+      "status": "pass",
+      "recordCount": 2
+    },
+    {
+      "id": "input-1",
+      "status": "pass",
+      "recordCount": 2
+    },
+    {
+      "id": "input-2",
+      "status": "pass",
+      "recordCount": 2
+    },
+    {
+      "id": "input-3",
+      "status": "pass",
+      "recordCount": 2
+    },
+    {
+      "id": "input-4",
+      "status": "pass",
+      "recordCount": 2
+    }
+  ],
+  "userTimeSavedMs": null,
+  "originalRecordSha256": "cfb2b58d999be75d2e3250ea0f8c623855de05bed636cd03eff128780e010f76",
+  "limits": [
+    "受控本机案例，不代表任意项目恢复",
+    "原始证据仅保留本地",
+    "没有真人收益测量",
+    "未新增 PDF 或前台 UI 验收"
+  ]
+}

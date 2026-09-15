@@ -18,8 +18,8 @@
     },
     {
       "file": "README.md",
-      "bytes": 5655,
-      "sha256": "2be1c3b3134d3e345677faa63afc479683b89d90ae13ad8f74d061dd9af6d456"
+      "bytes": 5825,
+      "sha256": "0ddc873479c86d8ebf73ff6a8102385fc757917c0a3da8023d06f6ffa6675bbf"
     },
     {
       "file": "audit/build-reading-repair-case.mjs",
@@ -35,6 +35,11 @@
       "file": "audit/check-cloud-api.mjs",
       "bytes": 2850,
       "sha256": "216df06de186d6e29c7ce07d3652507514f584bf6360136a4515ef7405a4a334"
+    },
+    {
+      "file": "audit/check-interrupted-repair.mjs",
+      "bytes": 7068,
+      "sha256": "6f2c2a6dff7ea4e5cadddbe9cee597a4a3f58f0119b2a28dbef2412996aad517"
     },
     {
       "file": "audit/check-project-import.mjs",
@@ -122,14 +127,24 @@
       "sha256": "362643b7828e89895597e422b5037912c668b9e0061b2edd557ea4e6956da01f"
     },
     {
+      "file": "docs/acceptance/12-interrupted-repair.md",
+      "bytes": 2776,
+      "sha256": "f83743ecbc72467437f07618ea7a570475287dd0aeb39635d51d7e189c647426"
+    },
+    {
       "file": "docs/acceptance/README.md",
-      "bytes": 3139,
-      "sha256": "2cf7ffbd9a5aaad2db54abc57459137c8db48276713688bee0bf4d1c62f41954"
+      "bytes": 3316,
+      "sha256": "06bb8609bf8fb2825ca3c37808ce26b636900115c70144f1540d79b4829185d0"
     },
     {
       "file": "docs/acceptance/evidence/help-evaluation.json",
       "bytes": 2400,
       "sha256": "c3b631d6ece1db1015ca7321027bf11e3ed496b5cf95d746994001d8aee13ad7"
+    },
+    {
+      "file": "docs/acceptance/evidence/interrupted-repair.json",
+      "bytes": 1623,
+      "sha256": "2d89756768532d3705715439cc88d3338314ce2e63d7ba9f0763582d5ab1791b"
     },
     {
       "file": "docs/acceptance/evidence/isolated-demo.json",
@@ -233,8 +248,8 @@
     },
     {
       "file": "docs/next-version/04-iteration-checklist.md",
-      "bytes": 10806,
-      "sha256": "788176a685e24618e12e35d6ac913868a2c9e0e10ee4095a0f7d38d4864e2b11"
+      "bytes": 11277,
+      "sha256": "1cef607a2dfd15de0f7b452dc61ab55ebb3942cf8bee9f6f670e0e80e61e5877"
     },
     {
       "file": "docs/subtitles.srt",
@@ -513,13 +528,13 @@
     },
     {
       "file": "v3/repair-evidence.mjs",
-      "bytes": 7580,
-      "sha256": "7c828527b9d2e2cc934dcae581a0986c8c02167846d304f70a167f66d4b6a6f3"
+      "bytes": 8239,
+      "sha256": "0f46615c29deaddddf45b395ce0dabc52066173813b3864409b4602321df25e2"
     },
     {
       "file": "v3/repair-evidence.test.mjs",
-      "bytes": 2418,
-      "sha256": "5f3d913eddd0907d6c59b73e498098a0b66f2703ec0dfe7f2a55e73d09642c3f"
+      "bytes": 5126,
+      "sha256": "3a438e66274a6d8fab7c1285e7fb4777514715d4f9513bea6ff32da70c711c6b"
     },
     {
       "file": "v3/repair-export.test.mjs",
@@ -568,8 +583,8 @@
     },
     {
       "file": "v3/workbench.mjs",
-      "bytes": 31898,
-      "sha256": "93eadc4cc14b6932a461bb5e0157b737fa757b5083995f2ffafbcc3b4d97efcf"
+      "bytes": 33917,
+      "sha256": "8371095d350586958c6d2150e555ed33b966aa4bf6ef48db5f5296c0a472a4cb"
     }
   ]
 }

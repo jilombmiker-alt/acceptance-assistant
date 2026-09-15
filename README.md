@@ -14,6 +14,8 @@
 
 [完整接入指南与支持范围](docs/acceptance/04-connect-your-project.md)
 
+本地任务中断后继续执行会保存对应复检证据，源码变化时提示新建任务。见 [恢复验收说明](docs/acceptance/12-interrupted-repair.md)。
+
 ## 产品验收资料
 
 [脱敏后的验收说明与记录](docs/acceptance/README.md)：使用指南、审评标准、历史检查摘要和受控记录。

@@ -17,23 +17,32 @@ export async function captureRepairSource(session, directory) {
  return {manifest,programHash:bodyHash(JSON.stringify(manifest)),scope:'仅已扫描文件；不代表完整产品版本或远端部署'};
 }
 
+export function repairEvidenceFile(runName='run') {
+ if(!/^run(?:-resume-[a-f0-9-]{36})?$/.test(runName))throw Error('执行证据目录无效');
+ return runName==='run'?'repair-evidence.json':'repair-evidence-'+runName+'.json';
+}
+
 export async function sealRepairEvidence(session,directory,runDirectory) {
+ const runName=path.relative(directory,runDirectory),sealFile=repairEvidenceFile(runName);
  const bytes=await readReportFile(runDirectory,'results.json');const result=JSON.parse(bytes);
  const files=new Set(['results.json','execution-identity.json','plan.json']);
  for(const group of result.groups)for(const record of group.records){files.add(record.id+'.json');for(const file of record.outputs||[])files.add(file);for(const shot of record.snapshots||[])files.add(shot.file);}
  const manifest=[];
  for(const file of files)manifest.push({file,sha256:bodyHash(await readReportFile(runDirectory,file))});
- const evidence={schemaVersion:1,taskId:session.task.id,projectId:session.repairProjectId||bodyHash(JSON.stringify([session.intake.root,session.observation.url])),criteriaHash:bodyHash(JSON.stringify(session.repairCanonicalURL?rebindSnapshotPlan(session.executionPlan,session.observation.url,session.repairCanonicalURL):session.executionPlan)),checkIds:session.executionPlan.paths.map(p=>p.id),source:session.repairSource,manifest,resultHash:bodyHash(bytes)};
+ const evidence={schemaVersion:1,runDirectory:runName,taskId:session.task.id,projectId:session.repairProjectId||bodyHash(JSON.stringify([session.intake.root,session.observation.url])),criteriaHash:bodyHash(JSON.stringify(session.repairCanonicalURL?rebindSnapshotPlan(session.executionPlan,session.observation.url,session.repairCanonicalURL):session.executionPlan)),checkIds:session.executionPlan.paths.map(p=>p.id),source:session.repairSource,manifest,resultHash:bodyHash(bytes)};
  if(!evidence.source)throw Error('缺少执行前源码快照');
- const text=JSON.stringify(evidence,null,2);await fs.writeFile(path.join(directory,'repair-evidence.json'),text,{flag:'wx',mode:0o600});
+ const text=JSON.stringify(evidence,null,2);await fs.writeFile(path.join(directory,sealFile),text,{flag:'wx',mode:0o600});
  return bodyHash(text);
 }
 
-export async function loadRepairEvidence(directory,hash){
+export async function loadRepairEvidence(directory,hash,sealFile='repair-evidence.json'){
  if(!/^[a-f0-9]{64}$/.test(hash||''))throw Error('没有本轮执行时保存的证据指纹');
- const bytes=await readReportFile(directory,'repair-evidence.json',{maxBytes:2000000});
+ if(!/^repair-evidence(?:-run-resume-[a-f0-9-]{36})?\.json$/.test(sealFile))throw Error('证据索引文件无效');
+ const bytes=await readReportFile(directory,sealFile,{maxBytes:2000000});
  if(bodyHash(bytes)!==hash)throw Error('修复证据索引已变化');
- const evidence=JSON.parse(bytes),run=path.join(directory,'run');
+ const evidence=JSON.parse(bytes),runName=evidence.runDirectory||'run';
+ if(repairEvidenceFile(runName)!==sealFile)throw Error('执行目录与证据索引不一致');
+ const run=path.join(directory,runName);
  for(const row of evidence.source.manifest)if(bodyHash(await readReportFile(directory,'repair-source/'+row.file))!==row.sha256)throw Error('已保存的源码快照缺失或变化');
  if(bodyHash(JSON.stringify(evidence.source.manifest))!==evidence.source.programHash)throw Error('源码版本指纹不一致');
  for(const row of evidence.manifest)if(bodyHash(await readReportFile(run,row.file))!==row.sha256)throw Error('执行记录或实际产物缺失、变化');
@@ -48,8 +57,8 @@ export async function repairStatus(session,folder){
  if(session.repairError)return {...detail,status:'unverified',reason:session.repairError};
  if(!session.repairSealHash)return {...detail,status:'pending',reason:'已关联上一轮；等待本轮执行和证据核对'};
  try{
-  const before=await loadRepairEvidence(folder(detail.beforeTaskId),session.repairBaseline.hash);
-  const after=await loadRepairEvidence(folder(detail.afterTaskId),session.repairSealHash);
+  const before=await loadRepairEvidence(folder(detail.beforeTaskId),session.repairBaseline.hash,session.repairBaseline.file);
+  const after=await loadRepairEvidence(folder(detail.afterTaskId),session.repairSealHash,session.repairSealFile);
   const planChanged=JSON.stringify(session.task.plan)!==JSON.stringify(session.executionPlan);
   const comparison=planChanged?{status:'criteria-changed',reason:'本轮执行后检查范围或标准发生变化，旧结果仅对应执行时版本；请重新建立任务复查'}:compareRepairRuns(before,after,before.checkIds);
   return {...detail,...comparison,...(planChanged?{currentCriteriaHash:bodyHash(JSON.stringify(session.repairCanonicalURL?rebindSnapshotPlan(session.task.plan,session.observation.url,session.repairCanonicalURL):session.task.plan))}:{}),beforeProgramHash:before.programHash,afterProgramHash:after.programHash,beforeCriteriaHash:before.criteriaHash,afterCriteriaHash:after.criteriaHash,changedFiles:[...new Set([...before.source.manifest.map(f=>f.file),...after.source.manifest.map(f=>f.file)])].filter(file=>before.source.manifest.find(f=>f.file===file)?.sha256!==after.source.manifest.find(f=>f.file===file)?.sha256),issues:before.groups.filter(g=>g.status==='issue').map(g=>({issueId:bodyHash(before.projectId+':'+before.criteriaHash+':'+g.pathId).slice(0,16),checkId:g.pathId,name:g.name,observedDifferences:g.records[0].checks.filter(c=>c.status==='issue'&&!c.setup).map(c=>({label:c.label,expected:c.expected,actual:c.actual}))}))};

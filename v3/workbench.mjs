@@ -1,5 +1,5 @@
 import {snapshotRepairEligible,snapshotRepairTask} from './snapshot-repair.mjs';
-import {captureRepairSource,sealRepairEvidence,loadRepairEvidence,repairStatus,repairHTML} from './repair-evidence.mjs';
+import {captureRepairSource,repairEvidenceFile,sealRepairEvidence,loadRepairEvidence,repairStatus,repairHTML} from './repair-evidence.mjs';
 import {connectPage,connectJS,connectCSS} from './connect-page.mjs';
 import {cloudCSS} from './cloud-page.mjs';
 import {importStaticProject} from './project-import.mjs';
@@ -64,6 +64,17 @@ export async function startWorkbench({allowedRoot=base,stateDir=path.join(base,'
    controller=await controllerPromise;
   }return controller;
  };
+ const trackCompletion=(session,control)=>{
+  if(demoOnly)return;learningError=null;learningPromise=control.wait().then(async()=>{
+       const state=control.state();if(!state.reportAvailable)return;
+       try{
+        const finalSource=await inspectProject(session.intake.root);if(finalSource.fingerprint!==session.intake.fingerprint)throw Error('执行期间源码变化，不能确认本轮程序版本');
+        session.repairSealHash=await sealRepairEvidence(session,folder(session.task.id),state.worker.runId);
+        session.repairSealFile=repairEvidenceFile(path.basename(state.worker.runId));delete session.repairError;
+       }catch(error){session.repairError='复检证据未确认：'+sanitize(error.message);}
+       await save(path.join(folder(session.task.id),'session.json'),session);
+       if(session.task.autoExperience){const r=JSON.parse(await readReportFile(state.worker.runId,'results.json'));await autoStore.outcome(session.intake.root,session.task,r);}
+      }).catch(error=>{learningError='执行结果尚未写入后续记录：'+sanitize(error.message);});};
  const result=async()=>{if(!current?.receipt)return null;const state=(await getController()).state();if(!state.reportAvailable)return null;return JSON.parse(await readReportFile(state.worker.runId,'results.json'));};
  const helpEvaluation=async(r)=>current?buildHelpEvaluation({task:current.task,result:r,automatic:experienceOutcomes(current.task,r),coverage:coverageResults(current.task,r),measurements:current.measurements}):null;
  const view=async()=>({repair:demoOnly?null:await repairStatus(current,folder),helpEvaluation:await helpEvaluation(await result()),resumeDraft:current?{projectPath:current.intake.root,url:current.observation.url,kind:current.intake.root.startsWith(path.resolve(stateDir,'imports')+path.sep)?'snapshot':'directory',available:!current.intake.root.startsWith(path.resolve(stateDir,'imports')+path.sep)||importedProjects.has(current.intake.root)}:null,impacts:current?reportImpact(current.task,await result()):[],semantic:{available:semantic.available,name:semantic.name},learningError,automatic:current?experienceOutcomes(current.task,await result()):null,allowedRoot,examples,evidenceReports:evidenceReports.map(r=>({id:r.id,title:r.title,url:'/case-files/'+r.id+'/report.html'})),limits:plannerLimits,busy,task:current?.task||null,intake:current?{files:current.intake.files.map(x=>x.file),gaps:current.intake.gaps,coverage:current.intake.coverage}:null,observation:current?.observation||null,revisions:current?.revisions||[],receipt:!!current?.receipt,control:current?.receipt?(await getController()).state():null,coverage:current?coverageResults(current.task,await result()):[],opinions:current?.opinions||[]});
@@ -148,7 +159,7 @@ export async function startWorkbench({allowedRoot=base,stateDir=path.join(base,'
       if(demoOnly||!snapshotRepairEligible(current,path.resolve(stateDir,'imports'))||data.repairFrom.taskId!==current.task.id||data.repairFrom.revision!==current.task.revision)throw Error('原任务已变化或不支持快照复检，请重新打开接入页');
       const imported=importedProjects.get(root);if(!imported||root===current.intake.root||data.url!==imported.url)throw Error('请选择新上传的网页快照，不得替换成其他页面');
       if((data.mode&&data.mode!=='basic')||data.automatic||data.experienceId||['goal','expectedText','endpoint','normalRuns','fieldValues','excludedPaths'].some(k=>data[k]!==undefined&&JSON.stringify(data[k])!==JSON.stringify(current.task[k])))throw Error('本次复检保留原标准；修改目标或标准请取消同项目复检，建立新任务');
-      snapshotPrior=current;Object.assign(data,{goal:current.task.goal,expectedText:current.task.expectedText,endpoint:current.task.endpoint,normalRuns:current.task.normalRuns,fieldValues:current.task.fieldValues,excludedPaths:current.task.excludedPaths});snapshotEvidence=await loadRepairEvidence(folder(current.task.id),current.repairSealHash);
+      snapshotPrior=current;Object.assign(data,{goal:current.task.goal,expectedText:current.task.expectedText,endpoint:current.task.endpoint,normalRuns:current.task.normalRuns,fieldValues:current.task.fieldValues,excludedPaths:current.task.excludedPaths});snapshotEvidence=await loadRepairEvidence(folder(current.task.id),current.repairSealHash,current.repairSealFile);
      }
      if(data.mode&&!['basic',businessMode].includes(data.mode))throw Error('此任务模式尚未支持');
      localURL(data.url);const intake=await inspectProject(root),observation=await discoverPage(data.url,intake,{semanticTargets:data.automatic===true});
@@ -158,7 +169,7 @@ export async function startWorkbench({allowedRoot=base,stateDir=path.join(base,'
      else if(task.mode!==businessMode)task=compileReportJourneys(task,observation);
      if(experience){if(task.mode===businessMode&&experience.source.templateHash!==task.templateHash)throw Error('历史业务模板已变化，请重新选择本轮路径');task.sources.experience={id:experience.id,taskId:experience.source.taskId,revision:experience.source.revision,note:experience.note,versionChanged:experience.source.fingerprint!==task.fingerprint,adopted:'操作者主动采纳为本轮草稿；当前表单要求优先，旧授权与执行记录不复用'};task.digest=bodyHash(JSON.stringify({...task,digest:undefined}));}
      if(data.automatic===true){if(data.contextNote?.trim()){if(demoOnly)throw Error('公开演示不读取个人资料');await autoStore.feedback(root,{task,text:data.contextNote});}if(demoOnly)throw Error('公开演示不读取个人资料');task=await enhance(task,intake,observation,data.materialFiles||[]);}
-     const repairBaseline=snapshotPrior?{taskId:snapshotPrior.task.id,hash:snapshotPrior.repairSealHash}:!demoOnly&&current?.repairSealHash&&current.intake.root===root&&current.observation.url===observation.url?{taskId:current.task.id,hash:current.repairSealHash}:null;
+     const repairBaseline=snapshotPrior?{taskId:snapshotPrior.task.id,hash:snapshotPrior.repairSealHash,file:snapshotPrior.repairSealFile}:!demoOnly&&current?.repairSealHash&&current.intake.root===root&&current.observation.url===observation.url?{taskId:current.task.id,hash:current.repairSealHash,file:current.repairSealFile}:null;
      await fs.mkdir(folder(id),{mode:0o700});current={repairBaseline,...(snapshotPrior?{repairProjectId:snapshotEvidence.projectId,repairCanonicalURL:snapshotPrior.repairCanonicalURL||snapshotPrior.observation.url,repairLinkKind:'user-confirmed-snapshot'}:repairBaseline&&current.repairProjectId?{repairProjectId:current.repairProjectId,repairCanonicalURL:current.repairCanonicalURL,repairLinkKind:current.repairLinkKind}:{}),task,intake,observation,revisions:[{revision:1,at:new Date().toISOString(),reason:'用户创建本次任务',goal:task.goal,digest:task.digest}],opinions:[],measurements:{version:1,events:[]}};controller=null;controllerPromise=null;
      await save(path.join(folder(id),'revision-1.json'),task);await persist();
     }else{
@@ -203,18 +214,24 @@ export async function startWorkbench({allowedRoot=base,stateDir=path.join(base,'
       if(!demoOnly)current.repairSource=await captureRepairSource(current,folder(current.task.id));
       current.executionPlan=structuredClone(current.task.plan);current.receipt={at:new Date().toISOString(),revision:current.task.revision,digest:current.task.digest,authorizationHash:bodyHash(JSON.stringify(current.confirmedAuthorization))};await persist();
       await(await getController()).command({command:'start'});
-      if(!demoOnly){const session=current,control=await getController();learningError=null;learningPromise=control.wait().then(async()=>{
-       const state=control.state();if(!state.reportAvailable)return;
-       try{
-        const finalSource=await inspectProject(session.intake.root);if(finalSource.fingerprint!==session.intake.fingerprint)throw Error('执行期间源码变化，不能确认本轮程序版本');
-        session.repairSealHash=await sealRepairEvidence(session,folder(session.task.id),state.worker.runId);
-       }catch(error){session.repairError='复检证据未确认：'+sanitize(error.message);}
-       await save(path.join(folder(session.task.id),'session.json'),session);
-       if(session.task.autoExperience){const r=JSON.parse(await readReportFile(state.worker.runId,'results.json'));await autoStore.outcome(session.intake.root,session.task,r);}
-      }).catch(error=>{learningError='执行结果尚未写入后续记录：'+sanitize(error.message);});}
+      trackCompletion(current,await getController());
      }else if(req.url==='/command'){
       if(!['pause','resume','skip','revoke','restore','end','query'].includes(data.command))throw Error('本轮入口不支持此控制动作');
-      await(await getController()).command({command:data.command,expectedRevision:data.expectedControlRevision,confirmed:data.confirmed});
+      const control=await getController();
+      if(data.command==='resume'){
+       const state=control.state();if(!state.worker?.running||state.interrupted)await learningPromise;
+       const fresh=await inspectProject(current.intake.root);if(fresh.fingerprint!==current.intake.fingerprint)throw Error('源码已变化，不能混用原检查点；请重新建立任务复检');
+       if(!demoOnly)await captureRepairSource(current,folder(current.task.id));
+       if(current.task.mode===businessMode){const check=await compileBusinessTask({id:current.task.id,intake:current.intake,observation:current.observation,normalRuns:current.task.normalRuns,excludedPaths:current.task.excludedPaths});if(check.templateHash!==current.task.templateHash)throw Error('审核模板已变化，请重新建立任务');}
+       if(current.task.autoExperience){const materials=await autoStore.collect(current.intake.root,current.task.autoExperience.files||[]);if(JSON.stringify(materials.materials.map(m=>({id:m.id,hash:m.hash,disabled:!!m.disabled})))!==JSON.stringify(current.task.autoExperience.materialHashes))throw Error('个人依据已变化，请重新建立任务');}
+       for(const doc of current.task.reportDocuments||[]){if(bodyHash(await readReportFile(current.intake.root,doc.file,{maxBytes:256000}))!==doc.hash)throw Error('证据文件已变化，请重新建立任务');}
+      }
+      const response=await control.command({command:data.command,expectedRevision:data.expectedControlRevision,confirmed:data.confirmed});
+      if(data.command==='resume'&&response?.started){
+       if(current.repairSealHash)(current.repairSealHistory??=[]).push({hash:current.repairSealHash,file:current.repairSealFile||'repair-evidence.json'});
+       delete current.repairSealHash;delete current.repairSealFile;delete current.repairError;await persist();
+       trackCompletion(current,control);
+      }
      }else{
       if(typeof data.text!=='string'||!data.text.trim()||data.text.length>2000)throw Error('请填写具体纠正意见（最多 2000 字）');
       current.opinions.push({at:new Date().toISOString(),revision:current.task.revision,actor:'user',text:data.text});
