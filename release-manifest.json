@@ -43,8 +43,8 @@
     },
     {
       "file": "audit/check-repair-workflow.mjs",
-      "bytes": 3641,
-      "sha256": "2cef22b6dd689f42d9304f3d4c1bf8356e15b60d6af0422d6bb070cd52f20285"
+      "bytes": 5421,
+      "sha256": "b15f511d7934499e0019eb9770f6a90e1c5f6c257f51c12f2b99eff24b600713"
     },
     {
       "file": "audit/check-self-ui.mjs",
@@ -88,13 +88,18 @@
     },
     {
       "file": "docs/acceptance/07-repair-workflow.md",
-      "bytes": 2420,
-      "sha256": "72057260b181f4b110530298ea3b972f6bf31c014b8bd5da53984402ccd46ff8"
+      "bytes": 2520,
+      "sha256": "5ddedbb8c4fa01cc30e6124cc9d3cb7903b5e125e59263038d4695f8d24e4578"
+    },
+    {
+      "file": "docs/acceptance/08-repair-exports.md",
+      "bytes": 2645,
+      "sha256": "e87ea9d0937beb8bc8aff6a8f6e366a9d64d7c4c3479a2fb5b3f4cb86f0ce4c5"
     },
     {
       "file": "docs/acceptance/README.md",
-      "bytes": 2512,
-      "sha256": "f4d1984d6a0678545c451543429e2035735960c541620157bad9ecd78319defa"
+      "bytes": 2765,
+      "sha256": "fe56396e98f9079e0232b9ba87da96516177f51d871917f23f28789086e3184d"
     },
     {
       "file": "docs/acceptance/evidence/help-evaluation.json",
@@ -125,6 +130,11 @@
       "file": "docs/acceptance/evidence/reading-repair.json",
       "bytes": 134158,
       "sha256": "15433d3ced95f8a532d846145cca5578ce241bfd2d733e8f5c833f1975ceafed"
+    },
+    {
+      "file": "docs/acceptance/evidence/repair-exports.json",
+      "bytes": 2072,
+      "sha256": "bf2f7fe7d29c4a6f252d954955407f43d720496df0b476d5837f062ff2a7fd5b"
     },
     {
       "file": "docs/acceptance/evidence/repair-workflow.json",
@@ -188,8 +198,8 @@
     },
     {
       "file": "docs/next-version/04-iteration-checklist.md",
-      "bytes": 9264,
-      "sha256": "e53bbfdc336fbaea84ead4af0a6f3fac1207ea01ed9abf8c15e8048c4de3eecf"
+      "bytes": 9644,
+      "sha256": "983d4171357e99b414cf7a63b9e06572bac0ebdb2c2835e7b48977b78c02f702"
     },
     {
       "file": "docs/subtitles.srt",
@@ -383,8 +393,8 @@
     },
     {
       "file": "v3/codex-context.mjs",
-      "bytes": 3250,
-      "sha256": "898da69b5d699115431fdd2dae509d674ddd83f46f09a6550b2318196d3f8a56"
+      "bytes": 4462,
+      "sha256": "fbe5977904850ff79f550693e6f69d79e0650a7cb2e09bde9a104e66f4554c06"
     },
     {
       "file": "v3/codex-context.test.mjs",
@@ -413,13 +423,13 @@
     },
     {
       "file": "v3/help-evaluation.mjs",
-      "bytes": 14208,
-      "sha256": "745532b05712eb0e9aa889d114b1d9fdb05ab85d8fe76f7664a8b30a03eb63c7"
+      "bytes": 14256,
+      "sha256": "d0f7aed4f433df6180d21cdb834e3fb6e64335d3585c31ca8a135e654c127f50"
     },
     {
       "file": "v3/help-evaluation.test.mjs",
-      "bytes": 8921,
-      "sha256": "05abbc77d86b76e5d84155b6465e2fda27b51183bc4d51fb758a97c365a7c2db"
+      "bytes": 8930,
+      "sha256": "825004636ffe16ac7cea88f4fb12031196326fc1ae75b9bdc2213dc2275c7605"
     },
     {
       "file": "v3/intake-flow.test.mjs",
@@ -468,8 +478,8 @@
     },
     {
       "file": "v3/repair-evidence.mjs",
-      "bytes": 6372,
-      "sha256": "f5c0028d28a365e10c1179cb06b52f9ebb1e53e408bd4aa8f78a4f216db14994"
+      "bytes": 6561,
+      "sha256": "f318d34a754b3dded4293c02d5a812acfb5a5bbcef76343b765b9393844f16e7"
     },
     {
       "file": "v3/repair-evidence.test.mjs",
@@ -477,9 +487,14 @@
       "sha256": "5f3d913eddd0907d6c59b73e498098a0b66f2703ec0dfe7f2a55e73d09642c3f"
     },
     {
+      "file": "v3/repair-export.test.mjs",
+      "bytes": 2542,
+      "sha256": "457f0f49ac73d45fee8ce08c6d57b1ddd40cc28a35b8ed2cc7151c8b30b38316"
+    },
+    {
       "file": "v3/report-export.mjs",
-      "bytes": 5927,
-      "sha256": "9d57c253e5c34df73fe6170cf88b120662e055551eca02156ef2dd4c8366424f"
+      "bytes": 6025,
+      "sha256": "242cfca12ebec4018edbdec0aa1a59de17286aa909f0f227b1fdd3c55ebf3c01"
     },
     {
       "file": "v3/report-journeys.mjs",
@@ -508,8 +523,8 @@
     },
     {
       "file": "v3/workbench.mjs",
-      "bytes": 29405,
-      "sha256": "cef9d649c2a1adfa3a44d462b591fee53e7bb232905256cc1683d16a1ca75643"
+      "bytes": 29946,
+      "sha256": "8e8e68cbd964666e5d5732cfb0a7e88f49dcfacf547a6cfaaae4fdbd945b35ab"
     }
   ]
 }

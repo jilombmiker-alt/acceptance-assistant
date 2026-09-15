@@ -57,7 +57,7 @@ export function buildHelpEvaluation({task,result,automatic,coverage=[],measureme
    revisionSubmissions:measurements?events.filter(e=>e.kind==='revise'&&e.success).length:null
   },
   burden:{userActiveMs:unknown('后台接口耗时不能代表用户操作时间'),systemWaitMs:unknown('尚未测量用户实际等待区间；模型耗时单列'),costMinor:unknown('没有已核对的费用账单；令牌数不换算成费用'),historySetupMs:unknown('首次整理历史及后续维护时间尚未测量，不能忽略这部分成本')},
-  retest:{status:'unverified',label:'同版本重复检查，不是修复后的复检',reason:'需关联修复前后版本、同一验收项和实际产物，才确认修复；新任务上的复发另行观察。'},
+  retest:{status:'unverified',label:'以上次数仅统计本任务内的重复执行，单凭次数不能确认修复',reason:'跨版本结论见单独的“本次复检”关联；未提供关联时修复状态未验证。新任务上的复发另行观察。'},
   next:'下一步：固定同一任务、模型和验收标准，比较有无相关历史；优先测重复解释与纠错返工。',
   records:decisions.map(d=>({id:d.id,source:d.source,summary:d.summary,reason:d.reason,change:d.change,outcome:d.outcome,evidence:d.evidence||[],help:decisionHelp(d)}))
  };

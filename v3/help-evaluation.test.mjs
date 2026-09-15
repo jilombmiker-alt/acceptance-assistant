@@ -38,7 +38,7 @@ test('execution pass does not imply accepted result, savings, or post-fix retest
  const task={id:'example',revision:1,normalRuns:2,excludedPaths:[],plan:{paths:[{id:'p'}]}};
  const result={groups:[{path:{id:'p'},status:'pass',records:[{},{}]}]};
  const r=buildHelpEvaluation({task,result,coverage:[]});
- assert.equal(r.acceptance.covered,1);assert.equal(r.acceptance.status,'unverified');assert.ok(r.metrics.every(m=>m.value===null));assert.equal(r.observations.contextSubmissions,null);assert.equal(r.retest.status,'unverified');assert.match(helpEvaluationHTML(r),/同版本重复检查/);
+ assert.equal(r.acceptance.covered,1);assert.equal(r.acceptance.status,'unverified');assert.ok(r.metrics.every(m=>m.value===null));assert.equal(r.observations.contextSubmissions,null);assert.equal(r.retest.status,'unverified');assert.match(helpEvaluationHTML(r),/单凭次数不能确认修复/);
 });
 test('backend observation counters remain separate and only successful submissions count',()=>{
  const task={id:'example',revision:1,normalRuns:2,excludedPaths:['old'],plan:{paths:[{id:'new'}]}};

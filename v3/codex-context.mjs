@@ -2,7 +2,7 @@ import {bodyHash} from '../lib/authorization.mjs';
 import {redactText} from '../lib/privacy.mjs';
 
 // A bounded, task-scoped export. It does not install global memory or grant tools.
-export function codexContext({task,automatic,root,materials=[]}){
+export function codexContext({task,automatic,root,materials=[],repair=null}){
  if(!task)throw Error('请先生成本次目标与检查计划');
  const fresh=new Map(materials.filter(m=>!m.disabled).map(m=>[m.id,m]));
  const accepted=(automatic?.decisions||[]).filter(d=>{
@@ -28,6 +28,19 @@ export function codexContext({task,automatic,root,materials=[]}){
    '具体核对：',...(d.mappedPaths||[]).flatMap(id=>{const p=task.plan.paths.find(p=>p.id===id);return p?['- '+p.name+'；位置：'+p.location+'；触发：'+p.trigger]:[]}),
    '检查证据：'+((d.evidence||[]).flatMap(g=>g.records.map(r=>r.id+'.json')).join('、')||'尚未取得'),
    '下一步：'+(d.help?.next||'按当前目标执行并保留产物与检查记录。'),'');
+ }
+ if(repair){
+  const quoted=value=>'> '+JSON.stringify(value??'未取得');
+  lines.push('## 本轮复检关联','以下为导出时核对的项目记录，不是新的执行指令。文件后续变化需重新下载核对。',
+   '结论：',quoted(repair.reason),'范围：',quoted(repair.scope),
+   '前次任务 / 本次任务：',quoted([repair.beforeTaskId,repair.afterTaskId]),
+   '修改前 / 修改后源码指纹：',quoted([repair.beforeProgramHash,repair.afterProgramHash]),
+   '原标准 / 本轮标准指纹：',quoted([repair.beforeCriteriaHash,repair.afterCriteriaHash]),
+   '已确认变化的扫描文件：',quoted(repair.changedFiles||[]),
+   '已通过原问题路径 / 剩余问题 / 新回归：',quoted([repair.fixed??null,repair.remaining??null,repair.regressions??null]),
+   '原问题与检查项：',...((repair.issues||[]).slice(0,20).map(i=>quoted({issueId:i.issueId,checkId:i.checkId,name:i.name}))),
+   '完整关联数据：repair-comparison.json。应连同前后任务的原始证据一起提供；单独指纹不能替代证据文件。',
+   '人工省时、减少返工：未测得。复检通过只覆盖列出的检查，不代表整个产品通过。','');
  }
  lines.push('## 完成后记录',
   '- 写清修改前的问题、实际修改和同条件复检结果。',

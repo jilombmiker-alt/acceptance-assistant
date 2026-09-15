@@ -88,18 +88,28 @@ export async function startWorkbench({allowedRoot=base,stateDir=path.join(base,'
    if(req.method==='GET'&&req.url==='/repair-comparison.json'&&!demoOnly){const comparison=await repairStatus(current,folder);return send(comparison?200:404,comparison||{error:'尚未关联同一项目的前后任务'});}
    if(req.method==='GET'&&req.url==='/state')return send(200,await view());
    if(req.method==='GET'&&req.url==='/repair-case.json'){if(demoOnly)return send(404,{error:'此入口未提供'});try{return send(200,await readReportFile(base,'evaluation/report-repair-case.json'),'application/json');}catch{return send(404,{error:'尚未生成修复案例'});}}
-   if(req.method==='GET'&&req.url==='/codex-context.md'){if(demoOnly||!current)return send(404,{error:'请先建立本地任务'});const fresh=await autoStore.collect(current.intake.root,current.task.autoExperience?.files||[],{remember:false});const pack=codexContext({task:current.task,automatic:experienceOutcomes(current.task,await result()),root:current.intake.root,materials:fresh.materials});res.setHeader('Content-Disposition','attachment; filename="codex-project-context.md"');res.setHeader('X-Context-SHA256',pack.hash);return send(200,pack.text,'text/markdown');}
+   if(req.method==='GET'&&req.url==='/codex-context.md'){
+    if(demoOnly||!current)return send(404,{error:'请先建立本地任务'});
+    const session=current,r=await result();
+    const fresh=await autoStore.collect(session.intake.root,session.task.autoExperience?.files||[],{remember:false});
+    const repair=await repairStatus(session,folder);if(current!==session)throw Error('任务已变化，请重新下载交接材料');
+    const pack=codexContext({task:session.task,automatic:experienceOutcomes(session.task,r),root:session.intake.root,materials:fresh.materials,repair});
+    res.setHeader('Content-Disposition','attachment; filename="codex-project-context.md"');res.setHeader('X-Context-SHA256',pack.hash);return send(200,pack.text,'text/markdown');
+   }
    if(req.method==='GET'&&req.url.startsWith('/case-files/')){const match=req.url.match(/^\/case-files\/([a-z0-9-]+)\/([a-z0-9-]+\.(?:json|png|html))$/),item=match&&evidenceReports.find(x=>x.id===match[1]);if(!item||!item.files.includes(match[2]))return send(404,{error:'此案例文件未提供'});return send(200,await readReportFile(item.root,match[2]),match[2].endsWith('.html')?'text/html':match[2].endsWith('.png')?'image/png':'application/json');}
    if(req.method==='GET'&&['/report','/report.pdf'].includes(req.url)){
-    const r=await result();if(!r)throw Error('尚无完整结果文件，请查看当前任务进度');
+    const session=current,r=await result();if(!r)throw Error('尚无完整结果文件，请查看当前任务进度');
+    const repair=demoOnly?null:await repairStatus(session,folder);if(current!==session)throw Error('任务已变化，请重新打开报告');
     const rows=coverageResults(current.task,r),evaluation={pass:rows.every(x=>['pass','outside-scope','not-applicable'].includes(x.status))};
     const html=genericReport({impacts:reportImpact(current.task,r),controlled:current.task.mode===businessMode,coverageOnly:true,generatedAt:r.generatedAt,title:'本轮验收报告',description:r.goal,cases:[{id:'evidence',result:r}]},evaluation);
-    const rendered=html.replace('<h2>路径覆盖</h2>',(demoOnly?'':repairHTML(await repairStatus(current,folder)))+'<section>'+helpEvaluationHTML(await helpEvaluation(r))+'</section>'+automaticReportHTML(experienceOutcomes(current.task,r))+coverageHTML(current.task,rows)+'<h2>路径覆盖</h2>');
+    const rendered=html.replace('<h2>路径覆盖</h2>',repairHTML(repair)+'<section>'+helpEvaluationHTML(await helpEvaluation(r))+'</section>'+automaticReportHTML(experienceOutcomes(current.task,r))+coverageHTML(current.task,rows)+'<h2>路径覆盖</h2>');
     if(req.url==='/report.pdf'){
      if(demoOnly)throw Error('公开演示未开放个人报告 PDF');
-     const key=current.task.digest+':'+r.generatedAt+':'+bodyHash(JSON.stringify(current.measurements||null)),task=structuredClone(current.task);
-     if(pdfCache?.key!==key){const promise=reportPDF(pdfSummaryHTML({task,result:r,automatic:experienceOutcomes(task,r),impacts:reportImpact(task,r),coverage:rows,helpEvaluation:await helpEvaluation(r)}),task);pdfCache={key,promise};promise.catch(()=>{if(pdfCache?.key===key)pdfCache=null;});}
-     const pdf=await pdfCache.promise;res.setHeader('Content-Disposition','attachment; filename="acceptance-report.pdf"');res.setHeader('X-Report-SHA256',pdf.hash);return send(200,pdf.bytes,'application/pdf');
+     const key=current.task.digest+':'+bodyHash(JSON.stringify([r,current.measurements||null,repair])),task=structuredClone(current.task);
+     if(pdfCache?.key!==key){const promise=reportPDF(pdfSummaryHTML({task,result:r,automatic:experienceOutcomes(task,r),impacts:reportImpact(task,r),coverage:rows,helpEvaluation:await helpEvaluation(r),repair}),task);pdfCache={key,promise};promise.catch(()=>{if(pdfCache?.key===key)pdfCache=null;});}
+     const pdf=await pdfCache.promise;
+     if(current!==session||current.task.digest!==task.digest||JSON.stringify(await repairStatus(session,folder))!==JSON.stringify(repair))throw Error('任务或证据在生成期间发生变化，请重新下载报告');
+     res.setHeader('Content-Disposition','attachment; filename="acceptance-report.pdf"');res.setHeader('X-Report-SHA256',pdf.hash);return send(200,pdf.bytes,'application/pdf');
     }
     return send(200,rendered,'text/html');
    }

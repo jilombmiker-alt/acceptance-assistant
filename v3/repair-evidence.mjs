@@ -53,8 +53,8 @@ export async function repairStatus(session,folder){
  }catch{return {...detail,status:'unverified',reason:'前后源码、执行记录或实际产物无法通过指纹核对，请保留原记录并重新验收'};}
 }
 
-export function repairHTML(value){
+export function repairHTML(value,{download=true}={}){
  if(!value)return '';
  const esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
- return '<section id="repair-result" style="overflow-wrap:anywhere"><h2>本次复检</h2><p>'+esc(value.reason)+'</p><p>'+esc(value.scope)+'。人工省时：未测得。</p><details><summary>查看前后版本与标准</summary><p>前次任务：'+esc(value.beforeTaskId)+'<br>本次任务：'+esc(value.afterTaskId)+'</p><p style="overflow-wrap:anywhere">修改文件：'+esc((value.changedFiles||[]).join('、')||'未确认变化')+'<br>修改前源码指纹：'+esc(value.beforeProgramHash)+'<br>修改后源码指纹：'+esc(value.afterProgramHash)+'<br>原标准指纹：'+esc(value.beforeCriteriaHash)+'<br>本轮标准指纹：'+esc(value.afterCriteriaHash)+'</p><p>已通过原问题路径：'+esc((value.fixed||[]).map(id=>value.issues?.find(i=>i.checkId===id)?.name||id).join('、')||'尚未确认')+'<br>剩余问题路径：'+esc(Array.isArray(value.remaining)?(value.remaining.join('、')||'无（仅已覆盖路径）'):'尚未确认')+'</p></details><a href="/repair-comparison.json" download>下载复检关联记录</a></section>';
+ return '<section id="repair-result" style="overflow-wrap:anywhere"><h2>本次复检</h2><p>'+esc(value.reason)+'</p><p>'+esc(value.scope)+'。人工省时：未测得。</p><details><summary>查看前后版本与标准</summary><p>前次任务：'+esc(value.beforeTaskId)+'<br>本次任务：'+esc(value.afterTaskId)+'</p><p style="overflow-wrap:anywhere">修改文件：'+esc((value.changedFiles||[]).join('、')||'未确认变化')+'<br>修改前源码指纹：'+esc(value.beforeProgramHash||'未取得')+'<br>修改后源码指纹：'+esc(value.afterProgramHash||'未取得')+'<br>原标准指纹：'+esc(value.beforeCriteriaHash||'未取得')+'<br>本轮标准指纹：'+esc(value.afterCriteriaHash||'未取得')+'</p><p>已通过原问题路径：'+esc((value.fixed||[]).map(id=>value.issues?.find(i=>i.checkId===id)?.name||id).join('、')||'尚未确认')+'<br>剩余问题路径：'+esc(Array.isArray(value.remaining)?(value.remaining.join('、')||'无（仅已覆盖路径）'):'尚未确认')+'</p></details>'+(download?'<a href="/repair-comparison.json" download>下载复检关联记录</a>':'<p>复检关联数据：repair-comparison.json。请与本报告及原始证据一起保存。</p>')+'</section>';
 }
