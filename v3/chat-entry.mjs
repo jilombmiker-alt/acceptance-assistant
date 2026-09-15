@@ -42,7 +42,7 @@ function renderChat(){
  if(!chatInitialized&&state){chatInitialized=true;chatActive=!!state.task;chatView='task';}
  el('chat-send').disabled=busy||chatCustomBusy||!state;el('chat-help').disabled=busy||chatCustomBusy||!state;
  if(!chatActive||chatView!=='task'||!state.task)return;
- const key=JSON.stringify([state.task.id,state.task.revision,state.automatic,state.impacts,state.control?.worker?.phase,state.control?.control?.status,state.control?.reportAvailable,state.coverage,state.resumeDraft?.available]);
+ const key=JSON.stringify([state.task.id,state.task.revision,state.automatic,state.impacts,state.control?.worker?.phase,state.control?.control?.status,state.control?.reportAvailable,state.coverage,state.repair,state.resumeDraft?.available]);
  if(key===chatResultKey)return;chatResultKey=key;
  const t=state.task,s=state.control,ready=s?.reportAvailable,issues=state.impacts||[];
  if(state.resumeDraft?.kind==='snapshot'&&!state.resumeDraft.available&&!state.receipt){chatAnswer('<p>本地助手已重启，之前的网页服务已停止。请重新选择文件夹接入，再生成本轮检查。</p><a href="/connect">重新选择文件夹</a>');return;}
@@ -50,7 +50,7 @@ function renderChat(){
  if(ready){
   const basicIssues=[...new Set((state.coverage||[]).filter(r=>r.status==='issue').flatMap(r=>r.checkIds))];
   const failed=(state.automatic?.decisions||[]).find(d=>d.outcome==='requirement-not-met');
-  chatAnswer('<p>'+(issues.length?'先处理这 '+issues.length+' 项偏差。'+(failed?esc(failed.summary):'打开证据，按位置修复问题。'):('本轮已结束，已覆盖检查发现 '+basicIssues.length+' 项问题。尚未覆盖的目标请在报告中核对。'))+'</p><p>修改原代码后，先重新选择文件夹接入新版本。使用原目录和运行地址的项目，可以输入“重新检查”。</p><a href="/report">查看问题与证据</a><a href="/codex-context.md" download>把修改要求带回 Codex</a>');
+  chatAnswer('<p>'+(issues.length?'先处理这 '+issues.length+' 项偏差。'+(failed?esc(failed.summary):'打开证据，按位置修复问题。'):('本轮已结束，已覆盖检查发现 '+basicIssues.length+' 项问题。尚未覆盖的目标请在报告中核对。'))+'</p>'+(state.repair?'<p>复检：'+esc(state.repair.reason)+'</p><a href="/repair-comparison.json" download>下载复检关联记录</a>':'')+'<p>修改原代码后，先重新选择文件夹接入新版本。使用原目录和运行地址的项目，可以输入“重新检查”。</p><a href="/report">查看问题与证据</a><a href="/codex-context.md" download>把修改要求带回 Codex</a>');
  }else if(state.receipt){chatAnswer('<p>本轮尚未取得完整结果。先查看当前进度，再继续检查。</p><a href="/workbench#execution">继续处理本轮</a>');}
  else{
   const reminders=(state.automatic?.decisions||[]).filter(d=>d.decision==='apply');

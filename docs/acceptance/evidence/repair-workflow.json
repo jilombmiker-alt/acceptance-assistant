@@ -1,0 +1,36 @@
+{
+  "scope": "真实本机工作台任务、HTML 报告与证据关联；当前仅同目录同页面，文件夹重导入尚未关联",
+  "checks": [
+    "first-run-has-no-invented-baseline",
+    "same-directory-actual-fix-linked",
+    "html-report-and-json-match",
+    "restart-retains-link",
+    "tampered-baseline-refuses-repair-claim",
+    "same-version-repeat-not-repair",
+    "changed-criteria-not-repair"
+  ],
+  "comparison": {
+    "beforeTaskId": "controlled-before-task",
+    "afterTaskId": "controlled-after-task",
+    "scope": "同目录与同页面、已扫描源码及已执行路径；不等于整个产品合格",
+    "userTimeSavedMs": null,
+    "status": "verified-repair",
+    "reason": "同一项目的修改版本按原标准重复通过，未见已覆盖路径回归",
+    "fixed": [
+      "expected-text"
+    ],
+    "remaining": [],
+    "regressions": [],
+    "beforeProgramHash": "39c05abbaf21ef3ac6b2238196ccb92e0690372434fb565a542e064232618710",
+    "afterProgramHash": "3889c4107153aa24b739fdfc026ee023800cd13c39e63e2bcebcac3b55847a43",
+    "beforeCriteriaHash": "1e31a8e92bfe046c5c265b0b3f68f18ca331c18f4f40d3ec6c91289f9fc8373b",
+    "afterCriteriaHash": "1e31a8e92bfe046c5c265b0b3f68f18ca331c18f4f40d3ec6c91289f9fc8373b",
+    "issues": [
+      {
+        "issueId": "cb96db233964e7e8",
+        "checkId": "expected-text"
+      }
+    ]
+  },
+  "verification": "Local live workbench and browser UI; not deployed; controlled exact-text example, not arbitrary business repair."
+}

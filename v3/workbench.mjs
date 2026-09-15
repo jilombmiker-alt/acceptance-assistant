@@ -1,3 +1,4 @@
+import {captureRepairSource,sealRepairEvidence,repairStatus,repairHTML} from './repair-evidence.mjs';
 import {connectPage,connectJS,connectCSS} from './connect-page.mjs';
 import {cloudCSS} from './cloud-page.mjs';
 import {importStaticProject} from './project-import.mjs';
@@ -50,7 +51,7 @@ export async function startWorkbench({allowedRoot=base,stateDir=path.join(base,'
  const importedProjects=new Map();
  const checkedRoot=async value=>{const root=await fs.realpath(value);if(!importedProjects.has(root)&&root!==allowedRoot&&!root.startsWith(allowedRoot+path.sep))throw Error('项目不在本次启动允许的目录内');return root;};
  const token=crypto.randomBytes(32).toString('hex');let origin,current=null,controller=null,controllerPromise=null,busy=false,learningPromise=Promise.resolve(),learningError=null,pdfCache=null;
- const save=async(file,data)=>{const next=file+'.next';await fs.writeFile(next,JSON.stringify(sanitize(data),null,2),{mode:0o600});await fs.rename(next,file);};
+ const save=async(file,data)=>{const next=file+'.'+crypto.randomUUID()+'.next';await fs.writeFile(next,JSON.stringify(sanitize(data),null,2),{mode:0o600});await fs.rename(next,file);};
  const folder=id=>{if(!/^task-[a-f0-9-]{36}$/.test(id))throw Error('任务标识无效');return path.join(stateDir,id);};
  const persist=async()=>{await save(path.join(folder(current.task.id),'session.json'),current);await save(path.join(stateDir,'active.json'),{id:current.task.id});};
  try{const pointer=JSON.parse(await fs.readFile(path.join(stateDir,'active.json'),'utf8'));current=JSON.parse(await fs.readFile(path.join(folder(pointer.id),'session.json'),'utf8'));}catch(e){if(e.code!=='ENOENT')throw e;}
@@ -64,7 +65,7 @@ export async function startWorkbench({allowedRoot=base,stateDir=path.join(base,'
  };
  const result=async()=>{if(!current?.receipt)return null;const state=(await getController()).state();if(!state.reportAvailable)return null;return JSON.parse(await readReportFile(state.worker.runId,'results.json'));};
  const helpEvaluation=async(r)=>current?buildHelpEvaluation({task:current.task,result:r,automatic:experienceOutcomes(current.task,r),coverage:coverageResults(current.task,r),measurements:current.measurements}):null;
- const view=async()=>({helpEvaluation:await helpEvaluation(await result()),resumeDraft:current?{projectPath:current.intake.root,url:current.observation.url,kind:current.intake.root.startsWith(path.resolve(stateDir,'imports')+path.sep)?'snapshot':'directory',available:!current.intake.root.startsWith(path.resolve(stateDir,'imports')+path.sep)||importedProjects.has(current.intake.root)}:null,impacts:current?reportImpact(current.task,await result()):[],semantic:{available:semantic.available,name:semantic.name},learningError,automatic:current?experienceOutcomes(current.task,await result()):null,allowedRoot,examples,evidenceReports:evidenceReports.map(r=>({id:r.id,title:r.title,url:'/case-files/'+r.id+'/report.html'})),limits:plannerLimits,busy,task:current?.task||null,intake:current?{files:current.intake.files.map(x=>x.file),gaps:current.intake.gaps,coverage:current.intake.coverage}:null,observation:current?.observation||null,revisions:current?.revisions||[],receipt:!!current?.receipt,control:current?.receipt?(await getController()).state():null,coverage:current?coverageResults(current.task,await result()):[],opinions:current?.opinions||[]});
+ const view=async()=>({repair:demoOnly?null:await repairStatus(current,folder),helpEvaluation:await helpEvaluation(await result()),resumeDraft:current?{projectPath:current.intake.root,url:current.observation.url,kind:current.intake.root.startsWith(path.resolve(stateDir,'imports')+path.sep)?'snapshot':'directory',available:!current.intake.root.startsWith(path.resolve(stateDir,'imports')+path.sep)||importedProjects.has(current.intake.root)}:null,impacts:current?reportImpact(current.task,await result()):[],semantic:{available:semantic.available,name:semantic.name},learningError,automatic:current?experienceOutcomes(current.task,await result()):null,allowedRoot,examples,evidenceReports:evidenceReports.map(r=>({id:r.id,title:r.title,url:'/case-files/'+r.id+'/report.html'})),limits:plannerLimits,busy,task:current?.task||null,intake:current?{files:current.intake.files.map(x=>x.file),gaps:current.intake.gaps,coverage:current.intake.coverage}:null,observation:current?.observation||null,revisions:current?.revisions||[],receipt:!!current?.receipt,control:current?.receipt?(await getController()).state():null,coverage:current?coverageResults(current.task,await result()):[],opinions:current?.opinions||[]});
  const server=http.createServer(async(req,res)=>{
   const send=(code,data,type='application/json')=>{res.writeHead(code,{'Content-Type':type+'; charset=utf-8','Cache-Control':'no-store','X-Content-Type-Options':'nosniff','Referrer-Policy':'no-referrer','Content-Security-Policy':"default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self'; media-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'"});res.end(typeof data==='string'||Buffer.isBuffer(data)?data:JSON.stringify(data));};
   if(req.headers.host!==new URL(origin).host)return send(403,{error:'入口不匹配'});
@@ -84,6 +85,7 @@ export async function startWorkbench({allowedRoot=base,stateDir=path.join(base,'
     if(start>end||start>=stat.size){res.writeHead(416,{'Content-Range':'bytes */'+stat.size});return res.end();}
     res.writeHead(match?206:200,{'Content-Type':'video/mp4','Content-Length':end-start+1,'Accept-Ranges':'bytes','Cache-Control':'no-store',...(match?{'Content-Range':'bytes '+start+'-'+end+'/'+stat.size}:{})});createReadStream(file,{start,end}).pipe(res);return;
    }
+   if(req.method==='GET'&&req.url==='/repair-comparison.json'&&!demoOnly){const comparison=await repairStatus(current,folder);return send(comparison?200:404,comparison||{error:'尚未关联同一项目的前后任务'});}
    if(req.method==='GET'&&req.url==='/state')return send(200,await view());
    if(req.method==='GET'&&req.url==='/repair-case.json'){if(demoOnly)return send(404,{error:'此入口未提供'});try{return send(200,await readReportFile(base,'evaluation/report-repair-case.json'),'application/json');}catch{return send(404,{error:'尚未生成修复案例'});}}
    if(req.method==='GET'&&req.url==='/codex-context.md'){if(demoOnly||!current)return send(404,{error:'请先建立本地任务'});const fresh=await autoStore.collect(current.intake.root,current.task.autoExperience?.files||[],{remember:false});const pack=codexContext({task:current.task,automatic:experienceOutcomes(current.task,await result()),root:current.intake.root,materials:fresh.materials});res.setHeader('Content-Disposition','attachment; filename="codex-project-context.md"');res.setHeader('X-Context-SHA256',pack.hash);return send(200,pack.text,'text/markdown');}
@@ -92,7 +94,7 @@ export async function startWorkbench({allowedRoot=base,stateDir=path.join(base,'
     const r=await result();if(!r)throw Error('尚无完整结果文件，请查看当前任务进度');
     const rows=coverageResults(current.task,r),evaluation={pass:rows.every(x=>['pass','outside-scope','not-applicable'].includes(x.status))};
     const html=genericReport({impacts:reportImpact(current.task,r),controlled:current.task.mode===businessMode,coverageOnly:true,generatedAt:r.generatedAt,title:'本轮验收报告',description:r.goal,cases:[{id:'evidence',result:r}]},evaluation);
-    const rendered=html.replace('<h2>路径覆盖</h2>','<section>'+helpEvaluationHTML(await helpEvaluation(r))+'</section>'+automaticReportHTML(experienceOutcomes(current.task,r))+coverageHTML(current.task,rows)+'<h2>路径覆盖</h2>');
+    const rendered=html.replace('<h2>路径覆盖</h2>',(demoOnly?'':repairHTML(await repairStatus(current,folder)))+'<section>'+helpEvaluationHTML(await helpEvaluation(r))+'</section>'+automaticReportHTML(experienceOutcomes(current.task,r))+coverageHTML(current.task,rows)+'<h2>路径覆盖</h2>');
     if(req.url==='/report.pdf'){
      if(demoOnly)throw Error('公开演示未开放个人报告 PDF');
      const key=current.task.digest+':'+r.generatedAt+':'+bodyHash(JSON.stringify(current.measurements||null)),task=structuredClone(current.task);
@@ -137,7 +139,8 @@ export async function startWorkbench({allowedRoot=base,stateDir=path.join(base,'
      if(task.mode!==businessMode)task=compileReportJourneys(task,observation);
      if(experience){if(task.mode===businessMode&&experience.source.templateHash!==task.templateHash)throw Error('历史业务模板已变化，请重新选择本轮路径');task.sources.experience={id:experience.id,taskId:experience.source.taskId,revision:experience.source.revision,note:experience.note,versionChanged:experience.source.fingerprint!==task.fingerprint,adopted:'操作者主动采纳为本轮草稿；当前表单要求优先，旧授权与执行记录不复用'};task.digest=bodyHash(JSON.stringify({...task,digest:undefined}));}
      if(data.automatic===true){if(data.contextNote?.trim()){if(demoOnly)throw Error('公开演示不读取个人资料');await autoStore.feedback(root,{task,text:data.contextNote});}if(demoOnly)throw Error('公开演示不读取个人资料');task=await enhance(task,intake,observation,data.materialFiles||[]);}
-     await fs.mkdir(folder(id),{mode:0o700});current={task,intake,observation,revisions:[{revision:1,at:new Date().toISOString(),reason:'用户创建本次任务',goal:task.goal,digest:task.digest}],opinions:[],measurements:{version:1,events:[]}};controller=null;controllerPromise=null;
+     const repairBaseline=!demoOnly&&current?.repairSealHash&&current.intake.root===root&&current.observation.url===observation.url?{taskId:current.task.id,hash:current.repairSealHash}:null;
+     await fs.mkdir(folder(id),{mode:0o700});current={repairBaseline,task,intake,observation,revisions:[{revision:1,at:new Date().toISOString(),reason:'用户创建本次任务',goal:task.goal,digest:task.digest}],opinions:[],measurements:{version:1,events:[]}};controller=null;controllerPromise=null;
      await save(path.join(folder(id),'revision-1.json'),task);await persist();
     }else{
      if(!current||data.taskId!==current.task.id||data.revision!==current.task.revision)throw Error('任务或版本已变化，请刷新后操作');
@@ -178,9 +181,18 @@ export async function startWorkbench({allowedRoot=base,stateDir=path.join(base,'
       if(current.task.autoExperience){const freshMaterials=await autoStore.collect(current.intake.root,current.task.autoExperience.files||[]);const hashes=freshMaterials.materials.map(s=>({id:s.id,hash:s.hash,disabled:!!s.disabled}));if(JSON.stringify(hashes)!==JSON.stringify(current.task.autoExperience.materialHashes))throw Error('个人依据已变化，请重新生成本轮计划；尚未执行');}
       for(const doc of current.task.reportDocuments||[]){const bytes=await readReportFile(current.intake.root,doc.file,{maxBytes:256000});if(bodyHash(bytes)!==doc.hash)throw Error('证据文件已变化，请重新生成计划');}
       current.confirmedAuthorization=structuredClone(current.task.proposedScope);current.confirmedAuthorization.source=current.task.mode===businessMode?'用户在当前版本任务页明确开始：仅受控阅读清单样例，按列出的输入、点击、筛选、刷新、导出和次数上限执行；不外发、不修改原始资料':'用户在本机任务入口明确开始；普通输入仅使用页面列出的本轮测试样例；只读指定本机页面及资源，不提交、不外发';
+      if(!demoOnly)current.repairSource=await captureRepairSource(current,folder(current.task.id));
       current.executionPlan=structuredClone(current.task.plan);current.receipt={at:new Date().toISOString(),revision:current.task.revision,digest:current.task.digest,authorizationHash:bodyHash(JSON.stringify(current.confirmedAuthorization))};await persist();
       await(await getController()).command({command:'start'});
-      if(current.task.autoExperience){const session=current,control=await getController();learningError=null;learningPromise=control.wait().then(async()=>{const state=control.state();if(state.reportAvailable){const r=JSON.parse(await readReportFile(state.worker.runId,'results.json'));await autoStore.outcome(session.intake.root,session.task,r);}}).catch(error=>{learningError='执行结果尚未写入后续经验：'+sanitize(error.message);});}
+      if(!demoOnly){const session=current,control=await getController();learningError=null;learningPromise=control.wait().then(async()=>{
+       const state=control.state();if(!state.reportAvailable)return;
+       try{
+        const finalSource=await inspectProject(session.intake.root);if(finalSource.fingerprint!==session.intake.fingerprint)throw Error('执行期间源码变化，不能确认本轮程序版本');
+        session.repairSealHash=await sealRepairEvidence(session,folder(session.task.id),state.worker.runId);
+       }catch(error){session.repairError='复检证据未确认：'+sanitize(error.message);}
+       await save(path.join(folder(session.task.id),'session.json'),session);
+       if(session.task.autoExperience){const r=JSON.parse(await readReportFile(state.worker.runId,'results.json'));await autoStore.outcome(session.intake.root,session.task,r);}
+      }).catch(error=>{learningError='执行结果尚未写入后续记录：'+sanitize(error.message);});}
      }else if(req.url==='/command'){
       if(!['pause','resume','skip','revoke','restore','end','query'].includes(data.command))throw Error('本轮入口不支持此控制动作');
       await(await getController()).command({command:data.command,expectedRevision:data.expectedControlRevision,confirmed:data.confirmed});
