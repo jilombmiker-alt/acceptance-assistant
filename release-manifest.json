@@ -78,8 +78,8 @@
     },
     {
       "file": "docs/acceptance/04-connect-your-project.md",
-      "bytes": 4765,
-      "sha256": "26a201a0083cb6eba5bd0ee8821f79cd35d11a41235cb6257b1d3b80959c8d20"
+      "bytes": 4763,
+      "sha256": "3424a31c0d9344d7778c2d2cf613287963d1455c880f1dc713e00a794f9d888c"
     },
     {
       "file": "docs/acceptance/05-self-review.md",
@@ -93,28 +93,28 @@
     },
     {
       "file": "docs/acceptance/07-repair-workflow.md",
-      "bytes": 2600,
-      "sha256": "02249557049dc2cec23cfab9d366ec8b7f1ac0ab23cead2b08cd3ea2c7ef4300"
+      "bytes": 2653,
+      "sha256": "fb029543a16e4970b0635548a233bf5f17fccb471cd5424972e1dd997b6dbada"
     },
     {
       "file": "docs/acceptance/08-repair-exports.md",
-      "bytes": 2677,
-      "sha256": "7735f2307ae680b9569fb53f9d1169771d3155b5c784443b35ecfb23ba9219f0"
+      "bytes": 2707,
+      "sha256": "0b369e15ad803b70c44055791681331f3cc771dc79f7cf8883a894c14871e5af"
     },
     {
       "file": "docs/acceptance/09-snapshot-repair.md",
-      "bytes": 2729,
-      "sha256": "b3e97a1640e1f320e173c04b885c0e26970fac6902e542ada97a69996e255a84"
+      "bytes": 2785,
+      "sha256": "59110d5b0ceb2bd1606445b5e82e0193186c9bbe05a10883dba61148a924c5e0"
     },
     {
       "file": "docs/acceptance/10-release-20260916.md",
-      "bytes": 1486,
-      "sha256": "b198ea935400b081f3a18404944396c1db276cb276308fe91b1f8c8ad6bb8fa0"
+      "bytes": 1590,
+      "sha256": "739b8367b613f45ba239195d287ae48026ccc7fc29dd7605ae1f7544db571029"
     },
     {
       "file": "docs/acceptance/README.md",
-      "bytes": 2957,
-      "sha256": "bb81728e02a185d9aa5747f714f4d48c366c33865a92938c01a55e3d22613ca1"
+      "bytes": 2985,
+      "sha256": "cb30532076fb569875f61eb063f28b22598dcb993893f8360c56342b6804b944"
     },
     {
       "file": "docs/acceptance/evidence/help-evaluation.json",
@@ -218,8 +218,8 @@
     },
     {
       "file": "docs/next-version/04-iteration-checklist.md",
-      "bytes": 10051,
-      "sha256": "90e3fe0c9d5b774289974c46b600091e4905026d5237bb1593bd0ee9ea60d9b2"
+      "bytes": 10427,
+      "sha256": "8df5744649685916c923067ce0c45a4a9450e1fe31321dcfc2477ccef7094393"
     },
     {
       "file": "docs/subtitles.srt",
