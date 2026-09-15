@@ -22,6 +22,11 @@
       "sha256": "b178d2ae02b673291d4e2f23784ad730797f0fdc83d096e0f9f50be6773bd444"
     },
     {
+      "file": "audit/build-reading-repair-case.mjs",
+      "bytes": 7615,
+      "sha256": "4e22efb251ebf05fb113313746d82104b2e4e3586b18e75c77a7bf766eee3c62"
+    },
+    {
       "file": "audit/build-repair-case.mjs",
       "bytes": 5307,
       "sha256": "6661e7a54c99f0f13be852a46c3757528edf9206af50850caaee300d0f0aa8ad"
@@ -72,9 +77,14 @@
       "sha256": "8e5a9a5cc0ef1183187b4334058a778b7e978e76e09fc4386f2ef22071ef4f8b"
     },
     {
+      "file": "docs/acceptance/06-continuous-repair.md",
+      "bytes": 2465,
+      "sha256": "bfe7c0774726ddbef544657fba102d920563a7a6ab7b493d679ac16d55519059"
+    },
+    {
       "file": "docs/acceptance/README.md",
-      "bytes": 2157,
-      "sha256": "db4087b0448e157e2d3bdd5f7addd232e69c28519a3778fed85806f51a90c430"
+      "bytes": 2374,
+      "sha256": "447157b1553a69c57860a3856a39ace994235854a44c0ec65a7e53ad6ef990a8"
     },
     {
       "file": "docs/acceptance/evidence/help-evaluation.json",
@@ -100,6 +110,11 @@
       "file": "docs/acceptance/evidence/public-controlled-check.json",
       "bytes": 19473,
       "sha256": "84e54c0bf62a359a38e3b735a32fbc8561d341d4b4ca7b7ab58b1612ceef05e8"
+    },
+    {
+      "file": "docs/acceptance/evidence/reading-repair.json",
+      "bytes": 134158,
+      "sha256": "15433d3ced95f8a532d846145cca5578ce241bfd2d733e8f5c833f1975ceafed"
     },
     {
       "file": "docs/acceptance/evidence/report-repair-summary.json",
@@ -158,8 +173,8 @@
     },
     {
       "file": "docs/next-version/04-iteration-checklist.md",
-      "bytes": 8554,
-      "sha256": "ee8d439f8777707cd88273b96c24e23f174033272973700b302b4bc0f635447b"
+      "bytes": 8945,
+      "sha256": "b56e1fcdf58d31939635c36bcfec2ae33676b21bf2ae5ddd02667c8bf1620a6c"
     },
     {
       "file": "docs/subtitles.srt",
@@ -218,8 +233,8 @@
     },
     {
       "file": "package.json",
-      "bytes": 477,
-      "sha256": "d45cf723cbf6bea33a7a302b95e32916025f2019f38c929ef40f45e7842b2f2e"
+      "bytes": 550,
+      "sha256": "4b2fc7c492658c303b69ba286787ddb1be9b9dc6cdf9561f6f60ebcc65568e1e"
     },
     {
       "file": "plans/reading-list.json",
@@ -425,6 +440,16 @@
       "file": "v3/public-demo.mjs",
       "bytes": 11413,
       "sha256": "1bfad49602fabbd564dc83af4bee814033edb326e5f2f35dbfa0c7fcdce0433f"
+    },
+    {
+      "file": "v3/repair-comparison.mjs",
+      "bytes": 2833,
+      "sha256": "dfefb3b4b3e339cdafb3c812b5947f3c620b6d931d65a91b06fe7b153eda0bbe"
+    },
+    {
+      "file": "v3/repair-comparison.test.mjs",
+      "bytes": 2195,
+      "sha256": "87e81ff6dcf3f10105b2926eaaec93a9464ae99bd3cdef1932023e911661750a"
     },
     {
       "file": "v3/report-export.mjs",

@@ -1,0 +1,13 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {compareRepairRuns} from './repair-comparison.mjs';
+const group=(id,status)=>({pathId:id,status,records:Array.from({length:2},()=>({status,checks:[{status,setup:false}]}))});
+const before=()=>({projectId:'sample',programHash:'before',criteriaHash:'frozen',evidenceVerified:true,groups:[group('export','issue'),group('unread','pass')]});
+const after=()=>({...before(),programHash:'after',groups:[group('export','pass'),group('unread','pass')]});
+const compare=(b=before(),a=after())=>compareRepairRuns(b,a,['export','unread']);
+test('changed same-project source and identical criteria can verify a covered repair',()=>{assert.equal(compare().status,'verified-repair');assert.equal(compare().userTimeSavedMs,null);});
+test('same version, different project and changed criteria cannot claim repair',()=>{for(const [field,value,status] of [['programHash','before','same-version-repeat'],['projectId','other','different-project'],['criteriaHash','new','criteria-changed']])assert.equal(compare(before(),{...after(),[field]:value}).status,status);});
+test('missing evidence, skipped checks and incomplete repetitions remain unverified',()=>{for(const mutate of [a=>a.evidenceVerified=false,a=>a.groups.pop(),a=>a.groups[0].records.pop(),a=>a.groups[0].status='blocked',a=>a.groups[0].records[0].checks=[]]){const a=after();mutate(a);assert.equal(compare(before(),a).status,'unverified');}});
+test('duplicate IDs and inconsistent reported passes are rejected',()=>{let a=after();a.groups[1].pathId='export';assert.equal(compare(before(),a).status,'unverified');a=after();a.groups[0].records[0].checks[0].status='issue';assert.equal(compare(before(),a).status,'unverified');});
+test('remaining failure and unrelated regressions are not a completed repair',()=>{let a=after();a.groups[0]=group('export','issue');assert.equal(compare(before(),a).status,'still-failing');a=after();a.groups[1]=group('unread','issue');assert.equal(compare(before(),a).status,'regression');});
+test('passing baseline is not a repaired issue',()=>{const b={...after(),programHash:'baseline'};assert.equal(compare(b).status,'no-baseline-issue');});

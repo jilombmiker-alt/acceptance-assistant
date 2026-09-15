@@ -1,0 +1,3969 @@
+{
+  "summary": {
+    "schemaVersion": 1,
+    "projectId": "controlled-reading-4c71c599-3a17-4070-b827-d5d5957882c0",
+    "criteriaHash": "360848a506aa841a20dc0ab2005e45abb241f64df11f02399ffde7d4b386a0e0",
+    "scope": "受控阅读清单连续修改实验；新增三个由开发者预先明确的相关导出检查",
+    "comparison": {
+      "status": "verified-repair",
+      "reason": "同一项目的修改版本按原标准重复通过，未见已覆盖路径回归",
+      "fixed": [
+        "export",
+        "export-filter",
+        "export-refresh"
+      ],
+      "remaining": [],
+      "regressions": [],
+      "userTimeSavedMs": null
+    },
+    "uniqueIssue": {
+      "id": "reading-export-state",
+      "description": "导出丢失已读状态",
+      "affectedChecks": [
+        "export",
+        "export-filter",
+        "export-refresh"
+      ]
+    },
+    "checkCount": 11,
+    "repetitions": 2,
+    "beforeProgramHash": "ff870eda7e5a341f65718b504c583fb9876ccf3c73e0176ba0118489d7016dd7",
+    "afterProgramHash": "78c6b5926b60b6564a72ddfa1ff99480872a9130e4d9a188c466c55c7fafb7c3",
+    "files": [
+      "embedded frozenCriteria",
+      "embedded change",
+      "embedded runs"
+    ],
+    "userTimeSavedMs": null,
+    "reworkSaved": null,
+    "limitations": [
+      "受控已知问题，不是陌生项目迁移",
+      "当前为开发者运行的审计入口，尚未接入用户报告的自动修复关联",
+      "文件指纹证明本次保存一致性，不代替独立真人复核"
+    ]
+  },
+  "change": {
+    "file": "app.js",
+    "removed": "({title,read})=>({title,read:false})",
+    "added": "({title,read})=>({title,read})",
+    "reason": "保留每条书目的实际 read 状态，不再强制写成 false",
+    "source": "本轮开发者在同一副本上实际修改",
+    "beforeProgramHash": "ff870eda7e5a341f65718b504c583fb9876ccf3c73e0176ba0118489d7016dd7"
+  },
+  "frozenCriteria": {
+    "version": "reading-repair-v1",
+    "scope": "受控阅读清单连续修改实验；新增三个由开发者预先明确的相关导出检查",
+    "requirement": "# 阅读清单\n\n目标：用户保存想读的书，更新阅读进度，按状态查看，并导出与当前清单一致的记录。\n\n## 正常要求\n\n- 新增书目后，列表应出现输入的书名，默认状态为未读。\n- 标记已读后，该书状态为已读，并计入已读统计。\n- 筛选已读时，只显示已读书目；切回全部后，所有书目仍存在。\n- 刷新页面后，已经保存的书目和阅读状态仍保留。\n- 导出的 JSON 应包含当前所有书目及各自的阅读状态，与界面和本次操作一致。\n- 使用说明独立可访问，说明书目保存在当前浏览器。\n\n## 入口\n\n`index.html` 是页面入口，`app.js` 负责书目操作。通过本地静态服务打开；无账号、无外部 API。数据只保存在测试浏览器的 localStorage。\n",
+    "plan": {
+      "project": "阅读清单",
+      "goal": "新增和更新书目，按状态筛选，刷新保留，并导出与当前清单一致的最终记录。",
+      "planSource": "助手结合 README 正常要求与页面代码分析后生成；非运行时 AI 自动规划。",
+      "policy": {
+        "normalRuns": 2,
+        "failureExtraRetries": 0,
+        "recoveryAttempts": 0,
+        "actionTimeoutMs": 5000
+      },
+      "paths": [
+        {
+          "id": "add",
+          "name": "新增书目",
+          "location": "阅读清单 → 新增",
+          "trigger": "输入两本书的名称，分别点击添加书目。",
+          "basis": [
+            "README.md:7"
+          ],
+          "steps": [
+            {
+              "type": "goto",
+              "path": "index.html"
+            },
+            {
+              "type": "fill",
+              "target": {
+                "label": "书名"
+              },
+              "value": "山海笔记"
+            },
+            {
+              "type": "click",
+              "target": {
+                "role": "button",
+                "name": "添加书目"
+              }
+            },
+            {
+              "type": "fill",
+              "target": {
+                "label": "书名"
+              },
+              "value": "城市观察"
+            },
+            {
+              "type": "click",
+              "target": {
+                "role": "button",
+                "name": "添加书目"
+              }
+            }
+          ],
+          "checks": [
+            {
+              "type": "count",
+              "target": {
+                "css": "#books li"
+              },
+              "expected": 2,
+              "label": "两本书均保存",
+              "problem": "提示保存成功，但书目没有出现在清单中"
+            },
+            {
+              "type": "text",
+              "target": {
+                "testId": "summary"
+              },
+              "expected": "共 2 本，已读 0 本",
+              "label": "初始状态为未读"
+            }
+          ]
+        },
+        {
+          "id": "read",
+          "name": "标记已读",
+          "location": "阅读清单 → 阅读状态",
+          "trigger": "将山海笔记标记为已读。",
+          "dependsOn": [
+            "add"
+          ],
+          "basis": [
+            "README.md:8"
+          ],
+          "steps": [
+            {
+              "type": "click",
+              "target": {
+                "role": "button",
+                "name": "标记已读 山海笔记"
+              }
+            }
+          ],
+          "checks": [
+            {
+              "type": "text",
+              "target": {
+                "testId": "summary"
+              },
+              "expected": "共 2 本，已读 1 本",
+              "label": "已读状态和统计一致"
+            },
+            {
+              "type": "text",
+              "target": {
+                "css": "#books li span >> nth=0"
+              },
+              "expected": "山海笔记 · 已读",
+              "label": "目标书目状态正确"
+            }
+          ]
+        },
+        {
+          "id": "unread",
+          "name": "改回未读",
+          "location": "阅读清单 → 阅读状态",
+          "trigger": "将已读的山海笔记改回未读。",
+          "dependsOn": [
+            "read"
+          ],
+          "basis": [
+            "README.md:8"
+          ],
+          "steps": [
+            {
+              "type": "click",
+              "target": {
+                "role": "button",
+                "name": "标记未读 山海笔记"
+              }
+            }
+          ],
+          "checks": [
+            {
+              "type": "text",
+              "target": {
+                "testId": "summary"
+              },
+              "expected": "共 2 本，已读 0 本",
+              "label": "状态可以改回未读"
+            }
+          ]
+        },
+        {
+          "id": "filter",
+          "name": "已读筛选与返回全部",
+          "location": "阅读清单 → 查看状态",
+          "trigger": "筛选已读书目，再切回全部。",
+          "dependsOn": [
+            "read"
+          ],
+          "basis": [
+            "README.md:9"
+          ],
+          "steps": [
+            {
+              "type": "select",
+              "target": {
+                "css": "#filter"
+              },
+              "value": "read"
+            }
+          ],
+          "checks": [
+            {
+              "type": "count",
+              "target": {
+                "css": "#books li"
+              },
+              "expected": 1,
+              "label": "已读筛选只保留一项"
+            },
+            {
+              "type": "text",
+              "target": {
+                "css": "#books li span"
+              },
+              "expected": "山海笔记 · 已读",
+              "label": "筛选对象正确"
+            }
+          ]
+        },
+        {
+          "id": "all",
+          "name": "切回全部",
+          "location": "阅读清单 → 查看状态",
+          "trigger": "从已读筛选切回全部，检查两本书仍在。",
+          "dependsOn": [
+            "filter"
+          ],
+          "basis": [
+            "README.md:9"
+          ],
+          "steps": [
+            {
+              "type": "select",
+              "target": {
+                "css": "#filter"
+              },
+              "value": "all"
+            }
+          ],
+          "checks": [
+            {
+              "type": "count",
+              "target": {
+                "css": "#books li"
+              },
+              "expected": 2,
+              "label": "恢复显示全部书目"
+            }
+          ]
+        },
+        {
+          "id": "persist",
+          "name": "刷新保留记录",
+          "location": "阅读清单 → 刷新后",
+          "trigger": "保存书目与阅读状态后刷新页面。",
+          "dependsOn": [
+            "read"
+          ],
+          "basis": [
+            "README.md:10"
+          ],
+          "steps": [
+            {
+              "type": "reload"
+            }
+          ],
+          "checks": [
+            {
+              "type": "text",
+              "target": {
+                "testId": "summary"
+              },
+              "expected": "共 2 本，已读 1 本",
+              "label": "刷新后记录和状态保留"
+            },
+            {
+              "type": "text",
+              "target": {
+                "css": "#books li span >> nth=0"
+              },
+              "expected": "山海笔记 · 已读",
+              "label": "刷新后目标状态正确"
+            }
+          ]
+        },
+        {
+          "id": "export",
+          "name": "导出当前清单",
+          "location": "阅读清单 → 导出清单",
+          "trigger": "新增两本书，将山海笔记标记已读，再点击导出清单。",
+          "dependsOn": [
+            "read"
+          ],
+          "basis": [
+            "README.md:11"
+          ],
+          "steps": [
+            {
+              "type": "download",
+              "target": {
+                "role": "button",
+                "name": "导出清单"
+              },
+              "as": "books"
+            }
+          ],
+          "checks": [
+            {
+              "type": "json",
+              "artifact": "books",
+              "expected": {
+                "books": [
+                  {
+                    "title": "山海笔记",
+                    "read": true
+                  },
+                  {
+                    "title": "城市观察",
+                    "read": false
+                  }
+                ]
+              },
+              "label": "最终导出与当前书目及状态一致",
+              "problem": "界面显示已读，但导出文件把该书写成未读"
+            }
+          ]
+        },
+        {
+          "id": "help",
+          "name": "独立使用说明",
+          "location": "使用说明",
+          "trigger": "打开独立说明页。",
+          "basis": [
+            "README.md:12"
+          ],
+          "steps": [
+            {
+              "type": "goto",
+              "path": "help.html"
+            }
+          ],
+          "checks": [
+            {
+              "type": "text",
+              "target": {
+                "css": "main p"
+              },
+              "expected": "书目保存在当前浏览器。支持新增、更新阅读状态、筛选和导出。",
+              "label": "独立说明可访问"
+            }
+          ]
+        },
+        {
+          "id": "export-filter",
+          "name": "筛选后仍导出全部书目",
+          "location": "阅读清单 → 导出清单",
+          "trigger": "筛选后仍导出全部书目，下载并核对全部记录",
+          "dependsOn": [
+            "filter"
+          ],
+          "basis": [
+            "README.md:11"
+          ],
+          "steps": [
+            {
+              "type": "download",
+              "target": {
+                "role": "button",
+                "name": "导出清单"
+              },
+              "as": "books"
+            }
+          ],
+          "checks": [
+            {
+              "type": "json",
+              "artifact": "books",
+              "expected": {
+                "books": [
+                  {
+                    "title": "山海笔记",
+                    "read": true
+                  },
+                  {
+                    "title": "城市观察",
+                    "read": false
+                  }
+                ]
+              },
+              "label": "最终导出与当前书目及状态一致",
+              "problem": "界面显示已读，但导出文件把该书写成未读"
+            }
+          ]
+        },
+        {
+          "id": "export-refresh",
+          "name": "刷新后导出当前状态",
+          "location": "阅读清单 → 导出清单",
+          "trigger": "刷新后导出当前状态，下载并核对全部记录",
+          "dependsOn": [
+            "persist"
+          ],
+          "basis": [
+            "README.md:11"
+          ],
+          "steps": [
+            {
+              "type": "download",
+              "target": {
+                "role": "button",
+                "name": "导出清单"
+              },
+              "as": "books"
+            }
+          ],
+          "checks": [
+            {
+              "type": "json",
+              "artifact": "books",
+              "expected": {
+                "books": [
+                  {
+                    "title": "山海笔记",
+                    "read": true
+                  },
+                  {
+                    "title": "城市观察",
+                    "read": false
+                  }
+                ]
+              },
+              "label": "最终导出与当前书目及状态一致",
+              "problem": "界面显示已读，但导出文件把该书写成未读"
+            }
+          ]
+        },
+        {
+          "id": "export-unread",
+          "name": "改回未读后导出",
+          "location": "阅读清单 → 导出清单",
+          "trigger": "改回未读后导出，下载并核对全部记录",
+          "dependsOn": [
+            "unread"
+          ],
+          "basis": [
+            "README.md:11"
+          ],
+          "steps": [
+            {
+              "type": "download",
+              "target": {
+                "role": "button",
+                "name": "导出清单"
+              },
+              "as": "books"
+            }
+          ],
+          "checks": [
+            {
+              "type": "json",
+              "artifact": "books",
+              "expected": {
+                "books": [
+                  {
+                    "title": "山海笔记",
+                    "read": false
+                  },
+                  {
+                    "title": "城市观察",
+                    "read": false
+                  }
+                ]
+              },
+              "label": "最终导出与当前书目及状态一致",
+              "problem": "界面显示已读，但导出文件把该书写成未读"
+            }
+          ]
+        }
+      ]
+    },
+    "minimumRepeats": 2,
+    "qualityGate": "原问题及全部相关路径通过，缺证据不算通过",
+    "primaryMetric": "原问题和回归路径的独立最终文件一致性",
+    "humanBenefit": "未测得"
+  },
+  "runs": [
+    {
+      "phase": "before",
+      "programHash": "ff870eda7e5a341f65718b504c583fb9876ccf3c73e0176ba0118489d7016dd7",
+      "criteriaHash": "360848a506aa841a20dc0ab2005e45abb241f64df11f02399ffde7d4b386a0e0",
+      "sourceManifest": [
+        {
+          "file": "README.md",
+          "sha256": "ff4223c79e39da0cc99ac6665951e19cb3639a82502d82219f6d412e7e829ad3"
+        },
+        {
+          "file": "index.html",
+          "sha256": "8a0d4953932982873c2cd9c0c1ebaa3790d700284d5b0af42533378ef8305f88"
+        },
+        {
+          "file": "app.js",
+          "sha256": "8184efca7427e028469c72240ad896e6cdeff897e0e90a83096b94552520f851"
+        },
+        {
+          "file": "help.html",
+          "sha256": "08ca466490c846681b181f50748843247798b4c1e2ac47eeff4d92727715e470"
+        }
+      ],
+      "groups": [
+        {
+          "pathId": "add",
+          "status": "pass",
+          "records": [
+            {
+              "id": "add-0",
+              "status": "pass",
+              "checks": [
+                {
+                  "pathId": "add",
+                  "setup": false,
+                  "label": "两本书均保存",
+                  "expected": 2,
+                  "actual": 2,
+                  "pass": true,
+                  "status": "pass",
+                  "problem": "提示保存成功，但书目没有出现在清单中",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "add",
+                  "setup": false,
+                  "label": "初始状态为未读",
+                  "expected": "共 2 本，已读 0 本",
+                  "actual": "共 2 本，已读 0 本",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                }
+              ],
+              "outputs": []
+            },
+            {
+              "id": "add-1",
+              "status": "pass",
+              "checks": [
+                {
+                  "pathId": "add",
+                  "setup": false,
+                  "label": "两本书均保存",
+                  "expected": 2,
+                  "actual": 2,
+                  "pass": true,
+                  "status": "pass",
+                  "problem": "提示保存成功，但书目没有出现在清单中",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "add",
+                  "setup": false,
+                  "label": "初始状态为未读",
+                  "expected": "共 2 本，已读 0 本",
+                  "actual": "共 2 本，已读 0 本",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                }
+              ],
+              "outputs": []
+            }
+          ]
+        },
+        {
+          "pathId": "read",
+          "status": "pass",
+          "records": [
+            {
+              "id": "read-0",
+              "status": "pass",
+              "checks": [
+                {
+                  "pathId": "add",
+                  "setup": true,
+                  "label": "两本书均保存",
+                  "expected": 2,
+                  "actual": 2,
+                  "pass": true,
+                  "status": "pass",
+                  "problem": "提示保存成功，但书目没有出现在清单中",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "add",
+                  "setup": true,
+                  "label": "初始状态为未读",
+                  "expected": "共 2 本，已读 0 本",
+                  "actual": "共 2 本，已读 0 本",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "read",
+                  "setup": false,
+                  "label": "已读状态和统计一致",
+                  "expected": "共 2 本，已读 1 本",
+                  "actual": "共 2 本，已读 1 本",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "read",
+                  "setup": false,
+                  "label": "目标书目状态正确",
+                  "expected": "山海笔记 · 已读",
+                  "actual": "山海笔记 · 已读",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                }
+              ],
+              "outputs": []
+            },
+            {
+              "id": "read-1",
+              "status": "pass",
+              "checks": [
+                {
+                  "pathId": "add",
+                  "setup": true,
+                  "label": "两本书均保存",
+                  "expected": 2,
+                  "actual": 2,
+                  "pass": true,
+                  "status": "pass",
+                  "problem": "提示保存成功，但书目没有出现在清单中",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "add",
+                  "setup": true,
+                  "label": "初始状态为未读",
+                  "expected": "共 2 本，已读 0 本",
+                  "actual": "共 2 本，已读 0 本",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "read",
+                  "setup": false,
+                  "label": "已读状态和统计一致",
+                  "expected": "共 2 本，已读 1 本",
+                  "actual": "共 2 本，已读 1 本",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "read",
+                  "setup": false,
+                  "label": "目标书目状态正确",
+                  "expected": "山海笔记 · 已读",
+                  "actual": "山海笔记 · 已读",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                }
+              ],
+              "outputs": []
+            }
+          ]
+        },
+        {
+          "pathId": "unread",
+          "status": "pass",
+          "records": [
+            {
+              "id": "unread-0",
+              "status": "pass",
+              "checks": [
+                {
+                  "pathId": "add",
+                  "setup": true,
+                  "label": "两本书均保存",
+                  "expected": 2,
+                  "actual": 2,
+                  "pass": true,
+                  "status": "pass",
+                  "problem": "提示保存成功，但书目没有出现在清单中",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "add",
+                  "setup": true,
+                  "label": "初始状态为未读",
+                  "expected": "共 2 本，已读 0 本",
+                  "actual": "共 2 本，已读 0 本",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "read",
+                  "setup": true,
+                  "label": "已读状态和统计一致",
+                  "expected": "共 2 本，已读 1 本",
+                  "actual": "共 2 本，已读 1 本",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "read",
+                  "setup": true,
+                  "label": "目标书目状态正确",
+                  "expected": "山海笔记 · 已读",
+                  "actual": "山海笔记 · 已读",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "unread",
+                  "setup": false,
+                  "label": "状态可以改回未读",
+                  "expected": "共 2 本，已读 0 本",
+                  "actual": "共 2 本，已读 0 本",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                }
+              ],
+              "outputs": []
+            },
+            {
+              "id": "unread-1",
+              "status": "pass",
+              "checks": [
+                {
+                  "pathId": "add",
+                  "setup": true,
+                  "label": "两本书均保存",
+                  "expected": 2,
+                  "actual": 2,
+                  "pass": true,
+                  "status": "pass",
+                  "problem": "提示保存成功，但书目没有出现在清单中",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "add",
+                  "setup": true,
+                  "label": "初始状态为未读",
+                  "expected": "共 2 本，已读 0 本",
+                  "actual": "共 2 本，已读 0 本",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "read",
+                  "setup": true,
+                  "label": "已读状态和统计一致",
+                  "expected": "共 2 本，已读 1 本",
+                  "actual": "共 2 本，已读 1 本",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "read",
+                  "setup": true,
+                  "label": "目标书目状态正确",
+                  "expected": "山海笔记 · 已读",
+                  "actual": "山海笔记 · 已读",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "unread",
+                  "setup": false,
+                  "label": "状态可以改回未读",
+                  "expected": "共 2 本，已读 0 本",
+                  "actual": "共 2 本，已读 0 本",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                }
+              ],
+              "outputs": []
+            }
+          ]
+        },
+        {
+          "pathId": "filter",
+          "status": "pass",
+          "records": [
+            {
+              "id": "filter-0",
+              "status": "pass",
+              "checks": [
+                {
+                  "pathId": "add",
+                  "setup": true,
+                  "label": "两本书均保存",
+                  "expected": 2,
+                  "actual": 2,
+                  "pass": true,
+                  "status": "pass",
+                  "problem": "提示保存成功，但书目没有出现在清单中",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "add",
+                  "setup": true,
+                  "label": "初始状态为未读",
+                  "expected": "共 2 本，已读 0 本",
+                  "actual": "共 2 本，已读 0 本",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "read",
+                  "setup": true,
+                  "label": "已读状态和统计一致",
+                  "expected": "共 2 本，已读 1 本",
+                  "actual": "共 2 本，已读 1 本",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "read",
+                  "setup": true,
+                  "label": "目标书目状态正确",
+                  "expected": "山海笔记 · 已读",
+                  "actual": "山海笔记 · 已读",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "filter",
+                  "setup": false,
+                  "label": "已读筛选只保留一项",
+                  "expected": 1,
+                  "actual": 1,
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "filter",
+                  "setup": false,
+                  "label": "筛选对象正确",
+                  "expected": "山海笔记 · 已读",
+                  "actual": "山海笔记 · 已读",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                }
+              ],
+              "outputs": []
+            },
+            {
+              "id": "filter-1",
+              "status": "pass",
+              "checks": [
+                {
+                  "pathId": "add",
+                  "setup": true,
+                  "label": "两本书均保存",
+                  "expected": 2,
+                  "actual": 2,
+                  "pass": true,
+                  "status": "pass",
+                  "problem": "提示保存成功，但书目没有出现在清单中",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "add",
+                  "setup": true,
+                  "label": "初始状态为未读",
+                  "expected": "共 2 本，已读 0 本",
+                  "actual": "共 2 本，已读 0 本",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "read",
+                  "setup": true,
+                  "label": "已读状态和统计一致",
+                  "expected": "共 2 本，已读 1 本",
+                  "actual": "共 2 本，已读 1 本",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "read",
+                  "setup": true,
+                  "label": "目标书目状态正确",
+                  "expected": "山海笔记 · 已读",
+                  "actual": "山海笔记 · 已读",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "filter",
+                  "setup": false,
+                  "label": "已读筛选只保留一项",
+                  "expected": 1,
+                  "actual": 1,
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "filter",
+                  "setup": false,
+                  "label": "筛选对象正确",
+                  "expected": "山海笔记 · 已读",
+                  "actual": "山海笔记 · 已读",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                }
+              ],
+              "outputs": []
+            }
+          ]
+        },
+        {
+          "pathId": "all",
+          "status": "pass",
+          "records": [
+            {
+              "id": "all-0",
+              "status": "pass",
+              "checks": [
+                {
+                  "pathId": "add",
+                  "setup": true,
+                  "label": "两本书均保存",
+                  "expected": 2,
+                  "actual": 2,
+                  "pass": true,
+                  "status": "pass",
+                  "problem": "提示保存成功，但书目没有出现在清单中",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "add",
+                  "setup": true,
+                  "label": "初始状态为未读",
+                  "expected": "共 2 本，已读 0 本",
+                  "actual": "共 2 本，已读 0 本",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "read",
+                  "setup": true,
+                  "label": "已读状态和统计一致",
+                  "expected": "共 2 本，已读 1 本",
+                  "actual": "共 2 本，已读 1 本",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "read",
+                  "setup": true,
+                  "label": "目标书目状态正确",
+                  "expected": "山海笔记 · 已读",
+                  "actual": "山海笔记 · 已读",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "filter",
+                  "setup": true,
+                  "label": "已读筛选只保留一项",
+                  "expected": 1,
+                  "actual": 1,
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "filter",
+                  "setup": true,
+                  "label": "筛选对象正确",
+                  "expected": "山海笔记 · 已读",
+                  "actual": "山海笔记 · 已读",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "all",
+                  "setup": false,
+                  "label": "恢复显示全部书目",
+                  "expected": 2,
+                  "actual": 2,
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                }
+              ],
+              "outputs": []
+            },
+            {
+              "id": "all-1",
+              "status": "pass",
+              "checks": [
+                {
+                  "pathId": "add",
+                  "setup": true,
+                  "label": "两本书均保存",
+                  "expected": 2,
+                  "actual": 2,
+                  "pass": true,
+                  "status": "pass",
+                  "problem": "提示保存成功，但书目没有出现在清单中",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "add",
+                  "setup": true,
+                  "label": "初始状态为未读",
+                  "expected": "共 2 本，已读 0 本",
+                  "actual": "共 2 本，已读 0 本",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "read",
+                  "setup": true,
+                  "label": "已读状态和统计一致",
+                  "expected": "共 2 本，已读 1 本",
+                  "actual": "共 2 本，已读 1 本",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "read",
+                  "setup": true,
+                  "label": "目标书目状态正确",
+                  "expected": "山海笔记 · 已读",
+                  "actual": "山海笔记 · 已读",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "filter",
+                  "setup": true,
+                  "label": "已读筛选只保留一项",
+                  "expected": 1,
+                  "actual": 1,
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "filter",
+                  "setup": true,
+                  "label": "筛选对象正确",
+                  "expected": "山海笔记 · 已读",
+                  "actual": "山海笔记 · 已读",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "all",
+                  "setup": false,
+                  "label": "恢复显示全部书目",
+                  "expected": 2,
+                  "actual": 2,
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                }
+              ],
+              "outputs": []
+            }
+          ]
+        },
+        {
+          "pathId": "persist",
+          "status": "pass",
+          "records": [
+            {
+              "id": "persist-0",
+              "status": "pass",
+              "checks": [
+                {
+                  "pathId": "add",
+                  "setup": true,
+                  "label": "两本书均保存",
+                  "expected": 2,
+                  "actual": 2,
+                  "pass": true,
+                  "status": "pass",
+                  "problem": "提示保存成功，但书目没有出现在清单中",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "add",
+                  "setup": true,
+                  "label": "初始状态为未读",
+                  "expected": "共 2 本，已读 0 本",
+                  "actual": "共 2 本，已读 0 本",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "read",
+                  "setup": true,
+                  "label": "已读状态和统计一致",
+                  "expected": "共 2 本，已读 1 本",
+                  "actual": "共 2 本，已读 1 本",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "read",
+                  "setup": true,
+                  "label": "目标书目状态正确",
+                  "expected": "山海笔记 · 已读",
+                  "actual": "山海笔记 · 已读",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "persist",
+                  "setup": false,
+                  "label": "刷新后记录和状态保留",
+                  "expected": "共 2 本，已读 1 本",
+                  "actual": "共 2 本，已读 1 本",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "persist",
+                  "setup": false,
+                  "label": "刷新后目标状态正确",
+                  "expected": "山海笔记 · 已读",
+                  "actual": "山海笔记 · 已读",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                }
+              ],
+              "outputs": []
+            },
+            {
+              "id": "persist-1",
+              "status": "pass",
+              "checks": [
+                {
+                  "pathId": "add",
+                  "setup": true,
+                  "label": "两本书均保存",
+                  "expected": 2,
+                  "actual": 2,
+                  "pass": true,
+                  "status": "pass",
+                  "problem": "提示保存成功，但书目没有出现在清单中",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "add",
+                  "setup": true,
+                  "label": "初始状态为未读",
+                  "expected": "共 2 本，已读 0 本",
+                  "actual": "共 2 本，已读 0 本",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "read",
+                  "setup": true,
+                  "label": "已读状态和统计一致",
+                  "expected": "共 2 本，已读 1 本",
+                  "actual": "共 2 本，已读 1 本",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "read",
+                  "setup": true,
+                  "label": "目标书目状态正确",
+                  "expected": "山海笔记 · 已读",
+                  "actual": "山海笔记 · 已读",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "persist",
+                  "setup": false,
+                  "label": "刷新后记录和状态保留",
+                  "expected": "共 2 本，已读 1 本",
+                  "actual": "共 2 本，已读 1 本",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "persist",
+                  "setup": false,
+                  "label": "刷新后目标状态正确",
+                  "expected": "山海笔记 · 已读",
+                  "actual": "山海笔记 · 已读",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                }
+              ],
+              "outputs": []
+            }
+          ]
+        },
+        {
+          "pathId": "export",
+          "status": "issue",
+          "records": [
+            {
+              "id": "export-0",
+              "status": "issue",
+              "checks": [
+                {
+                  "pathId": "add",
+                  "setup": true,
+                  "label": "两本书均保存",
+                  "expected": 2,
+                  "actual": 2,
+                  "pass": true,
+                  "status": "pass",
+                  "problem": "提示保存成功，但书目没有出现在清单中",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "add",
+                  "setup": true,
+                  "label": "初始状态为未读",
+                  "expected": "共 2 本，已读 0 本",
+                  "actual": "共 2 本，已读 0 本",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "read",
+                  "setup": true,
+                  "label": "已读状态和统计一致",
+                  "expected": "共 2 本，已读 1 本",
+                  "actual": "共 2 本，已读 1 本",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "read",
+                  "setup": true,
+                  "label": "目标书目状态正确",
+                  "expected": "山海笔记 · 已读",
+                  "actual": "山海笔记 · 已读",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "export",
+                  "setup": false,
+                  "label": "最终导出与当前书目及状态一致",
+                  "expected": {
+                    "books": [
+                      {
+                        "title": "山海笔记",
+                        "read": true
+                      },
+                      {
+                        "title": "城市观察",
+                        "read": false
+                      }
+                    ]
+                  },
+                  "actual": {
+                    "books": [
+                      {
+                        "title": "山海笔记",
+                        "read": false
+                      },
+                      {
+                        "title": "城市观察",
+                        "read": false
+                      }
+                    ]
+                  },
+                  "pass": false,
+                  "status": "issue",
+                  "problem": "界面显示已读，但导出文件把该书写成未读",
+                  "conditionRefs": []
+                }
+              ],
+              "outputs": [
+                "export-0-books.json"
+              ]
+            },
+            {
+              "id": "export-1",
+              "status": "issue",
+              "checks": [
+                {
+                  "pathId": "add",
+                  "setup": true,
+                  "label": "两本书均保存",
+                  "expected": 2,
+                  "actual": 2,
+                  "pass": true,
+                  "status": "pass",
+                  "problem": "提示保存成功，但书目没有出现在清单中",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "add",
+                  "setup": true,
+                  "label": "初始状态为未读",
+                  "expected": "共 2 本，已读 0 本",
+                  "actual": "共 2 本，已读 0 本",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "read",
+                  "setup": true,
+                  "label": "已读状态和统计一致",
+                  "expected": "共 2 本，已读 1 本",
+                  "actual": "共 2 本，已读 1 本",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "read",
+                  "setup": true,
+                  "label": "目标书目状态正确",
+                  "expected": "山海笔记 · 已读",
+                  "actual": "山海笔记 · 已读",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "export",
+                  "setup": false,
+                  "label": "最终导出与当前书目及状态一致",
+                  "expected": {
+                    "books": [
+                      {
+                        "title": "山海笔记",
+                        "read": true
+                      },
+                      {
+                        "title": "城市观察",
+                        "read": false
+                      }
+                    ]
+                  },
+                  "actual": {
+                    "books": [
+                      {
+                        "title": "山海笔记",
+                        "read": false
+                      },
+                      {
+                        "title": "城市观察",
+                        "read": false
+                      }
+                    ]
+                  },
+                  "pass": false,
+                  "status": "issue",
+                  "problem": "界面显示已读，但导出文件把该书写成未读",
+                  "conditionRefs": []
+                }
+              ],
+              "outputs": [
+                "export-1-books.json"
+              ]
+            }
+          ]
+        },
+        {
+          "pathId": "help",
+          "status": "pass",
+          "records": [
+            {
+              "id": "help-0",
+              "status": "pass",
+              "checks": [
+                {
+                  "pathId": "help",
+                  "setup": false,
+                  "label": "独立说明可访问",
+                  "expected": "书目保存在当前浏览器。支持新增、更新阅读状态、筛选和导出。",
+                  "actual": "书目保存在当前浏览器。支持新增、更新阅读状态、筛选和导出。",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                }
+              ],
+              "outputs": []
+            },
+            {
+              "id": "help-1",
+              "status": "pass",
+              "checks": [
+                {
+                  "pathId": "help",
+                  "setup": false,
+                  "label": "独立说明可访问",
+                  "expected": "书目保存在当前浏览器。支持新增、更新阅读状态、筛选和导出。",
+                  "actual": "书目保存在当前浏览器。支持新增、更新阅读状态、筛选和导出。",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                }
+              ],
+              "outputs": []
+            }
+          ]
+        },
+        {
+          "pathId": "export-filter",
+          "status": "issue",
+          "records": [
+            {
+              "id": "export-filter-0",
+              "status": "issue",
+              "checks": [
+                {
+                  "pathId": "add",
+                  "setup": true,
+                  "label": "两本书均保存",
+                  "expected": 2,
+                  "actual": 2,
+                  "pass": true,
+                  "status": "pass",
+                  "problem": "提示保存成功，但书目没有出现在清单中",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "add",
+                  "setup": true,
+                  "label": "初始状态为未读",
+                  "expected": "共 2 本，已读 0 本",
+                  "actual": "共 2 本，已读 0 本",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "read",
+                  "setup": true,
+                  "label": "已读状态和统计一致",
+                  "expected": "共 2 本，已读 1 本",
+                  "actual": "共 2 本，已读 1 本",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "read",
+                  "setup": true,
+                  "label": "目标书目状态正确",
+                  "expected": "山海笔记 · 已读",
+                  "actual": "山海笔记 · 已读",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "filter",
+                  "setup": true,
+                  "label": "已读筛选只保留一项",
+                  "expected": 1,
+                  "actual": 1,
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "filter",
+                  "setup": true,
+                  "label": "筛选对象正确",
+                  "expected": "山海笔记 · 已读",
+                  "actual": "山海笔记 · 已读",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "export-filter",
+                  "setup": false,
+                  "label": "最终导出与当前书目及状态一致",
+                  "expected": {
+                    "books": [
+                      {
+                        "title": "山海笔记",
+                        "read": true
+                      },
+                      {
+                        "title": "城市观察",
+                        "read": false
+                      }
+                    ]
+                  },
+                  "actual": {
+                    "books": [
+                      {
+                        "title": "山海笔记",
+                        "read": false
+                      },
+                      {
+                        "title": "城市观察",
+                        "read": false
+                      }
+                    ]
+                  },
+                  "pass": false,
+                  "status": "issue",
+                  "problem": "界面显示已读，但导出文件把该书写成未读",
+                  "conditionRefs": []
+                }
+              ],
+              "outputs": [
+                "export-filter-0-books.json"
+              ]
+            },
+            {
+              "id": "export-filter-1",
+              "status": "issue",
+              "checks": [
+                {
+                  "pathId": "add",
+                  "setup": true,
+                  "label": "两本书均保存",
+                  "expected": 2,
+                  "actual": 2,
+                  "pass": true,
+                  "status": "pass",
+                  "problem": "提示保存成功，但书目没有出现在清单中",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "add",
+                  "setup": true,
+                  "label": "初始状态为未读",
+                  "expected": "共 2 本，已读 0 本",
+                  "actual": "共 2 本，已读 0 本",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "read",
+                  "setup": true,
+                  "label": "已读状态和统计一致",
+                  "expected": "共 2 本，已读 1 本",
+                  "actual": "共 2 本，已读 1 本",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "read",
+                  "setup": true,
+                  "label": "目标书目状态正确",
+                  "expected": "山海笔记 · 已读",
+                  "actual": "山海笔记 · 已读",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "filter",
+                  "setup": true,
+                  "label": "已读筛选只保留一项",
+                  "expected": 1,
+                  "actual": 1,
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "filter",
+                  "setup": true,
+                  "label": "筛选对象正确",
+                  "expected": "山海笔记 · 已读",
+                  "actual": "山海笔记 · 已读",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "export-filter",
+                  "setup": false,
+                  "label": "最终导出与当前书目及状态一致",
+                  "expected": {
+                    "books": [
+                      {
+                        "title": "山海笔记",
+                        "read": true
+                      },
+                      {
+                        "title": "城市观察",
+                        "read": false
+                      }
+                    ]
+                  },
+                  "actual": {
+                    "books": [
+                      {
+                        "title": "山海笔记",
+                        "read": false
+                      },
+                      {
+                        "title": "城市观察",
+                        "read": false
+                      }
+                    ]
+                  },
+                  "pass": false,
+                  "status": "issue",
+                  "problem": "界面显示已读，但导出文件把该书写成未读",
+                  "conditionRefs": []
+                }
+              ],
+              "outputs": [
+                "export-filter-1-books.json"
+              ]
+            }
+          ]
+        },
+        {
+          "pathId": "export-refresh",
+          "status": "issue",
+          "records": [
+            {
+              "id": "export-refresh-0",
+              "status": "issue",
+              "checks": [
+                {
+                  "pathId": "add",
+                  "setup": true,
+                  "label": "两本书均保存",
+                  "expected": 2,
+                  "actual": 2,
+                  "pass": true,
+                  "status": "pass",
+                  "problem": "提示保存成功，但书目没有出现在清单中",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "add",
+                  "setup": true,
+                  "label": "初始状态为未读",
+                  "expected": "共 2 本，已读 0 本",
+                  "actual": "共 2 本，已读 0 本",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "read",
+                  "setup": true,
+                  "label": "已读状态和统计一致",
+                  "expected": "共 2 本，已读 1 本",
+                  "actual": "共 2 本，已读 1 本",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "read",
+                  "setup": true,
+                  "label": "目标书目状态正确",
+                  "expected": "山海笔记 · 已读",
+                  "actual": "山海笔记 · 已读",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "persist",
+                  "setup": true,
+                  "label": "刷新后记录和状态保留",
+                  "expected": "共 2 本，已读 1 本",
+                  "actual": "共 2 本，已读 1 本",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "persist",
+                  "setup": true,
+                  "label": "刷新后目标状态正确",
+                  "expected": "山海笔记 · 已读",
+                  "actual": "山海笔记 · 已读",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "export-refresh",
+                  "setup": false,
+                  "label": "最终导出与当前书目及状态一致",
+                  "expected": {
+                    "books": [
+                      {
+                        "title": "山海笔记",
+                        "read": true
+                      },
+                      {
+                        "title": "城市观察",
+                        "read": false
+                      }
+                    ]
+                  },
+                  "actual": {
+                    "books": [
+                      {
+                        "title": "山海笔记",
+                        "read": false
+                      },
+                      {
+                        "title": "城市观察",
+                        "read": false
+                      }
+                    ]
+                  },
+                  "pass": false,
+                  "status": "issue",
+                  "problem": "界面显示已读，但导出文件把该书写成未读",
+                  "conditionRefs": []
+                }
+              ],
+              "outputs": [
+                "export-refresh-0-books.json"
+              ]
+            },
+            {
+              "id": "export-refresh-1",
+              "status": "issue",
+              "checks": [
+                {
+                  "pathId": "add",
+                  "setup": true,
+                  "label": "两本书均保存",
+                  "expected": 2,
+                  "actual": 2,
+                  "pass": true,
+                  "status": "pass",
+                  "problem": "提示保存成功，但书目没有出现在清单中",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "add",
+                  "setup": true,
+                  "label": "初始状态为未读",
+                  "expected": "共 2 本，已读 0 本",
+                  "actual": "共 2 本，已读 0 本",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "read",
+                  "setup": true,
+                  "label": "已读状态和统计一致",
+                  "expected": "共 2 本，已读 1 本",
+                  "actual": "共 2 本，已读 1 本",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "read",
+                  "setup": true,
+                  "label": "目标书目状态正确",
+                  "expected": "山海笔记 · 已读",
+                  "actual": "山海笔记 · 已读",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "persist",
+                  "setup": true,
+                  "label": "刷新后记录和状态保留",
+                  "expected": "共 2 本，已读 1 本",
+                  "actual": "共 2 本，已读 1 本",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "persist",
+                  "setup": true,
+                  "label": "刷新后目标状态正确",
+                  "expected": "山海笔记 · 已读",
+                  "actual": "山海笔记 · 已读",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "export-refresh",
+                  "setup": false,
+                  "label": "最终导出与当前书目及状态一致",
+                  "expected": {
+                    "books": [
+                      {
+                        "title": "山海笔记",
+                        "read": true
+                      },
+                      {
+                        "title": "城市观察",
+                        "read": false
+                      }
+                    ]
+                  },
+                  "actual": {
+                    "books": [
+                      {
+                        "title": "山海笔记",
+                        "read": false
+                      },
+                      {
+                        "title": "城市观察",
+                        "read": false
+                      }
+                    ]
+                  },
+                  "pass": false,
+                  "status": "issue",
+                  "problem": "界面显示已读，但导出文件把该书写成未读",
+                  "conditionRefs": []
+                }
+              ],
+              "outputs": [
+                "export-refresh-1-books.json"
+              ]
+            }
+          ]
+        },
+        {
+          "pathId": "export-unread",
+          "status": "pass",
+          "records": [
+            {
+              "id": "export-unread-0",
+              "status": "pass",
+              "checks": [
+                {
+                  "pathId": "add",
+                  "setup": true,
+                  "label": "两本书均保存",
+                  "expected": 2,
+                  "actual": 2,
+                  "pass": true,
+                  "status": "pass",
+                  "problem": "提示保存成功，但书目没有出现在清单中",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "add",
+                  "setup": true,
+                  "label": "初始状态为未读",
+                  "expected": "共 2 本，已读 0 本",
+                  "actual": "共 2 本，已读 0 本",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "read",
+                  "setup": true,
+                  "label": "已读状态和统计一致",
+                  "expected": "共 2 本，已读 1 本",
+                  "actual": "共 2 本，已读 1 本",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "read",
+                  "setup": true,
+                  "label": "目标书目状态正确",
+                  "expected": "山海笔记 · 已读",
+                  "actual": "山海笔记 · 已读",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "unread",
+                  "setup": true,
+                  "label": "状态可以改回未读",
+                  "expected": "共 2 本，已读 0 本",
+                  "actual": "共 2 本，已读 0 本",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "export-unread",
+                  "setup": false,
+                  "label": "最终导出与当前书目及状态一致",
+                  "expected": {
+                    "books": [
+                      {
+                        "title": "山海笔记",
+                        "read": false
+                      },
+                      {
+                        "title": "城市观察",
+                        "read": false
+                      }
+                    ]
+                  },
+                  "actual": {
+                    "books": [
+                      {
+                        "title": "山海笔记",
+                        "read": false
+                      },
+                      {
+                        "title": "城市观察",
+                        "read": false
+                      }
+                    ]
+                  },
+                  "pass": true,
+                  "status": "pass",
+                  "problem": "界面显示已读，但导出文件把该书写成未读",
+                  "conditionRefs": []
+                }
+              ],
+              "outputs": [
+                "export-unread-0-books.json"
+              ]
+            },
+            {
+              "id": "export-unread-1",
+              "status": "pass",
+              "checks": [
+                {
+                  "pathId": "add",
+                  "setup": true,
+                  "label": "两本书均保存",
+                  "expected": 2,
+                  "actual": 2,
+                  "pass": true,
+                  "status": "pass",
+                  "problem": "提示保存成功，但书目没有出现在清单中",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "add",
+                  "setup": true,
+                  "label": "初始状态为未读",
+                  "expected": "共 2 本，已读 0 本",
+                  "actual": "共 2 本，已读 0 本",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "read",
+                  "setup": true,
+                  "label": "已读状态和统计一致",
+                  "expected": "共 2 本，已读 1 本",
+                  "actual": "共 2 本，已读 1 本",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "read",
+                  "setup": true,
+                  "label": "目标书目状态正确",
+                  "expected": "山海笔记 · 已读",
+                  "actual": "山海笔记 · 已读",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "unread",
+                  "setup": true,
+                  "label": "状态可以改回未读",
+                  "expected": "共 2 本，已读 0 本",
+                  "actual": "共 2 本，已读 0 本",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "export-unread",
+                  "setup": false,
+                  "label": "最终导出与当前书目及状态一致",
+                  "expected": {
+                    "books": [
+                      {
+                        "title": "山海笔记",
+                        "read": false
+                      },
+                      {
+                        "title": "城市观察",
+                        "read": false
+                      }
+                    ]
+                  },
+                  "actual": {
+                    "books": [
+                      {
+                        "title": "山海笔记",
+                        "read": false
+                      },
+                      {
+                        "title": "城市观察",
+                        "read": false
+                      }
+                    ]
+                  },
+                  "pass": true,
+                  "status": "pass",
+                  "problem": "界面显示已读，但导出文件把该书写成未读",
+                  "conditionRefs": []
+                }
+              ],
+              "outputs": [
+                "export-unread-1-books.json"
+              ]
+            }
+          ]
+        }
+      ],
+      "downloads": [
+        {
+          "checkId": "export",
+          "runId": "export-0",
+          "file": "export-0-books.json",
+          "sha256": "f11de8b91f648aeed1dc093a240e0d2cdafc7cac31155e62ef0448b27eecad12",
+          "actual": {
+            "books": [
+              {
+                "title": "山海笔记",
+                "read": false
+              },
+              {
+                "title": "城市观察",
+                "read": false
+              }
+            ]
+          }
+        },
+        {
+          "checkId": "export",
+          "runId": "export-1",
+          "file": "export-1-books.json",
+          "sha256": "f11de8b91f648aeed1dc093a240e0d2cdafc7cac31155e62ef0448b27eecad12",
+          "actual": {
+            "books": [
+              {
+                "title": "山海笔记",
+                "read": false
+              },
+              {
+                "title": "城市观察",
+                "read": false
+              }
+            ]
+          }
+        },
+        {
+          "checkId": "export-filter",
+          "runId": "export-filter-0",
+          "file": "export-filter-0-books.json",
+          "sha256": "f11de8b91f648aeed1dc093a240e0d2cdafc7cac31155e62ef0448b27eecad12",
+          "actual": {
+            "books": [
+              {
+                "title": "山海笔记",
+                "read": false
+              },
+              {
+                "title": "城市观察",
+                "read": false
+              }
+            ]
+          }
+        },
+        {
+          "checkId": "export-filter",
+          "runId": "export-filter-1",
+          "file": "export-filter-1-books.json",
+          "sha256": "f11de8b91f648aeed1dc093a240e0d2cdafc7cac31155e62ef0448b27eecad12",
+          "actual": {
+            "books": [
+              {
+                "title": "山海笔记",
+                "read": false
+              },
+              {
+                "title": "城市观察",
+                "read": false
+              }
+            ]
+          }
+        },
+        {
+          "checkId": "export-refresh",
+          "runId": "export-refresh-0",
+          "file": "export-refresh-0-books.json",
+          "sha256": "f11de8b91f648aeed1dc093a240e0d2cdafc7cac31155e62ef0448b27eecad12",
+          "actual": {
+            "books": [
+              {
+                "title": "山海笔记",
+                "read": false
+              },
+              {
+                "title": "城市观察",
+                "read": false
+              }
+            ]
+          }
+        },
+        {
+          "checkId": "export-refresh",
+          "runId": "export-refresh-1",
+          "file": "export-refresh-1-books.json",
+          "sha256": "f11de8b91f648aeed1dc093a240e0d2cdafc7cac31155e62ef0448b27eecad12",
+          "actual": {
+            "books": [
+              {
+                "title": "山海笔记",
+                "read": false
+              },
+              {
+                "title": "城市观察",
+                "read": false
+              }
+            ]
+          }
+        },
+        {
+          "checkId": "export-unread",
+          "runId": "export-unread-0",
+          "file": "export-unread-0-books.json",
+          "sha256": "f11de8b91f648aeed1dc093a240e0d2cdafc7cac31155e62ef0448b27eecad12",
+          "actual": {
+            "books": [
+              {
+                "title": "山海笔记",
+                "read": false
+              },
+              {
+                "title": "城市观察",
+                "read": false
+              }
+            ]
+          }
+        },
+        {
+          "checkId": "export-unread",
+          "runId": "export-unread-1",
+          "file": "export-unread-1-books.json",
+          "sha256": "f11de8b91f648aeed1dc093a240e0d2cdafc7cac31155e62ef0448b27eecad12",
+          "actual": {
+            "books": [
+              {
+                "title": "山海笔记",
+                "read": false
+              },
+              {
+                "title": "城市观察",
+                "read": false
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "phase": "after",
+      "programHash": "78c6b5926b60b6564a72ddfa1ff99480872a9130e4d9a188c466c55c7fafb7c3",
+      "criteriaHash": "360848a506aa841a20dc0ab2005e45abb241f64df11f02399ffde7d4b386a0e0",
+      "sourceManifest": [
+        {
+          "file": "README.md",
+          "sha256": "ff4223c79e39da0cc99ac6665951e19cb3639a82502d82219f6d412e7e829ad3"
+        },
+        {
+          "file": "index.html",
+          "sha256": "8a0d4953932982873c2cd9c0c1ebaa3790d700284d5b0af42533378ef8305f88"
+        },
+        {
+          "file": "app.js",
+          "sha256": "6052eb96a93321792edee5e11cdfc97bef261ee3a53c681158c3b198e9e9d694"
+        },
+        {
+          "file": "help.html",
+          "sha256": "08ca466490c846681b181f50748843247798b4c1e2ac47eeff4d92727715e470"
+        }
+      ],
+      "groups": [
+        {
+          "pathId": "add",
+          "status": "pass",
+          "records": [
+            {
+              "id": "add-0",
+              "status": "pass",
+              "checks": [
+                {
+                  "pathId": "add",
+                  "setup": false,
+                  "label": "两本书均保存",
+                  "expected": 2,
+                  "actual": 2,
+                  "pass": true,
+                  "status": "pass",
+                  "problem": "提示保存成功，但书目没有出现在清单中",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "add",
+                  "setup": false,
+                  "label": "初始状态为未读",
+                  "expected": "共 2 本，已读 0 本",
+                  "actual": "共 2 本，已读 0 本",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                }
+              ],
+              "outputs": []
+            },
+            {
+              "id": "add-1",
+              "status": "pass",
+              "checks": [
+                {
+                  "pathId": "add",
+                  "setup": false,
+                  "label": "两本书均保存",
+                  "expected": 2,
+                  "actual": 2,
+                  "pass": true,
+                  "status": "pass",
+                  "problem": "提示保存成功，但书目没有出现在清单中",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "add",
+                  "setup": false,
+                  "label": "初始状态为未读",
+                  "expected": "共 2 本，已读 0 本",
+                  "actual": "共 2 本，已读 0 本",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                }
+              ],
+              "outputs": []
+            }
+          ]
+        },
+        {
+          "pathId": "read",
+          "status": "pass",
+          "records": [
+            {
+              "id": "read-0",
+              "status": "pass",
+              "checks": [
+                {
+                  "pathId": "add",
+                  "setup": true,
+                  "label": "两本书均保存",
+                  "expected": 2,
+                  "actual": 2,
+                  "pass": true,
+                  "status": "pass",
+                  "problem": "提示保存成功，但书目没有出现在清单中",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "add",
+                  "setup": true,
+                  "label": "初始状态为未读",
+                  "expected": "共 2 本，已读 0 本",
+                  "actual": "共 2 本，已读 0 本",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "read",
+                  "setup": false,
+                  "label": "已读状态和统计一致",
+                  "expected": "共 2 本，已读 1 本",
+                  "actual": "共 2 本，已读 1 本",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "read",
+                  "setup": false,
+                  "label": "目标书目状态正确",
+                  "expected": "山海笔记 · 已读",
+                  "actual": "山海笔记 · 已读",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                }
+              ],
+              "outputs": []
+            },
+            {
+              "id": "read-1",
+              "status": "pass",
+              "checks": [
+                {
+                  "pathId": "add",
+                  "setup": true,
+                  "label": "两本书均保存",
+                  "expected": 2,
+                  "actual": 2,
+                  "pass": true,
+                  "status": "pass",
+                  "problem": "提示保存成功，但书目没有出现在清单中",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "add",
+                  "setup": true,
+                  "label": "初始状态为未读",
+                  "expected": "共 2 本，已读 0 本",
+                  "actual": "共 2 本，已读 0 本",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "read",
+                  "setup": false,
+                  "label": "已读状态和统计一致",
+                  "expected": "共 2 本，已读 1 本",
+                  "actual": "共 2 本，已读 1 本",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "read",
+                  "setup": false,
+                  "label": "目标书目状态正确",
+                  "expected": "山海笔记 · 已读",
+                  "actual": "山海笔记 · 已读",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                }
+              ],
+              "outputs": []
+            }
+          ]
+        },
+        {
+          "pathId": "unread",
+          "status": "pass",
+          "records": [
+            {
+              "id": "unread-0",
+              "status": "pass",
+              "checks": [
+                {
+                  "pathId": "add",
+                  "setup": true,
+                  "label": "两本书均保存",
+                  "expected": 2,
+                  "actual": 2,
+                  "pass": true,
+                  "status": "pass",
+                  "problem": "提示保存成功，但书目没有出现在清单中",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "add",
+                  "setup": true,
+                  "label": "初始状态为未读",
+                  "expected": "共 2 本，已读 0 本",
+                  "actual": "共 2 本，已读 0 本",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "read",
+                  "setup": true,
+                  "label": "已读状态和统计一致",
+                  "expected": "共 2 本，已读 1 本",
+                  "actual": "共 2 本，已读 1 本",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "read",
+                  "setup": true,
+                  "label": "目标书目状态正确",
+                  "expected": "山海笔记 · 已读",
+                  "actual": "山海笔记 · 已读",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "unread",
+                  "setup": false,
+                  "label": "状态可以改回未读",
+                  "expected": "共 2 本，已读 0 本",
+                  "actual": "共 2 本，已读 0 本",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                }
+              ],
+              "outputs": []
+            },
+            {
+              "id": "unread-1",
+              "status": "pass",
+              "checks": [
+                {
+                  "pathId": "add",
+                  "setup": true,
+                  "label": "两本书均保存",
+                  "expected": 2,
+                  "actual": 2,
+                  "pass": true,
+                  "status": "pass",
+                  "problem": "提示保存成功，但书目没有出现在清单中",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "add",
+                  "setup": true,
+                  "label": "初始状态为未读",
+                  "expected": "共 2 本，已读 0 本",
+                  "actual": "共 2 本，已读 0 本",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "read",
+                  "setup": true,
+                  "label": "已读状态和统计一致",
+                  "expected": "共 2 本，已读 1 本",
+                  "actual": "共 2 本，已读 1 本",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "read",
+                  "setup": true,
+                  "label": "目标书目状态正确",
+                  "expected": "山海笔记 · 已读",
+                  "actual": "山海笔记 · 已读",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "unread",
+                  "setup": false,
+                  "label": "状态可以改回未读",
+                  "expected": "共 2 本，已读 0 本",
+                  "actual": "共 2 本，已读 0 本",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                }
+              ],
+              "outputs": []
+            }
+          ]
+        },
+        {
+          "pathId": "filter",
+          "status": "pass",
+          "records": [
+            {
+              "id": "filter-0",
+              "status": "pass",
+              "checks": [
+                {
+                  "pathId": "add",
+                  "setup": true,
+                  "label": "两本书均保存",
+                  "expected": 2,
+                  "actual": 2,
+                  "pass": true,
+                  "status": "pass",
+                  "problem": "提示保存成功，但书目没有出现在清单中",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "add",
+                  "setup": true,
+                  "label": "初始状态为未读",
+                  "expected": "共 2 本，已读 0 本",
+                  "actual": "共 2 本，已读 0 本",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "read",
+                  "setup": true,
+                  "label": "已读状态和统计一致",
+                  "expected": "共 2 本，已读 1 本",
+                  "actual": "共 2 本，已读 1 本",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "read",
+                  "setup": true,
+                  "label": "目标书目状态正确",
+                  "expected": "山海笔记 · 已读",
+                  "actual": "山海笔记 · 已读",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "filter",
+                  "setup": false,
+                  "label": "已读筛选只保留一项",
+                  "expected": 1,
+                  "actual": 1,
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "filter",
+                  "setup": false,
+                  "label": "筛选对象正确",
+                  "expected": "山海笔记 · 已读",
+                  "actual": "山海笔记 · 已读",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                }
+              ],
+              "outputs": []
+            },
+            {
+              "id": "filter-1",
+              "status": "pass",
+              "checks": [
+                {
+                  "pathId": "add",
+                  "setup": true,
+                  "label": "两本书均保存",
+                  "expected": 2,
+                  "actual": 2,
+                  "pass": true,
+                  "status": "pass",
+                  "problem": "提示保存成功，但书目没有出现在清单中",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "add",
+                  "setup": true,
+                  "label": "初始状态为未读",
+                  "expected": "共 2 本，已读 0 本",
+                  "actual": "共 2 本，已读 0 本",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "read",
+                  "setup": true,
+                  "label": "已读状态和统计一致",
+                  "expected": "共 2 本，已读 1 本",
+                  "actual": "共 2 本，已读 1 本",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "read",
+                  "setup": true,
+                  "label": "目标书目状态正确",
+                  "expected": "山海笔记 · 已读",
+                  "actual": "山海笔记 · 已读",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "filter",
+                  "setup": false,
+                  "label": "已读筛选只保留一项",
+                  "expected": 1,
+                  "actual": 1,
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "filter",
+                  "setup": false,
+                  "label": "筛选对象正确",
+                  "expected": "山海笔记 · 已读",
+                  "actual": "山海笔记 · 已读",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                }
+              ],
+              "outputs": []
+            }
+          ]
+        },
+        {
+          "pathId": "all",
+          "status": "pass",
+          "records": [
+            {
+              "id": "all-0",
+              "status": "pass",
+              "checks": [
+                {
+                  "pathId": "add",
+                  "setup": true,
+                  "label": "两本书均保存",
+                  "expected": 2,
+                  "actual": 2,
+                  "pass": true,
+                  "status": "pass",
+                  "problem": "提示保存成功，但书目没有出现在清单中",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "add",
+                  "setup": true,
+                  "label": "初始状态为未读",
+                  "expected": "共 2 本，已读 0 本",
+                  "actual": "共 2 本，已读 0 本",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "read",
+                  "setup": true,
+                  "label": "已读状态和统计一致",
+                  "expected": "共 2 本，已读 1 本",
+                  "actual": "共 2 本，已读 1 本",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "read",
+                  "setup": true,
+                  "label": "目标书目状态正确",
+                  "expected": "山海笔记 · 已读",
+                  "actual": "山海笔记 · 已读",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "filter",
+                  "setup": true,
+                  "label": "已读筛选只保留一项",
+                  "expected": 1,
+                  "actual": 1,
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "filter",
+                  "setup": true,
+                  "label": "筛选对象正确",
+                  "expected": "山海笔记 · 已读",
+                  "actual": "山海笔记 · 已读",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "all",
+                  "setup": false,
+                  "label": "恢复显示全部书目",
+                  "expected": 2,
+                  "actual": 2,
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                }
+              ],
+              "outputs": []
+            },
+            {
+              "id": "all-1",
+              "status": "pass",
+              "checks": [
+                {
+                  "pathId": "add",
+                  "setup": true,
+                  "label": "两本书均保存",
+                  "expected": 2,
+                  "actual": 2,
+                  "pass": true,
+                  "status": "pass",
+                  "problem": "提示保存成功，但书目没有出现在清单中",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "add",
+                  "setup": true,
+                  "label": "初始状态为未读",
+                  "expected": "共 2 本，已读 0 本",
+                  "actual": "共 2 本，已读 0 本",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "read",
+                  "setup": true,
+                  "label": "已读状态和统计一致",
+                  "expected": "共 2 本，已读 1 本",
+                  "actual": "共 2 本，已读 1 本",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "read",
+                  "setup": true,
+                  "label": "目标书目状态正确",
+                  "expected": "山海笔记 · 已读",
+                  "actual": "山海笔记 · 已读",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "filter",
+                  "setup": true,
+                  "label": "已读筛选只保留一项",
+                  "expected": 1,
+                  "actual": 1,
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "filter",
+                  "setup": true,
+                  "label": "筛选对象正确",
+                  "expected": "山海笔记 · 已读",
+                  "actual": "山海笔记 · 已读",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "all",
+                  "setup": false,
+                  "label": "恢复显示全部书目",
+                  "expected": 2,
+                  "actual": 2,
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                }
+              ],
+              "outputs": []
+            }
+          ]
+        },
+        {
+          "pathId": "persist",
+          "status": "pass",
+          "records": [
+            {
+              "id": "persist-0",
+              "status": "pass",
+              "checks": [
+                {
+                  "pathId": "add",
+                  "setup": true,
+                  "label": "两本书均保存",
+                  "expected": 2,
+                  "actual": 2,
+                  "pass": true,
+                  "status": "pass",
+                  "problem": "提示保存成功，但书目没有出现在清单中",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "add",
+                  "setup": true,
+                  "label": "初始状态为未读",
+                  "expected": "共 2 本，已读 0 本",
+                  "actual": "共 2 本，已读 0 本",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "read",
+                  "setup": true,
+                  "label": "已读状态和统计一致",
+                  "expected": "共 2 本，已读 1 本",
+                  "actual": "共 2 本，已读 1 本",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "read",
+                  "setup": true,
+                  "label": "目标书目状态正确",
+                  "expected": "山海笔记 · 已读",
+                  "actual": "山海笔记 · 已读",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "persist",
+                  "setup": false,
+                  "label": "刷新后记录和状态保留",
+                  "expected": "共 2 本，已读 1 本",
+                  "actual": "共 2 本，已读 1 本",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "persist",
+                  "setup": false,
+                  "label": "刷新后目标状态正确",
+                  "expected": "山海笔记 · 已读",
+                  "actual": "山海笔记 · 已读",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                }
+              ],
+              "outputs": []
+            },
+            {
+              "id": "persist-1",
+              "status": "pass",
+              "checks": [
+                {
+                  "pathId": "add",
+                  "setup": true,
+                  "label": "两本书均保存",
+                  "expected": 2,
+                  "actual": 2,
+                  "pass": true,
+                  "status": "pass",
+                  "problem": "提示保存成功，但书目没有出现在清单中",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "add",
+                  "setup": true,
+                  "label": "初始状态为未读",
+                  "expected": "共 2 本，已读 0 本",
+                  "actual": "共 2 本，已读 0 本",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "read",
+                  "setup": true,
+                  "label": "已读状态和统计一致",
+                  "expected": "共 2 本，已读 1 本",
+                  "actual": "共 2 本，已读 1 本",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "read",
+                  "setup": true,
+                  "label": "目标书目状态正确",
+                  "expected": "山海笔记 · 已读",
+                  "actual": "山海笔记 · 已读",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "persist",
+                  "setup": false,
+                  "label": "刷新后记录和状态保留",
+                  "expected": "共 2 本，已读 1 本",
+                  "actual": "共 2 本，已读 1 本",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "persist",
+                  "setup": false,
+                  "label": "刷新后目标状态正确",
+                  "expected": "山海笔记 · 已读",
+                  "actual": "山海笔记 · 已读",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                }
+              ],
+              "outputs": []
+            }
+          ]
+        },
+        {
+          "pathId": "export",
+          "status": "pass",
+          "records": [
+            {
+              "id": "export-0",
+              "status": "pass",
+              "checks": [
+                {
+                  "pathId": "add",
+                  "setup": true,
+                  "label": "两本书均保存",
+                  "expected": 2,
+                  "actual": 2,
+                  "pass": true,
+                  "status": "pass",
+                  "problem": "提示保存成功，但书目没有出现在清单中",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "add",
+                  "setup": true,
+                  "label": "初始状态为未读",
+                  "expected": "共 2 本，已读 0 本",
+                  "actual": "共 2 本，已读 0 本",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "read",
+                  "setup": true,
+                  "label": "已读状态和统计一致",
+                  "expected": "共 2 本，已读 1 本",
+                  "actual": "共 2 本，已读 1 本",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "read",
+                  "setup": true,
+                  "label": "目标书目状态正确",
+                  "expected": "山海笔记 · 已读",
+                  "actual": "山海笔记 · 已读",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "export",
+                  "setup": false,
+                  "label": "最终导出与当前书目及状态一致",
+                  "expected": {
+                    "books": [
+                      {
+                        "title": "山海笔记",
+                        "read": true
+                      },
+                      {
+                        "title": "城市观察",
+                        "read": false
+                      }
+                    ]
+                  },
+                  "actual": {
+                    "books": [
+                      {
+                        "title": "山海笔记",
+                        "read": true
+                      },
+                      {
+                        "title": "城市观察",
+                        "read": false
+                      }
+                    ]
+                  },
+                  "pass": true,
+                  "status": "pass",
+                  "problem": "界面显示已读，但导出文件把该书写成未读",
+                  "conditionRefs": []
+                }
+              ],
+              "outputs": [
+                "export-0-books.json"
+              ]
+            },
+            {
+              "id": "export-1",
+              "status": "pass",
+              "checks": [
+                {
+                  "pathId": "add",
+                  "setup": true,
+                  "label": "两本书均保存",
+                  "expected": 2,
+                  "actual": 2,
+                  "pass": true,
+                  "status": "pass",
+                  "problem": "提示保存成功，但书目没有出现在清单中",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "add",
+                  "setup": true,
+                  "label": "初始状态为未读",
+                  "expected": "共 2 本，已读 0 本",
+                  "actual": "共 2 本，已读 0 本",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "read",
+                  "setup": true,
+                  "label": "已读状态和统计一致",
+                  "expected": "共 2 本，已读 1 本",
+                  "actual": "共 2 本，已读 1 本",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "read",
+                  "setup": true,
+                  "label": "目标书目状态正确",
+                  "expected": "山海笔记 · 已读",
+                  "actual": "山海笔记 · 已读",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "export",
+                  "setup": false,
+                  "label": "最终导出与当前书目及状态一致",
+                  "expected": {
+                    "books": [
+                      {
+                        "title": "山海笔记",
+                        "read": true
+                      },
+                      {
+                        "title": "城市观察",
+                        "read": false
+                      }
+                    ]
+                  },
+                  "actual": {
+                    "books": [
+                      {
+                        "title": "山海笔记",
+                        "read": true
+                      },
+                      {
+                        "title": "城市观察",
+                        "read": false
+                      }
+                    ]
+                  },
+                  "pass": true,
+                  "status": "pass",
+                  "problem": "界面显示已读，但导出文件把该书写成未读",
+                  "conditionRefs": []
+                }
+              ],
+              "outputs": [
+                "export-1-books.json"
+              ]
+            }
+          ]
+        },
+        {
+          "pathId": "help",
+          "status": "pass",
+          "records": [
+            {
+              "id": "help-0",
+              "status": "pass",
+              "checks": [
+                {
+                  "pathId": "help",
+                  "setup": false,
+                  "label": "独立说明可访问",
+                  "expected": "书目保存在当前浏览器。支持新增、更新阅读状态、筛选和导出。",
+                  "actual": "书目保存在当前浏览器。支持新增、更新阅读状态、筛选和导出。",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                }
+              ],
+              "outputs": []
+            },
+            {
+              "id": "help-1",
+              "status": "pass",
+              "checks": [
+                {
+                  "pathId": "help",
+                  "setup": false,
+                  "label": "独立说明可访问",
+                  "expected": "书目保存在当前浏览器。支持新增、更新阅读状态、筛选和导出。",
+                  "actual": "书目保存在当前浏览器。支持新增、更新阅读状态、筛选和导出。",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                }
+              ],
+              "outputs": []
+            }
+          ]
+        },
+        {
+          "pathId": "export-filter",
+          "status": "pass",
+          "records": [
+            {
+              "id": "export-filter-0",
+              "status": "pass",
+              "checks": [
+                {
+                  "pathId": "add",
+                  "setup": true,
+                  "label": "两本书均保存",
+                  "expected": 2,
+                  "actual": 2,
+                  "pass": true,
+                  "status": "pass",
+                  "problem": "提示保存成功，但书目没有出现在清单中",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "add",
+                  "setup": true,
+                  "label": "初始状态为未读",
+                  "expected": "共 2 本，已读 0 本",
+                  "actual": "共 2 本，已读 0 本",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "read",
+                  "setup": true,
+                  "label": "已读状态和统计一致",
+                  "expected": "共 2 本，已读 1 本",
+                  "actual": "共 2 本，已读 1 本",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "read",
+                  "setup": true,
+                  "label": "目标书目状态正确",
+                  "expected": "山海笔记 · 已读",
+                  "actual": "山海笔记 · 已读",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "filter",
+                  "setup": true,
+                  "label": "已读筛选只保留一项",
+                  "expected": 1,
+                  "actual": 1,
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "filter",
+                  "setup": true,
+                  "label": "筛选对象正确",
+                  "expected": "山海笔记 · 已读",
+                  "actual": "山海笔记 · 已读",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "export-filter",
+                  "setup": false,
+                  "label": "最终导出与当前书目及状态一致",
+                  "expected": {
+                    "books": [
+                      {
+                        "title": "山海笔记",
+                        "read": true
+                      },
+                      {
+                        "title": "城市观察",
+                        "read": false
+                      }
+                    ]
+                  },
+                  "actual": {
+                    "books": [
+                      {
+                        "title": "山海笔记",
+                        "read": true
+                      },
+                      {
+                        "title": "城市观察",
+                        "read": false
+                      }
+                    ]
+                  },
+                  "pass": true,
+                  "status": "pass",
+                  "problem": "界面显示已读，但导出文件把该书写成未读",
+                  "conditionRefs": []
+                }
+              ],
+              "outputs": [
+                "export-filter-0-books.json"
+              ]
+            },
+            {
+              "id": "export-filter-1",
+              "status": "pass",
+              "checks": [
+                {
+                  "pathId": "add",
+                  "setup": true,
+                  "label": "两本书均保存",
+                  "expected": 2,
+                  "actual": 2,
+                  "pass": true,
+                  "status": "pass",
+                  "problem": "提示保存成功，但书目没有出现在清单中",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "add",
+                  "setup": true,
+                  "label": "初始状态为未读",
+                  "expected": "共 2 本，已读 0 本",
+                  "actual": "共 2 本，已读 0 本",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "read",
+                  "setup": true,
+                  "label": "已读状态和统计一致",
+                  "expected": "共 2 本，已读 1 本",
+                  "actual": "共 2 本，已读 1 本",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "read",
+                  "setup": true,
+                  "label": "目标书目状态正确",
+                  "expected": "山海笔记 · 已读",
+                  "actual": "山海笔记 · 已读",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "filter",
+                  "setup": true,
+                  "label": "已读筛选只保留一项",
+                  "expected": 1,
+                  "actual": 1,
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "filter",
+                  "setup": true,
+                  "label": "筛选对象正确",
+                  "expected": "山海笔记 · 已读",
+                  "actual": "山海笔记 · 已读",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "export-filter",
+                  "setup": false,
+                  "label": "最终导出与当前书目及状态一致",
+                  "expected": {
+                    "books": [
+                      {
+                        "title": "山海笔记",
+                        "read": true
+                      },
+                      {
+                        "title": "城市观察",
+                        "read": false
+                      }
+                    ]
+                  },
+                  "actual": {
+                    "books": [
+                      {
+                        "title": "山海笔记",
+                        "read": true
+                      },
+                      {
+                        "title": "城市观察",
+                        "read": false
+                      }
+                    ]
+                  },
+                  "pass": true,
+                  "status": "pass",
+                  "problem": "界面显示已读，但导出文件把该书写成未读",
+                  "conditionRefs": []
+                }
+              ],
+              "outputs": [
+                "export-filter-1-books.json"
+              ]
+            }
+          ]
+        },
+        {
+          "pathId": "export-refresh",
+          "status": "pass",
+          "records": [
+            {
+              "id": "export-refresh-0",
+              "status": "pass",
+              "checks": [
+                {
+                  "pathId": "add",
+                  "setup": true,
+                  "label": "两本书均保存",
+                  "expected": 2,
+                  "actual": 2,
+                  "pass": true,
+                  "status": "pass",
+                  "problem": "提示保存成功，但书目没有出现在清单中",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "add",
+                  "setup": true,
+                  "label": "初始状态为未读",
+                  "expected": "共 2 本，已读 0 本",
+                  "actual": "共 2 本，已读 0 本",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "read",
+                  "setup": true,
+                  "label": "已读状态和统计一致",
+                  "expected": "共 2 本，已读 1 本",
+                  "actual": "共 2 本，已读 1 本",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "read",
+                  "setup": true,
+                  "label": "目标书目状态正确",
+                  "expected": "山海笔记 · 已读",
+                  "actual": "山海笔记 · 已读",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "persist",
+                  "setup": true,
+                  "label": "刷新后记录和状态保留",
+                  "expected": "共 2 本，已读 1 本",
+                  "actual": "共 2 本，已读 1 本",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "persist",
+                  "setup": true,
+                  "label": "刷新后目标状态正确",
+                  "expected": "山海笔记 · 已读",
+                  "actual": "山海笔记 · 已读",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "export-refresh",
+                  "setup": false,
+                  "label": "最终导出与当前书目及状态一致",
+                  "expected": {
+                    "books": [
+                      {
+                        "title": "山海笔记",
+                        "read": true
+                      },
+                      {
+                        "title": "城市观察",
+                        "read": false
+                      }
+                    ]
+                  },
+                  "actual": {
+                    "books": [
+                      {
+                        "title": "山海笔记",
+                        "read": true
+                      },
+                      {
+                        "title": "城市观察",
+                        "read": false
+                      }
+                    ]
+                  },
+                  "pass": true,
+                  "status": "pass",
+                  "problem": "界面显示已读，但导出文件把该书写成未读",
+                  "conditionRefs": []
+                }
+              ],
+              "outputs": [
+                "export-refresh-0-books.json"
+              ]
+            },
+            {
+              "id": "export-refresh-1",
+              "status": "pass",
+              "checks": [
+                {
+                  "pathId": "add",
+                  "setup": true,
+                  "label": "两本书均保存",
+                  "expected": 2,
+                  "actual": 2,
+                  "pass": true,
+                  "status": "pass",
+                  "problem": "提示保存成功，但书目没有出现在清单中",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "add",
+                  "setup": true,
+                  "label": "初始状态为未读",
+                  "expected": "共 2 本，已读 0 本",
+                  "actual": "共 2 本，已读 0 本",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "read",
+                  "setup": true,
+                  "label": "已读状态和统计一致",
+                  "expected": "共 2 本，已读 1 本",
+                  "actual": "共 2 本，已读 1 本",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "read",
+                  "setup": true,
+                  "label": "目标书目状态正确",
+                  "expected": "山海笔记 · 已读",
+                  "actual": "山海笔记 · 已读",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "persist",
+                  "setup": true,
+                  "label": "刷新后记录和状态保留",
+                  "expected": "共 2 本，已读 1 本",
+                  "actual": "共 2 本，已读 1 本",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "persist",
+                  "setup": true,
+                  "label": "刷新后目标状态正确",
+                  "expected": "山海笔记 · 已读",
+                  "actual": "山海笔记 · 已读",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "export-refresh",
+                  "setup": false,
+                  "label": "最终导出与当前书目及状态一致",
+                  "expected": {
+                    "books": [
+                      {
+                        "title": "山海笔记",
+                        "read": true
+                      },
+                      {
+                        "title": "城市观察",
+                        "read": false
+                      }
+                    ]
+                  },
+                  "actual": {
+                    "books": [
+                      {
+                        "title": "山海笔记",
+                        "read": true
+                      },
+                      {
+                        "title": "城市观察",
+                        "read": false
+                      }
+                    ]
+                  },
+                  "pass": true,
+                  "status": "pass",
+                  "problem": "界面显示已读，但导出文件把该书写成未读",
+                  "conditionRefs": []
+                }
+              ],
+              "outputs": [
+                "export-refresh-1-books.json"
+              ]
+            }
+          ]
+        },
+        {
+          "pathId": "export-unread",
+          "status": "pass",
+          "records": [
+            {
+              "id": "export-unread-0",
+              "status": "pass",
+              "checks": [
+                {
+                  "pathId": "add",
+                  "setup": true,
+                  "label": "两本书均保存",
+                  "expected": 2,
+                  "actual": 2,
+                  "pass": true,
+                  "status": "pass",
+                  "problem": "提示保存成功，但书目没有出现在清单中",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "add",
+                  "setup": true,
+                  "label": "初始状态为未读",
+                  "expected": "共 2 本，已读 0 本",
+                  "actual": "共 2 本，已读 0 本",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "read",
+                  "setup": true,
+                  "label": "已读状态和统计一致",
+                  "expected": "共 2 本，已读 1 本",
+                  "actual": "共 2 本，已读 1 本",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "read",
+                  "setup": true,
+                  "label": "目标书目状态正确",
+                  "expected": "山海笔记 · 已读",
+                  "actual": "山海笔记 · 已读",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "unread",
+                  "setup": true,
+                  "label": "状态可以改回未读",
+                  "expected": "共 2 本，已读 0 本",
+                  "actual": "共 2 本，已读 0 本",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "export-unread",
+                  "setup": false,
+                  "label": "最终导出与当前书目及状态一致",
+                  "expected": {
+                    "books": [
+                      {
+                        "title": "山海笔记",
+                        "read": false
+                      },
+                      {
+                        "title": "城市观察",
+                        "read": false
+                      }
+                    ]
+                  },
+                  "actual": {
+                    "books": [
+                      {
+                        "title": "山海笔记",
+                        "read": false
+                      },
+                      {
+                        "title": "城市观察",
+                        "read": false
+                      }
+                    ]
+                  },
+                  "pass": true,
+                  "status": "pass",
+                  "problem": "界面显示已读，但导出文件把该书写成未读",
+                  "conditionRefs": []
+                }
+              ],
+              "outputs": [
+                "export-unread-0-books.json"
+              ]
+            },
+            {
+              "id": "export-unread-1",
+              "status": "pass",
+              "checks": [
+                {
+                  "pathId": "add",
+                  "setup": true,
+                  "label": "两本书均保存",
+                  "expected": 2,
+                  "actual": 2,
+                  "pass": true,
+                  "status": "pass",
+                  "problem": "提示保存成功，但书目没有出现在清单中",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "add",
+                  "setup": true,
+                  "label": "初始状态为未读",
+                  "expected": "共 2 本，已读 0 本",
+                  "actual": "共 2 本，已读 0 本",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "read",
+                  "setup": true,
+                  "label": "已读状态和统计一致",
+                  "expected": "共 2 本，已读 1 本",
+                  "actual": "共 2 本，已读 1 本",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "read",
+                  "setup": true,
+                  "label": "目标书目状态正确",
+                  "expected": "山海笔记 · 已读",
+                  "actual": "山海笔记 · 已读",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "unread",
+                  "setup": true,
+                  "label": "状态可以改回未读",
+                  "expected": "共 2 本，已读 0 本",
+                  "actual": "共 2 本，已读 0 本",
+                  "pass": true,
+                  "status": "pass",
+                  "conditionRefs": []
+                },
+                {
+                  "pathId": "export-unread",
+                  "setup": false,
+                  "label": "最终导出与当前书目及状态一致",
+                  "expected": {
+                    "books": [
+                      {
+                        "title": "山海笔记",
+                        "read": false
+                      },
+                      {
+                        "title": "城市观察",
+                        "read": false
+                      }
+                    ]
+                  },
+                  "actual": {
+                    "books": [
+                      {
+                        "title": "山海笔记",
+                        "read": false
+                      },
+                      {
+                        "title": "城市观察",
+                        "read": false
+                      }
+                    ]
+                  },
+                  "pass": true,
+                  "status": "pass",
+                  "problem": "界面显示已读，但导出文件把该书写成未读",
+                  "conditionRefs": []
+                }
+              ],
+              "outputs": [
+                "export-unread-1-books.json"
+              ]
+            }
+          ]
+        }
+      ],
+      "downloads": [
+        {
+          "checkId": "export",
+          "runId": "export-0",
+          "file": "export-0-books.json",
+          "sha256": "405252df98ac906b53213f3922a9b06544d331564f1f728411abfa41304110a0",
+          "actual": {
+            "books": [
+              {
+                "title": "山海笔记",
+                "read": true
+              },
+              {
+                "title": "城市观察",
+                "read": false
+              }
+            ]
+          }
+        },
+        {
+          "checkId": "export",
+          "runId": "export-1",
+          "file": "export-1-books.json",
+          "sha256": "405252df98ac906b53213f3922a9b06544d331564f1f728411abfa41304110a0",
+          "actual": {
+            "books": [
+              {
+                "title": "山海笔记",
+                "read": true
+              },
+              {
+                "title": "城市观察",
+                "read": false
+              }
+            ]
+          }
+        },
+        {
+          "checkId": "export-filter",
+          "runId": "export-filter-0",
+          "file": "export-filter-0-books.json",
+          "sha256": "405252df98ac906b53213f3922a9b06544d331564f1f728411abfa41304110a0",
+          "actual": {
+            "books": [
+              {
+                "title": "山海笔记",
+                "read": true
+              },
+              {
+                "title": "城市观察",
+                "read": false
+              }
+            ]
+          }
+        },
+        {
+          "checkId": "export-filter",
+          "runId": "export-filter-1",
+          "file": "export-filter-1-books.json",
+          "sha256": "405252df98ac906b53213f3922a9b06544d331564f1f728411abfa41304110a0",
+          "actual": {
+            "books": [
+              {
+                "title": "山海笔记",
+                "read": true
+              },
+              {
+                "title": "城市观察",
+                "read": false
+              }
+            ]
+          }
+        },
+        {
+          "checkId": "export-refresh",
+          "runId": "export-refresh-0",
+          "file": "export-refresh-0-books.json",
+          "sha256": "405252df98ac906b53213f3922a9b06544d331564f1f728411abfa41304110a0",
+          "actual": {
+            "books": [
+              {
+                "title": "山海笔记",
+                "read": true
+              },
+              {
+                "title": "城市观察",
+                "read": false
+              }
+            ]
+          }
+        },
+        {
+          "checkId": "export-refresh",
+          "runId": "export-refresh-1",
+          "file": "export-refresh-1-books.json",
+          "sha256": "405252df98ac906b53213f3922a9b06544d331564f1f728411abfa41304110a0",
+          "actual": {
+            "books": [
+              {
+                "title": "山海笔记",
+                "read": true
+              },
+              {
+                "title": "城市观察",
+                "read": false
+              }
+            ]
+          }
+        },
+        {
+          "checkId": "export-unread",
+          "runId": "export-unread-0",
+          "file": "export-unread-0-books.json",
+          "sha256": "f11de8b91f648aeed1dc093a240e0d2cdafc7cac31155e62ef0448b27eecad12",
+          "actual": {
+            "books": [
+              {
+                "title": "山海笔记",
+                "read": false
+              },
+              {
+                "title": "城市观察",
+                "read": false
+              }
+            ]
+          }
+        },
+        {
+          "checkId": "export-unread",
+          "runId": "export-unread-1",
+          "file": "export-unread-1-books.json",
+          "sha256": "f11de8b91f648aeed1dc093a240e0d2cdafc7cac31155e62ef0448b27eecad12",
+          "actual": {
+            "books": [
+              {
+                "title": "山海笔记",
+                "read": false
+              },
+              {
+                "title": "城市观察",
+                "read": false
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
