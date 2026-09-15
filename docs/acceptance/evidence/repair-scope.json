@@ -1,0 +1,153 @@
+{
+  "scope": "受控静态网页；原控件移除与原检查范围缩小，非独立项目准确率",
+  "observeOnly": false,
+  "checks": [
+    {
+      "name": "missing-control",
+      "status": "unverified",
+      "reason": "有未验证、受阻或缺少重复证据的检查",
+      "completedStatus": "unverified",
+      "groups": [
+        {
+          "id": "entry",
+          "status": "pass",
+          "repetitions": 2
+        },
+        {
+          "id": "expected-text",
+          "status": "pass",
+          "repetitions": 2
+        },
+        {
+          "id": "input-0",
+          "status": "unverified",
+          "repetitions": 1
+        }
+      ],
+      "userTimeSavedMs": null
+    },
+    {
+      "name": "excluded-before-run",
+      "status": "unverified",
+      "reason": "执行范围与原标准不一致",
+      "completedStatus": "unverified",
+      "groups": [
+        {
+          "id": "entry",
+          "status": "pass",
+          "repetitions": 2
+        },
+        {
+          "id": "input-0",
+          "status": "pass",
+          "repetitions": 2
+        }
+      ],
+      "userTimeSavedMs": null
+    },
+    {
+      "name": "excluded-after-run",
+      "status": "criteria-changed",
+      "reason": "本轮执行后检查范围或标准发生变化，旧结果仅对应执行时版本；请重新建立任务复查",
+      "completedStatus": "verified-repair",
+      "groups": [
+        {
+          "id": "entry",
+          "status": "pass",
+          "repetitions": 2
+        },
+        {
+          "id": "expected-text",
+          "status": "pass",
+          "repetitions": 2
+        },
+        {
+          "id": "input-0",
+          "status": "pass",
+          "repetitions": 2
+        }
+      ],
+      "userTimeSavedMs": null
+    }
+  ],
+  "beforeFix": [
+    {
+      "name": "missing-control",
+      "status": "unverified",
+      "reason": "有未验证、受阻或缺少重复证据的检查",
+      "completedStatus": "unverified",
+      "groups": [
+        {
+          "id": "entry",
+          "status": "pass",
+          "repetitions": 2
+        },
+        {
+          "id": "expected-text",
+          "status": "pass",
+          "repetitions": 2
+        },
+        {
+          "id": "input-0",
+          "status": "unverified",
+          "repetitions": 1
+        }
+      ],
+      "userTimeSavedMs": null
+    },
+    {
+      "name": "excluded-before-run",
+      "status": "unverified",
+      "reason": "执行范围与原标准不一致",
+      "completedStatus": "unverified",
+      "groups": [
+        {
+          "id": "entry",
+          "status": "pass",
+          "repetitions": 2
+        },
+        {
+          "id": "input-0",
+          "status": "pass",
+          "repetitions": 2
+        }
+      ],
+      "userTimeSavedMs": null
+    },
+    {
+      "name": "excluded-after-run",
+      "status": "verified-repair",
+      "reason": "同一项目的修改版本按原标准重复通过，未见已覆盖路径回归",
+      "completedStatus": "verified-repair",
+      "groups": [
+        {
+          "id": "entry",
+          "status": "pass",
+          "repetitions": 2
+        },
+        {
+          "id": "expected-text",
+          "status": "pass",
+          "repetitions": 2
+        },
+        {
+          "id": "input-0",
+          "status": "pass",
+          "repetitions": 2
+        }
+      ],
+      "userTimeSavedMs": null
+    }
+  ],
+  "moduleTests": {
+    "passed": 73,
+    "total": 73
+  },
+  "pdfReview": {
+    "pages": 4,
+    "allPagesVisuallyReviewed": true,
+    "textAndCriteriaHashesVerified": true,
+    "restartStatus": "criteria-changed",
+    "sha256": "261b943529f6ef1665f2ace40b731668b7364ea0a5a8b73fdfa5b6dccb31b77c"
+  }
+}

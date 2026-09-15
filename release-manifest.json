@@ -42,6 +42,11 @@
       "sha256": "a22be90f9ace1a71e8e8b2b65c6bc931fcdc1bccb8a743d2c73be6a9f168f1fd"
     },
     {
+      "file": "audit/check-repair-scope.mjs",
+      "bytes": 3956,
+      "sha256": "f070475e0371d7f1d80b9c37d0bdff685630f0414b84e48c60e1300796ebc5cb"
+    },
+    {
       "file": "audit/check-repair-workflow.mjs",
       "bytes": 5421,
       "sha256": "b15f511d7934499e0019eb9770f6a90e1c5f6c257f51c12f2b99eff24b600713"
@@ -93,8 +98,8 @@
     },
     {
       "file": "docs/acceptance/07-repair-workflow.md",
-      "bytes": 2653,
-      "sha256": "fb029543a16e4970b0635548a233bf5f17fccb471cd5424972e1dd997b6dbada"
+      "bytes": 2714,
+      "sha256": "598c130df154946c0e1cfe266ce16e3d79ce79b2840cf5534cea5349928cb94b"
     },
     {
       "file": "docs/acceptance/08-repair-exports.md",
@@ -103,8 +108,8 @@
     },
     {
       "file": "docs/acceptance/09-snapshot-repair.md",
-      "bytes": 2785,
-      "sha256": "59110d5b0ceb2bd1606445b5e82e0193186c9bbe05a10883dba61148a924c5e0"
+      "bytes": 2865,
+      "sha256": "111820e64cb0bb86a6f9eadba74a6fc0a5040400f97769b980394c589de927c1"
     },
     {
       "file": "docs/acceptance/10-release-20260916.md",
@@ -112,9 +117,14 @@
       "sha256": "739b8367b613f45ba239195d287ae48026ccc7fc29dd7605ae1f7544db571029"
     },
     {
+      "file": "docs/acceptance/11-repair-scope.md",
+      "bytes": 2224,
+      "sha256": "362643b7828e89895597e422b5037912c668b9e0061b2edd557ea4e6956da01f"
+    },
+    {
       "file": "docs/acceptance/README.md",
-      "bytes": 2985,
-      "sha256": "cb30532076fb569875f61eb063f28b22598dcb993893f8360c56342b6804b944"
+      "bytes": 3139,
+      "sha256": "2cf7ffbd9a5aaad2db54abc57459137c8db48276713688bee0bf4d1c62f41954"
     },
     {
       "file": "docs/acceptance/evidence/help-evaluation.json",
@@ -150,6 +160,11 @@
       "file": "docs/acceptance/evidence/repair-exports.json",
       "bytes": 2072,
       "sha256": "bf2f7fe7d29c4a6f252d954955407f43d720496df0b476d5837f062ff2a7fd5b"
+    },
+    {
+      "file": "docs/acceptance/evidence/repair-scope.json",
+      "bytes": 3683,
+      "sha256": "b42f93d66f16f9e45e4699d7abc5a8e81de07a9820d965c7ff00eb44dfb74ee0"
     },
     {
       "file": "docs/acceptance/evidence/repair-workflow.json",
@@ -218,8 +233,8 @@
     },
     {
       "file": "docs/next-version/04-iteration-checklist.md",
-      "bytes": 10427,
-      "sha256": "8df5744649685916c923067ce0c45a4a9450e1fe31321dcfc2477ccef7094393"
+      "bytes": 10806,
+      "sha256": "788176a685e24618e12e35d6ac913868a2c9e0e10ee4095a0f7d38d4864e2b11"
     },
     {
       "file": "docs/subtitles.srt",
@@ -413,8 +428,8 @@
     },
     {
       "file": "v3/codex-context.mjs",
-      "bytes": 4462,
-      "sha256": "fbe5977904850ff79f550693e6f69d79e0650a7cb2e09bde9a104e66f4554c06"
+      "bytes": 4601,
+      "sha256": "585f9426c7276fe2be86ba7df00e4df35ecb3ab3115624a126dd086167b5f11c"
     },
     {
       "file": "v3/codex-context.test.mjs",
@@ -498,8 +513,8 @@
     },
     {
       "file": "v3/repair-evidence.mjs",
-      "bytes": 6986,
-      "sha256": "0f16281c48b66a375de52c3c0cc0ad0e02096dd5329166c43cabac026670ff25"
+      "bytes": 7580,
+      "sha256": "7c828527b9d2e2cc934dcae581a0986c8c02167846d304f70a167f66d4b6a6f3"
     },
     {
       "file": "v3/repair-evidence.test.mjs",
