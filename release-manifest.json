@@ -57,6 +57,11 @@
       "sha256": "b15f511d7934499e0019eb9770f6a90e1c5f6c257f51c12f2b99eff24b600713"
     },
     {
+      "file": "audit/check-seal-crash.mjs",
+      "bytes": 6692,
+      "sha256": "c522be9b80f44a86b5038b3bcd5c57405d44061e1a0eb4017455161661eff405"
+    },
+    {
       "file": "audit/check-self-ui.mjs",
       "bytes": 2382,
       "sha256": "20f729d6d338c834e0a15fb8ccf3d98802786cad85ca562ce1d246e53ed42b66"
@@ -128,18 +133,28 @@
     },
     {
       "file": "docs/acceptance/12-interrupted-repair.md",
-      "bytes": 2776,
-      "sha256": "f83743ecbc72467437f07618ea7a570475287dd0aeb39635d51d7e189c647426"
+      "bytes": 2838,
+      "sha256": "af5833c1d9a644ed23be0d7c40e36d499eafd68dff3557c5927ca6f0e747cc28"
+    },
+    {
+      "file": "docs/acceptance/13-incomplete-seal.md",
+      "bytes": 2864,
+      "sha256": "201bce32aefb6f99a1db07e6a6f6aa0e7a6431b0067076cd4e93349a83340289"
     },
     {
       "file": "docs/acceptance/README.md",
-      "bytes": 3316,
-      "sha256": "06bb8609bf8fb2825ca3c37808ce26b636900115c70144f1540d79b4829185d0"
+      "bytes": 3496,
+      "sha256": "92981e63bd29a07d3c9070e5d4e09bffbc7a7451434dbaf012e4f06420712e3d"
     },
     {
       "file": "docs/acceptance/evidence/help-evaluation.json",
       "bytes": 2400,
       "sha256": "c3b631d6ece1db1015ca7321027bf11e3ed496b5cf95d746994001d8aee13ad7"
+    },
+    {
+      "file": "docs/acceptance/evidence/incomplete-seal.json",
+      "bytes": 2652,
+      "sha256": "d594cbedc4d30068966dec7fe096c02502ce85c9f4022ba41728946d3589e99a"
     },
     {
       "file": "docs/acceptance/evidence/interrupted-repair.json",
@@ -248,8 +263,8 @@
     },
     {
       "file": "docs/next-version/04-iteration-checklist.md",
-      "bytes": 11277,
-      "sha256": "1cef607a2dfd15de0f7b452dc61ab55ebb3942cf8bee9f6f670e0e80e61e5877"
+      "bytes": 11673,
+      "sha256": "8ab47b55e3906f44ab8c3c983e4720ff356340024e1980198fe6f6cb8de6ba16"
     },
     {
       "file": "docs/subtitles.srt",
@@ -583,8 +598,8 @@
     },
     {
       "file": "v3/workbench.mjs",
-      "bytes": 33917,
-      "sha256": "8371095d350586958c6d2150e555ed33b966aa4bf6ef48db5f5296c0a472a4cb"
+      "bytes": 34860,
+      "sha256": "b8045a1322d92d39682b5aab152bc45bdb93f68a01af2ca177aecfadd1444c1c"
     }
   ]
 }

@@ -64,15 +64,27 @@ export async function startWorkbench({allowedRoot=base,stateDir=path.join(base,'
    controller=await controllerPromise;
   }return controller;
  };
+ // A finished execution without the session-held seal is not recoverable proof.
+ // Never adopt an orphan index merely because it exists on disk.
+ if(!demoOnly&&current?.receipt&&!current.repairSealHash){
+  const state=(await getController()).state();
+  if(state.worker?.phase==='finished'){
+   current.repairError??='复检证据未确认：执行已结束，但封存记录未完整保存；请保留原记录并新建任务复检';
+   await persist();
+  }
+ }
  const trackCompletion=(session,control)=>{
   if(demoOnly)return;learningError=null;learningPromise=control.wait().then(async()=>{
-       const state=control.state();if(!state.reportAvailable)return;
+       const state=control.state();if(!state.reportAvailable)return;let seal;
        try{
         const finalSource=await inspectProject(session.intake.root);if(finalSource.fingerprint!==session.intake.fingerprint)throw Error('执行期间源码变化，不能确认本轮程序版本');
-        session.repairSealHash=await sealRepairEvidence(session,folder(session.task.id),state.worker.runId);
-        session.repairSealFile=repairEvidenceFile(path.basename(state.worker.runId));delete session.repairError;
+        seal={repairSealHash:await sealRepairEvidence(session,folder(session.task.id),state.worker.runId),repairSealFile:repairEvidenceFile(path.basename(state.worker.runId))};
        }catch(error){session.repairError='复检证据未确认：'+sanitize(error.message);}
-       await save(path.join(folder(session.task.id),'session.json'),session);
+       try{await save(path.join(folder(session.task.id),'session.json'),seal?{...session,...seal,repairError:undefined}:session);}catch(error){
+        delete session.repairSealHash;delete session.repairSealFile;
+        session.repairError='复检证据未确认：执行已结束，但封存记录未完整保存；请保留原记录并新建任务复检';throw error;
+       }
+       if(seal){Object.assign(session,seal);delete session.repairError;}
        if(session.task.autoExperience){const r=JSON.parse(await readReportFile(state.worker.runId,'results.json'));await autoStore.outcome(session.intake.root,session.task,r);}
       }).catch(error=>{learningError='执行结果尚未写入后续记录：'+sanitize(error.message);});};
  const result=async()=>{if(!current?.receipt)return null;const state=(await getController()).state();if(!state.reportAvailable)return null;return JSON.parse(await readReportFile(state.worker.runId,'results.json'));};
@@ -169,7 +181,8 @@ export async function startWorkbench({allowedRoot=base,stateDir=path.join(base,'
      else if(task.mode!==businessMode)task=compileReportJourneys(task,observation);
      if(experience){if(task.mode===businessMode&&experience.source.templateHash!==task.templateHash)throw Error('历史业务模板已变化，请重新选择本轮路径');task.sources.experience={id:experience.id,taskId:experience.source.taskId,revision:experience.source.revision,note:experience.note,versionChanged:experience.source.fingerprint!==task.fingerprint,adopted:'操作者主动采纳为本轮草稿；当前表单要求优先，旧授权与执行记录不复用'};task.digest=bodyHash(JSON.stringify({...task,digest:undefined}));}
      if(data.automatic===true){if(data.contextNote?.trim()){if(demoOnly)throw Error('公开演示不读取个人资料');await autoStore.feedback(root,{task,text:data.contextNote});}if(demoOnly)throw Error('公开演示不读取个人资料');task=await enhance(task,intake,observation,data.materialFiles||[]);}
-     const repairBaseline=snapshotPrior?{taskId:snapshotPrior.task.id,hash:snapshotPrior.repairSealHash,file:snapshotPrior.repairSealFile}:!demoOnly&&current?.repairSealHash&&current.intake.root===root&&current.observation.url===observation.url?{taskId:current.task.id,hash:current.repairSealHash,file:current.repairSealFile}:null;
+     const sameProject=!demoOnly&&current&&current.intake.root===root&&current.observation.url===observation.url;
+     const repairBaseline=snapshotPrior?{taskId:snapshotPrior.task.id,hash:snapshotPrior.repairSealHash,file:snapshotPrior.repairSealFile}:sameProject&&current.repairSealHash?{taskId:current.task.id,hash:current.repairSealHash,file:current.repairSealFile}:sameProject&&current.repairError&&current.repairBaseline?structuredClone(current.repairBaseline):null;
      await fs.mkdir(folder(id),{mode:0o700});current={repairBaseline,...(snapshotPrior?{repairProjectId:snapshotEvidence.projectId,repairCanonicalURL:snapshotPrior.repairCanonicalURL||snapshotPrior.observation.url,repairLinkKind:'user-confirmed-snapshot'}:repairBaseline&&current.repairProjectId?{repairProjectId:current.repairProjectId,repairCanonicalURL:current.repairCanonicalURL,repairLinkKind:current.repairLinkKind}:{}),task,intake,observation,revisions:[{revision:1,at:new Date().toISOString(),reason:'用户创建本次任务',goal:task.goal,digest:task.digest}],opinions:[],measurements:{version:1,events:[]}};controller=null;controllerPromise=null;
      await save(path.join(folder(id),'revision-1.json'),task);await persist();
     }else{

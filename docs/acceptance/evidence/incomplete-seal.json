@@ -1,0 +1,70 @@
+{
+  "scope": "本机受控基础网页；完成后保存间隙的故障注入",
+  "cases": [
+    {
+      "mode": "before-index",
+      "completedChecks": 3,
+      "recordsPerCheck": 2,
+      "indexExists": false,
+      "repairStatus": "unverified",
+      "reason": "复检证据未确认：执行已结束，但封存记录未完整保存；请保留原记录并新建任务复检",
+      "originalResultsHash": "e3c1245e0524e73ffd2378066c5fefcdb35b96593182311e7c534f5906b056ad",
+      "userTimeSavedMs": null,
+      "retryStatus": "verified-repair",
+      "checks": [
+        "actual-crash-after-results",
+        "no-unanchored-seal-trusted",
+        "original-results-preserved",
+        "state-json-report-handoff-agree",
+        "second-restart-retains-unverified",
+        "fresh-task-reuses-verified-baseline"
+      ]
+    },
+    {
+      "mode": "before-session",
+      "completedChecks": 3,
+      "recordsPerCheck": 2,
+      "indexExists": true,
+      "repairStatus": "unverified",
+      "reason": "复检证据未确认：执行已结束，但封存记录未完整保存；请保留原记录并新建任务复检",
+      "originalResultsHash": "d085ff4ed7473fcff89429bc31ab2e7fb345a28c3a70e5d5c6914ab5fdd3e26f",
+      "userTimeSavedMs": null,
+      "retryStatus": "verified-repair",
+      "checks": [
+        "actual-crash-after-results",
+        "no-unanchored-seal-trusted",
+        "original-results-preserved",
+        "state-json-report-handoff-agree",
+        "second-restart-retains-unverified",
+        "fresh-task-reuses-verified-baseline"
+      ]
+    },
+    {
+      "mode": "session-write-error",
+      "completedChecks": 3,
+      "recordsPerCheck": 2,
+      "indexExists": true,
+      "repairStatus": "unverified",
+      "reason": "复检证据未确认：执行已结束，但封存记录未完整保存；请保留原记录并新建任务复检",
+      "originalResultsHash": "c6b57748e5f4ad01a1eb85c890d8b338d8090bca429f0fcb84f24b71840f0988",
+      "userTimeSavedMs": null,
+      "retryStatus": "verified-repair",
+      "checks": [
+        "actual-session-write-failure",
+        "no-unanchored-seal-trusted",
+        "original-results-preserved",
+        "state-json-report-handoff-agree",
+        "second-restart-retains-unverified",
+        "fresh-task-reuses-verified-baseline"
+      ]
+    }
+  ],
+  "sourceSummarySha256": "ef4fdb31cb8cb5670a34a39461b75aba46c8f8578f2507852908c42e4047e9a8",
+  "humanBenefit": "未测得",
+  "limitations": [
+    "不公开原任务/授权/本机路径",
+    "仅两处崩溃和一次写入失败",
+    "不同上传快照恢复不在本批范围",
+    "未新增 PDF 或前台 UI 验收"
+  ]
+}
