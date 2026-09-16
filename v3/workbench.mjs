@@ -1,6 +1,7 @@
 import {businessAdvice,businessAdviceHTML} from './business-advice.mjs';
+import {loadRepairHistory,repairHistoryHTML,repairHistoryUnavailable} from './repair-history.mjs';
 import {snapshotRepairEligible,snapshotRepairTask} from './snapshot-repair.mjs';
-import {captureRepairSource,repairEvidenceFile,sealRepairEvidence,loadRepairEvidence,repairStatus,repairHTML} from './repair-evidence.mjs';
+import {captureRepairSource,repairEvidenceFile,sealRepairEvidence,loadRepairEvidence,repairStatus,repairHTML,repairBeforeURL} from './repair-evidence.mjs';
 import {connectPage,connectJS,connectCSS} from './connect-page.mjs';
 import {cloudCSS} from './cloud-page.mjs';
 import {importStaticProject} from './project-import.mjs';
@@ -118,6 +119,23 @@ export async function startWorkbench({allowedRoot=base,stateDir=path.join(base,'
     res.writeHead(match?206:200,{'Content-Type':'video/mp4','Content-Length':end-start+1,'Accept-Ranges':'bytes','Cache-Control':'no-store',...(match?{'Content-Range':'bytes '+start+'-'+end+'/'+stat.size}:{})});createReadStream(file,{start,end}).pipe(res);return;
    }
    if(req.method==='GET'&&req.url==='/repair-comparison.json'&&!demoOnly){const comparison=await repairStatus(current,folder);return send(comparison?200:404,comparison||{error:'尚未关联同一项目的前后任务'});}
+   if(req.method==='GET'&&req.url.startsWith('/repair-before/')){
+    if(demoOnly)return send(404,{error:'此入口未提供'});
+    const match=req.url.match(/^\/repair-before\/([a-f0-9]{64})(?:\/evidence\/([^/?]+))?$/);
+    if(!match)return send(404,{error:'此入口未提供'});
+    const session=current,url='/repair-before/'+match[1],isFile=!!match[2];
+    const unavailable=(code,message)=>send(code,isFile?{error:message}:repairHistoryUnavailable(message),isFile?'application/json':'text/html');
+    if(url!==repairBeforeURL(session))return unavailable(409,'任务已变化或记录不属于当前关联，请从当前结果重新进入。');
+    try{
+     const history=await loadRepairHistory(session,folder);
+     const bytes=isFile?await history.readFile(decodeURIComponent(match[2])):null;
+     if(current!==session||url!==repairBeforeURL(current))return unavailable(409,'任务已变化，请从当前结果重新进入。');
+     if(!isFile)return send(200,repairHistoryHTML(history),'text/html');
+     const file=decodeURIComponent(match[2]);
+     if(!file.endsWith('.png'))res.setHeader('Content-Disposition','attachment; filename="prior-evidence.json"');
+     return send(200,bytes,file.endsWith('.png')?'image/png':'application/json');
+    }catch{return unavailable(409,'上轮源码、标准或实际产物缺失、变化，无法通过核验；所请求的文件也必须属于已核验产物。');}
+   }
    if(req.method==='GET'&&req.url==='/business-advice.json'&&!demoOnly)return send(200,{advice:await advice(),history:current?.adviceFeedbackHistory||[]});
    if(req.method==='GET'&&req.url==='/state')return send(200,await view());
    if(req.method==='GET'&&req.url==='/repair-case.json'){if(demoOnly)return send(404,{error:'此入口未提供'});try{return send(200,await readReportFile(base,'evaluation/report-repair-case.json'),'application/json');}catch{return send(404,{error:'尚未生成修复案例'});}}

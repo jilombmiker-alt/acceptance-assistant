@@ -51,9 +51,15 @@ export async function loadRepairEvidence(directory,hash,sealFile='repair-evidenc
  return {...evidence,programHash:evidence.source.programHash,evidenceVerified:true,groups:result.groups.map(g=>({pathId:g.path.id,name:g.path.name,status:g.status,records:g.records.map(r=>({status:r.status,checks:r.checks}))}))};
 }
 
+export function repairBeforeURL(session){
+ if(!session?.repairBaseline)return null;
+ const b=session.repairBaseline;
+ return '/repair-before/'+bodyHash(JSON.stringify([session.task.id,b.taskId,b.hash,b.file||'repair-evidence.json']));
+}
+
 export async function repairStatus(session,folder){
  if(!session?.repairBaseline)return null;
- const detail={beforeTaskId:session.repairBaseline.taskId,afterTaskId:session.task.id,scope:session.repairLinkKind==='user-confirmed-snapshot'?'用户确认同项目的不同上传快照；关联已扫描源码与已执行路径，标准变化另行标明；不等于自动证明项目身份或整个产品合格':'同目录与同页面、已扫描源码及已执行路径；不等于整个产品合格',userTimeSavedMs:null};
+ const detail={beforeReportURL:repairBeforeURL(session),beforeTaskId:session.repairBaseline.taskId,afterTaskId:session.task.id,scope:session.repairLinkKind==='user-confirmed-snapshot'?'用户确认同项目的不同上传快照；关联已扫描源码与已执行路径，标准变化另行标明；不等于自动证明项目身份或整个产品合格':'同目录与同页面、已扫描源码及已执行路径；不等于整个产品合格',userTimeSavedMs:null};
  if(session.repairError)return {...detail,status:'unverified',reason:session.repairError};
  if(!session.repairSealHash)return {...detail,status:'pending',reason:'已关联上一轮；等待本轮执行和证据核对'};
  try{
@@ -68,5 +74,5 @@ export async function repairStatus(session,folder){
 export function repairHTML(value,{download=true}={}){
  if(!value)return '';
  const esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
- return '<section id="repair-result" style="overflow-wrap:anywhere"><h2>本次复检</h2><p>'+esc(value.reason)+'</p><p>'+esc(value.scope)+'。人工省时：未测得。</p><details><summary>查看前后版本与标准</summary><p>前次任务：'+esc(value.beforeTaskId)+'<br>本次任务：'+esc(value.afterTaskId)+'</p><p style="overflow-wrap:anywhere">修改文件：'+esc((value.changedFiles||[]).join('、')||'未确认变化')+'<br>修改前源码指纹：'+esc(value.beforeProgramHash||'未取得')+'<br>修改后源码指纹：'+esc(value.afterProgramHash||'未取得')+'<br>原标准指纹：'+esc(value.beforeCriteriaHash||'未取得')+'<br>本轮执行标准指纹：'+esc(value.afterCriteriaHash||'未取得')+(value.currentCriteriaHash?'<br>当前计划标准指纹：'+esc(value.currentCriteriaHash):'')+'</p><p>已通过原问题路径：'+esc((value.fixed||[]).map(id=>value.issues?.find(i=>i.checkId===id)?.name||id).join('、')||'尚未确认')+'<br>剩余问题路径：'+esc(Array.isArray(value.remaining)?(value.remaining.join('、')||'无（仅已覆盖路径）'):'尚未确认')+'</p></details>'+(download?'<a href="/repair-comparison.json" download>下载复检关联记录</a>':'<p>复检关联数据：repair-comparison.json。请与本报告及原始证据一起保存。</p>')+'</section>';
+ return '<section id="repair-result" style="overflow-wrap:anywhere"><h2>本次复检</h2><p>'+esc(value.reason)+'</p><p>'+esc(value.scope)+'。人工省时：未测得。</p><details><summary>查看前后版本与标准</summary><p>前次任务：'+esc(value.beforeTaskId)+'<br>本次任务：'+esc(value.afterTaskId)+'</p><p style="overflow-wrap:anywhere">修改文件：'+esc((value.changedFiles||[]).join('、')||'未确认变化')+'<br>修改前源码指纹：'+esc(value.beforeProgramHash||'未取得')+'<br>修改后源码指纹：'+esc(value.afterProgramHash||'未取得')+'<br>原标准指纹：'+esc(value.beforeCriteriaHash||'未取得')+'<br>本轮执行标准指纹：'+esc(value.afterCriteriaHash||'未取得')+(value.currentCriteriaHash?'<br>当前计划标准指纹：'+esc(value.currentCriteriaHash):'')+'</p><p>已通过原问题路径：'+esc((value.fixed||[]).map(id=>value.issues?.find(i=>i.checkId===id)?.name||id).join('、')||'尚未确认')+'<br>剩余问题路径：'+esc(Array.isArray(value.remaining)?(value.remaining.join('、')||'无（仅已覆盖路径）'):'尚未确认')+'</p></details>'+(download?(value.beforeReportURL?'<p><a href="'+esc(value.beforeReportURL)+'">查看上轮问题与证据</a></p>':'')+'<a href="/repair-comparison.json" download>下载复检关联记录</a>':'<p>复检关联数据：repair-comparison.json。请与本报告及原始证据一起保存。</p>')+'</section>';
 }

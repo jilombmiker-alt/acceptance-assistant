@@ -1,0 +1,27 @@
+{
+  "scope": "受控阅读清单：新增、标记已读、导出三条路径，前后各两次；仅当前任务可信关联，只读导航",
+  "checks": [
+    "current-report-opens-linked-prior-issue",
+    "original-criteria-and-real-artifacts-survive-later-plan-edit",
+    "readonly-navigation-preserves-current-task-and-session-bytes",
+    "unrelated-files-and-forged-link-refused",
+    "changed-baseline-withdraws-history-and-repair-claim",
+    "restart-retains-same-readonly-link",
+    "task-switch-invalidates-old-page-and-artifact-links"
+  ],
+  "checkCount": 3,
+  "repetitions": 2,
+  "priorAffectedPaths": 1,
+  "afterAffectedPaths": 0,
+  "userTimeSavedMs": null,
+  "uiReview": "pass: current result, prior screenshot, criteria expansion and return; screenshot layout reviewed",
+  "moduleTests": 85,
+  "sourceSummarySha256": "8fe69891fb30dfafd77cb54323f0c79359bdac74bc2b0d0c77ace9ebabce3c8b",
+  "publicDemoRoutes": "local demoOnly: both routes return 404",
+  "limitations": [
+    "controlled fixture only",
+    "three paths rather than complete eleven-path coverage",
+    "no concurrent stress test",
+    "no measured human benefit"
+  ]
+}
