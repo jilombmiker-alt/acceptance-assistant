@@ -36,6 +36,10 @@ body[data-chat] #chat-answer button:hover{background:white;color:#111}
 export const chatJS=String.raw`
 let chatInitialized=false,chatActive=false,chatView='task',chatResultKey='',chatCustomBusy=false;
 function chatAnswer(html){el('chat-thread').hidden=false;el('chat-answer').innerHTML=html;}
+function scopeGuideText(){
+ const guide=state.scopeGuide;if(!guide)return '';
+ return '<p>'+esc(guide.boundary)+(guide.uncovered.length?' 尚未对应：'+esc(guide.uncovered.join('、'))+'。':'')+'</p>'+(guide.warnings.length?'<p>'+esc(guide.warnings[0])+'</p>':'');
+}
 function renderChat(){
  if(!el('chat-home'))return;
  el('connected-project').textContent=state?.resumeDraft?'当前项目：'+(state.task?.plan?.project||'已接入网页')+(state.resumeDraft.kind==='snapshot'?' · 修改源码后，重新选择文件夹接入新版本。':' · 修改源码后，在这里输入“重新检查”。'):'未接入个人项目。先选择文件夹，再写检查目标。';
@@ -52,12 +56,12 @@ function renderChat(){
   const failed=(state.automatic?.decisions||[]).find(d=>d.outcome==='requirement-not-met');
   const needsExecutionCheck=state.businessAdvice?.some(a=>a.kind==='execution-incomplete'||a.blockers?.some(b=>b.kind==='execution-incomplete'));
   const counts=state.executionCounts;const incomplete=counts&&(counts.blocked||counts.unverified)?'<p>依赖受阻 '+counts.blocked+' 条路径，执行未完成 '+counts.unverified+' 条路径；这些路径尚未验证通过。</p>':'';
-  chatAnswer('<p>'+(issues.length?'先处理这 '+issues.length+' 项偏差。'+(failed?esc(failed.summary):'打开证据，按位置修复问题。'):('本轮已结束，已覆盖检查发现 '+basicIssues.length+' 项问题。尚未覆盖的目标请在报告中核对。'))+'</p>'+incomplete+(state.businessAdvice?.length?'<p>下一步：'+esc(state.businessAdvice[0].next)+'</p><details><summary>为什么这样建议</summary><p>'+esc(state.businessAdvice[0].impact)+'</p><p>'+esc(state.businessAdvice[0].unknown)+'</p><p>'+esc(state.businessAdvice[0].recheck)+'</p><p>可输入“采纳建议：说明”“拒绝建议：原因”或“纠正建议：要求”。记录选择不会算作建议有效。</p></details>':'')+(state.repair?'<p>复检：'+esc(state.repair.reason)+'</p>'+(state.repair.progress?'<p>'+esc(state.repair.progress.message)+'</p>':'')+(state.repair.beforeReportURL?'<a href="'+esc(state.repair.beforeReportURL)+'">查看上轮问题与证据</a>':'')+'<a href="/repair-comparison.json" download>下载复检关联记录</a>':'')+'<p>'+(state.resumeDraft?.kind==='snapshot'?'修改源码后，重新选择文件夹接入新版本，再按原目标复检。':needsExecutionCheck?'先核对检查条件和定位依据；需要复查时，在这里输入“重新检查”。':'修改原目录中的代码后，保持运行地址不变，在这里输入“重新检查”。')+'</p><a href="/report">查看问题与证据</a><a href="/codex-context.md" download>把修改要求带回 Codex</a>');
+  chatAnswer('<p>'+(issues.length?'先处理这 '+issues.length+' 项偏差。'+(failed?esc(failed.summary):'打开证据，按位置修复问题。'):('本轮已结束，已覆盖检查发现 '+basicIssues.length+' 项问题。尚未覆盖的目标请在报告中核对。'))+'</p>'+scopeGuideText()+incomplete+(state.businessAdvice?.length?'<p>下一步：'+esc(state.businessAdvice[0].next)+'</p><details><summary>为什么这样建议</summary><p>'+esc(state.businessAdvice[0].impact)+'</p><p>'+esc(state.businessAdvice[0].unknown)+'</p><p>'+esc(state.businessAdvice[0].recheck)+'</p><p>可输入“采纳建议：说明”“拒绝建议：原因”或“纠正建议：要求”。记录选择不会算作建议有效。</p></details>':'')+(state.repair?'<p>复检：'+esc(state.repair.reason)+'</p>'+(state.repair.progress?'<p>'+esc(state.repair.progress.message)+'</p>':'')+(state.repair.beforeReportURL?'<a href="'+esc(state.repair.beforeReportURL)+'">查看上轮问题与证据</a>':'')+'<a href="/repair-comparison.json" download>下载复检关联记录</a>':'')+'<p>'+(state.resumeDraft?.kind==='snapshot'?'修改源码后，重新选择文件夹接入新版本，再按原目标复检。':needsExecutionCheck?'先核对检查条件和定位依据；需要复查时，在这里输入“重新检查”。':'修改原目录中的代码后，保持运行地址不变，在这里输入“重新检查”。')+'</p><a href="/report">查看问题与证据</a><a href="/codex-context.md" download>把修改要求带回 Codex</a>');
  }else if(state.receipt){chatAnswer('<p>本轮尚未取得完整结果。先查看当前进度，再继续检查。</p><a href="/workbench#execution">继续处理本轮</a>');}
  else{
   const reminders=(state.automatic?.decisions||[]).filter(d=>d.decision==='apply');
-  chatAnswer('<p>接下来检查“'+esc(t.goal)+'”，本轮有 '+t.checks.filter(c=>!t.excludedPaths.includes(c.id)).length+' 项可执行检查。'+(reminders.length?'会一并核对：'+esc(reminders[0].summary):'')+'</p><details><summary>查看本次检查范围</summary><p>'+esc(t.limitations)+'</p><ul>'+t.checks.filter(c=>!t.excludedPaths.includes(c.id)).map(c=>'<li>'+esc(c.module)+'：'+esc(c.expected)+'</li>').join('')+'</ul></details><button type="button" id="chat-start">开始检查</button>');
-  el('chat-start').onclick=()=>post('/start',{confirmed:true,digest:state.task.digest});
+  chatAnswer('<p>'+(state.scopeGuide?'本轮可执行 '+state.scopeGuide.checks.length+' 项网页检查：'+esc(state.scopeGuide.checks.slice(0,3).map(c=>c.name).join('、'))+(state.scopeGuide.checks.length>3?'等':'')+'。':'接下来检查“'+esc(t.goal)+'”，本轮有 '+t.checks.filter(c=>!t.excludedPaths.includes(c.id)).length+' 项可执行检查。')+(reminders.length?'会一并核对：'+esc(reminders[0].summary):'')+'</p>'+scopeGuideText()+'<details><summary>查看本次检查范围</summary><p>'+esc(t.limitations)+'</p><ul>'+t.checks.filter(c=>!t.excludedPaths.includes(c.id)).map(c=>'<li>'+esc(c.module)+'：'+esc(c.expected)+'</li>').join('')+'</ul>'+ (state.scopeGuide?.excluded.length?'<p>本轮已排除：'+esc(state.scopeGuide.excluded.join('、'))+'。</p>':'')+'</details>'+(state.scopeGuide&&!state.scopeGuide.checks.length?'<p>'+esc(state.scopeGuide.next)+'</p><a href="/workbench">调整检查范围</a>':'<button type="button" id="chat-start">'+(state.scopeGuide?'开始这些检查':'开始检查')+'</button>'));
+  if(el('chat-start'))el('chat-start').onclick=()=>post('/start',{confirmed:true,digest:state.task.digest});
  }
 }
 if(el('chat-home')){
@@ -68,7 +72,7 @@ if(el('chat-home')){
   const text=el('chat-input').value.trim();if(!text)return;
   chatActive=true;chatView='custom';chatResultKey='';el('chat-user').textContent=text;el('chat-input').value='';el('message').textContent='';
   if(/^(怎么做|怎么用|帮助|使用指南)[？?。！!]*$/.test(text)){
-   chatAnswer('<p>先点下方“检查我的产品”，选择网页文件夹，再写目标，例如：检查输入框和手机适配。</p><p>生成计划后点“开始检查”。修复快照项目后，重新选择文件夹；使用原目录和运行地址的项目，可输入“重新检查”。</p><p>想先体验，输入“查看案例”。换项目输入“设置项目”；留意见用“纠正：具体要求”。</p><a href="/guide-video">看 3 分半使用演示</a>');return;
+   chatAnswer('<p>先点下方“检查我的产品”，选择网页文件夹，再写目标，例如：检查输入框和手机适配。</p><p>生成计划后点“开始这些检查”。修复快照项目后，重新选择文件夹；使用原目录和运行地址的项目，可输入“重新检查”。</p><p>想先体验，输入“查看案例”。换项目输入“设置项目”；留意见用“纠正：具体要求”。</p><a href="/guide-video">看 3 分半使用演示</a>');return;
   }
   if(/^(设置项目|项目设置|换项目|上传代码|上传产品|检查我的产品)[。！!]*$/.test(text)){
    chatAnswer('<p>选择网页代码文件夹即可自动接入；已经启动的项目也可以填写地址。</p><a href="/connect">检查我的产品</a>');return;

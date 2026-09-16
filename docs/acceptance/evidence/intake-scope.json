@@ -1,0 +1,71 @@
+{
+  "scope": "Controlled local folder upload and basic checks only; no arbitrary business acceptance",
+  "records": [
+    {
+      "name": "unsupported-business",
+      "paths": [
+        {
+          "id": "entry",
+          "status": "pass",
+          "repetitions": 2
+        }
+      ],
+      "uncovered": [
+        "导出",
+        "保存"
+      ]
+    },
+    {
+      "name": "missing-input",
+      "paths": [
+        "entry"
+      ],
+      "warnings": [
+        "选定入口未观察到支持的普通输入框；不猜测隐藏步骤。"
+      ],
+      "executed": false,
+      "emptyScopeHasNoStartButton": true
+    },
+    {
+      "name": "supported-basics",
+      "paths": [
+        {
+          "id": "entry",
+          "status": "pass",
+          "repetitions": 2
+        },
+        {
+          "id": "expected-text",
+          "status": "pass",
+          "repetitions": 2
+        },
+        {
+          "id": "input-0",
+          "status": "pass",
+          "repetitions": 2
+        },
+        {
+          "id": "layout",
+          "status": "pass",
+          "repetitions": 2
+        }
+      ],
+      "uncovered": []
+    }
+  ],
+  "unauthorizedBusinessTemplateRejected": true,
+  "browserErrors": [],
+  "humanTimeSavedMs": null,
+  "date": "2026-09-16",
+  "moduleTests": 97,
+  "scopeDisclosureBeforeAndAfter": true,
+  "viewportWidths": [
+    1440,
+    390
+  ],
+  "limitations": [
+    "Three controlled local upload scenarios, not independent project transfer accuracy",
+    "No business actions granted to arbitrary uploaded projects",
+    "No human comprehension or time-saving measurement"
+  ]
+}
