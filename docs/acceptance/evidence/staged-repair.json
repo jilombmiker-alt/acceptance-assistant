@@ -1,0 +1,240 @@
+{
+  "date": "2026-09-16",
+  "scope": "同一目录、同一URL，先修新增再修导出；冻结5条路径，三个实际源码版本",
+  "moduleTests": 93,
+  "sourceVersions": 3,
+  "frozenCriteriaVersions": 1,
+  "actualDownloads": 8,
+  "tamperedBaselineWithdrawsProgress": true,
+  "stages": [
+    {
+      "stage": "A-prerequisite-fails",
+      "sourceHash": "10cf1e46ef6889ebda3b38edf5bc97de7b7088ab1f61eab8bd4e864978200754",
+      "criteriaHash": "c274577fe74ab0d2c2cafb7a3c814d99cd983107ae29158e46825ff01eec00b2",
+      "groups": [
+        {
+          "id": "add",
+          "status": "issue",
+          "attempts": 2
+        },
+        {
+          "id": "read",
+          "status": "blocked",
+          "attempts": 0
+        },
+        {
+          "id": "filter",
+          "status": "blocked",
+          "attempts": 0
+        },
+        {
+          "id": "export",
+          "status": "blocked",
+          "attempts": 0
+        },
+        {
+          "id": "export-filter",
+          "status": "blocked",
+          "attempts": 0
+        }
+      ],
+      "adviceKind": "prerequisite-blocked",
+      "downloads": [],
+      "repairStatus": null,
+      "partialProgress": null
+    },
+    {
+      "stage": "B-prerequisite-fixed",
+      "sourceHash": "8184efca7427e028469c72240ad896e6cdeff897e0e90a83096b94552520f851",
+      "criteriaHash": "c274577fe74ab0d2c2cafb7a3c814d99cd983107ae29158e46825ff01eec00b2",
+      "groups": [
+        {
+          "id": "add",
+          "status": "pass",
+          "attempts": 2
+        },
+        {
+          "id": "read",
+          "status": "pass",
+          "attempts": 2
+        },
+        {
+          "id": "filter",
+          "status": "pass",
+          "attempts": 2
+        },
+        {
+          "id": "export",
+          "status": "issue",
+          "attempts": 2
+        },
+        {
+          "id": "export-filter",
+          "status": "issue",
+          "attempts": 2
+        }
+      ],
+      "adviceKind": "product-mismatch",
+      "downloads": [
+        {
+          "file": "export-0-books.json",
+          "sha256": "f11de8b91f648aeed1dc093a240e0d2cdafc7cac31155e62ef0448b27eecad12",
+          "read": [
+            false,
+            false
+          ]
+        },
+        {
+          "file": "export-1-books.json",
+          "sha256": "f11de8b91f648aeed1dc093a240e0d2cdafc7cac31155e62ef0448b27eecad12",
+          "read": [
+            false,
+            false
+          ]
+        },
+        {
+          "file": "export-filter-0-books.json",
+          "sha256": "f11de8b91f648aeed1dc093a240e0d2cdafc7cac31155e62ef0448b27eecad12",
+          "read": [
+            false,
+            false
+          ]
+        },
+        {
+          "file": "export-filter-1-books.json",
+          "sha256": "f11de8b91f648aeed1dc093a240e0d2cdafc7cac31155e62ef0448b27eecad12",
+          "read": [
+            false,
+            false
+          ]
+        }
+      ],
+      "repairStatus": "unverified",
+      "partialProgress": {
+        "fixed": [
+          {
+            "checkId": "add",
+            "name": "新增书目"
+          }
+        ],
+        "newlyCheckedIssues": [
+          {
+            "checkId": "export",
+            "name": "导出当前清单"
+          },
+          {
+            "checkId": "export-filter",
+            "name": "筛选后仍导出全部书目"
+          }
+        ],
+        "newlyCheckedPasses": [
+          {
+            "checkId": "read",
+            "name": "标记已读"
+          },
+          {
+            "checkId": "filter",
+            "name": "已读筛选与返回全部"
+          }
+        ],
+        "regressions": [],
+        "stillUnverified": [],
+        "currentIssues": [
+          {
+            "checkId": "export",
+            "name": "导出当前清单"
+          },
+          {
+            "checkId": "export-filter",
+            "name": "筛选后仍导出全部书目"
+          }
+        ],
+        "message": "原问题路径「新增书目」已按原标准重复通过；此前未完成验证的路径「导出当前清单」、「筛选后仍导出全部书目」本轮确认偏差；此前未完成验证的路径「标记已读」、「已读筛选与返回全部」本轮重复通过。以上为分项进展，整体修复仍未确认。",
+        "userTimeSavedMs": null
+      }
+    },
+    {
+      "stage": "C-export-fixed",
+      "sourceHash": "6052eb96a93321792edee5e11cdfc97bef261ee3a53c681158c3b198e9e9d694",
+      "criteriaHash": "c274577fe74ab0d2c2cafb7a3c814d99cd983107ae29158e46825ff01eec00b2",
+      "groups": [
+        {
+          "id": "add",
+          "status": "pass",
+          "attempts": 2
+        },
+        {
+          "id": "read",
+          "status": "pass",
+          "attempts": 2
+        },
+        {
+          "id": "filter",
+          "status": "pass",
+          "attempts": 2
+        },
+        {
+          "id": "export",
+          "status": "pass",
+          "attempts": 2
+        },
+        {
+          "id": "export-filter",
+          "status": "pass",
+          "attempts": 2
+        }
+      ],
+      "adviceKind": null,
+      "downloads": [
+        {
+          "file": "export-0-books.json",
+          "sha256": "405252df98ac906b53213f3922a9b06544d331564f1f728411abfa41304110a0",
+          "read": [
+            true,
+            false
+          ]
+        },
+        {
+          "file": "export-1-books.json",
+          "sha256": "405252df98ac906b53213f3922a9b06544d331564f1f728411abfa41304110a0",
+          "read": [
+            true,
+            false
+          ]
+        },
+        {
+          "file": "export-filter-0-books.json",
+          "sha256": "405252df98ac906b53213f3922a9b06544d331564f1f728411abfa41304110a0",
+          "read": [
+            true,
+            false
+          ]
+        },
+        {
+          "file": "export-filter-1-books.json",
+          "sha256": "405252df98ac906b53213f3922a9b06544d331564f1f728411abfa41304110a0",
+          "read": [
+            true,
+            false
+          ]
+        }
+      ],
+      "repairStatus": "verified-repair",
+      "partialProgress": null
+    }
+  ],
+  "pdfReview": {
+    "pages": 7,
+    "sha256": "62b7cdb3d0c620417b1d83c41fe4fe8395efca83ddc09508fe7597b86ff12bce",
+    "textChecks": "pass; partial progress without overall repair claim",
+    "visualReview": "pass: all 7 pages inspected, readable, no clipping or overlap"
+  },
+  "userTimeSavedMs": null,
+  "sourceSummarySha256": "3aeb3b321d18f0a212acb15437a45cd8cf89c8df9b78801ef3722678949fb1ba",
+  "limitations": [
+    "controlled same-project example, not independent accuracy or human benefit",
+    "five paths only; remaining six excluded",
+    "blocked first-stage paths were not executed",
+    "no full concurrent or arbitrary dependency-graph coverage"
+  ]
+}
