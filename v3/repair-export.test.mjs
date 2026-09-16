@@ -24,3 +24,13 @@ test('no baseline invents no repair section and untrusted fields cannot inject H
  assert.ok(!pdf({...repair,changedFiles:['<script>bad</script>']}).includes('<script>'));
  const text=md({...repair,changedFiles:['file\n# override']}).text;assert.ok(!text.includes('\n# override'));
 });
+test('PDF includes business advice, unknowns and feedback with escaped human-readable evidence',()=>{
+ const advice={title:'核对导出',next:'此建议已拒绝',impact:'状态不一致',unknown:'根因未确认',change:'只整理交接',recheck:'按原标准两次',decision:'reject',feedback:[{text:'<script>不要直接改</script>'}],facts:[{name:'导出',location:'清单',trigger:'下载',basis:['README.md:11'],records:[{file:'export-0.json',outputs:['download.json'],checks:[{label:'状态',expected:{read:true},actual:{read:false}}]}]}]};
+ const html=pdfSummaryHTML({task,result:{groups:[],generatedAt:'fixture'},impacts:[],coverage:[],helpEvaluation:buildHelpEvaluation({task,result:{groups:[]},coverage:[]}),businessAdvice:[advice],adviceFeedbackHistory:[{adviceDecision:'correct',text:'历史纠正'}]});
+ for(const text of ['下一步怎么处理','根因未确认','按原标准两次','已拒绝','操作记录：export-0.json','download.json','历史纠正','不自动沿用','采纳不等于有效'])assert.ok(html.includes(text),text);
+ assert.ok(!html.includes('<script>'));assert.ok(html.includes('预期：'));assert.ok(html.includes('实际：'));
+});
+test('PDF labels retained execution as historical when current business evidence is missing',()=>{
+ const html=pdfSummaryHTML({task,result:{groups:[],generatedAt:'fixture'},impacts:[],coverage:[],helpEvaluation:buildHelpEvaluation({task,result:{groups:[]},coverage:[]}),businessAdvice:[{kind:'evidence-gap',title:'补齐证据',next:'重新检查',impact:'未确认',unknown:'未知',change:'无修改',recheck:'原标准',decision:'pending',facts:[],feedback:[]}]});
+ assert.match(html,/当前证据不完整：下方执行记录是历史结果/);assert.ok(html.indexOf('当前证据不完整')<html.indexOf('需要关注的问题'));
+});

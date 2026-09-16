@@ -32,6 +32,11 @@
       "sha256": "6661e7a54c99f0f13be852a46c3757528edf9206af50850caaee300d0f0aa8ad"
     },
     {
+      "file": "audit/check-business-advice-pdf.mjs",
+      "bytes": 4264,
+      "sha256": "72d7202d3c6e5f7576b065787af35e9c2080082b54073329996cbf78b8351679"
+    },
+    {
       "file": "audit/check-business-advice.mjs",
       "bytes": 4730,
       "sha256": "dd8c05ddc349191962781c92089c14a8d10150cea4639e1cbc3e609743f9b9ae"
@@ -158,13 +163,23 @@
     },
     {
       "file": "docs/acceptance/15-business-advice.md",
-      "bytes": 3463,
-      "sha256": "83966a137f49e67c9e01164b1e2370d9bc03e81276abae89a17c878868e046a7"
+      "bytes": 3457,
+      "sha256": "84da137292c693ee600b0c4967a36c52ba905190395f839d37f95b0863901516"
+    },
+    {
+      "file": "docs/acceptance/16-business-advice-pdf.md",
+      "bytes": 2225,
+      "sha256": "2918318c21403dbf5f28358f8bb9f08a68283a175c04cab45e332a4f65e59513"
     },
     {
       "file": "docs/acceptance/README.md",
-      "bytes": 3794,
-      "sha256": "9f184399cd6df6bbb0878970ed0f6fbd70bddf439e31ad66d428186341eaadde"
+      "bytes": 3938,
+      "sha256": "c484c842666af93293570aedd5cdc1ec5a41ab0e406a76b13f79fdb880e117d2"
+    },
+    {
+      "file": "docs/acceptance/evidence/business-advice-pdf.json",
+      "bytes": 1608,
+      "sha256": "c540fb0401e5933b96c903d8f4b387f778e9e9cadaeda8c41ec37da3a0446b61"
     },
     {
       "file": "docs/acceptance/evidence/business-advice.json",
@@ -293,8 +308,8 @@
     },
     {
       "file": "docs/next-version/04-iteration-checklist.md",
-      "bytes": 12674,
-      "sha256": "dc7bdad6e35012689f82949db5fef2c72354dedd40b246778d149a89af544055"
+      "bytes": 13079,
+      "sha256": "d714bf35d846e11437bf49635e408c9300b334eff5315157ee5593fd24971c42"
     },
     {
       "file": "docs/subtitles.srt",
@@ -473,8 +488,8 @@
     },
     {
       "file": "v3/business-advice.mjs",
-      "bytes": 3780,
-      "sha256": "b5f2188c18fb0b669e738519123e165f2b750f349e2b7a2d99157be933312162"
+      "bytes": 3997,
+      "sha256": "e143942a9f89499ae43b4354256eda23e49256178f96221938824ae7eed9ae69"
     },
     {
       "file": "v3/business-advice.test.mjs",
@@ -603,13 +618,13 @@
     },
     {
       "file": "v3/repair-export.test.mjs",
-      "bytes": 2542,
-      "sha256": "457f0f49ac73d45fee8ce08c6d57b1ddd40cc28a35b8ed2cc7151c8b30b38316"
+      "bytes": 4358,
+      "sha256": "40444f4260f7a49b8fe06e673bf54d22204c644ba76ff96ada86b3491850329f"
     },
     {
       "file": "v3/report-export.mjs",
-      "bytes": 6025,
-      "sha256": "242cfca12ebec4018edbdec0aa1a59de17286aa909f0f227b1fdd3c55ebf3c01"
+      "bytes": 6466,
+      "sha256": "6f47d82ed12c61e0eecf091f986b7bb3c82abfdc346dc1b8985b1fb20069f7cc"
     },
     {
       "file": "v3/report-journeys.mjs",
@@ -648,8 +663,8 @@
     },
     {
       "file": "v3/workbench.mjs",
-      "bytes": 36598,
-      "sha256": "7d86c6d0427bc80310b1afbc87a5f0587d05812226b1c3bc7f48499189385d48"
+      "bytes": 36960,
+      "sha256": "fbd22a6875fd7b6a9b28dcc67e709cfcffa543643cca320382de06e95cc7aab5"
     }
   ]
 }

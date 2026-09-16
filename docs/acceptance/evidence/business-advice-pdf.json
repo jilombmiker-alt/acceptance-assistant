@@ -1,0 +1,50 @@
+{
+  "scope": "受控阅读清单：仅新增、标记已读、导出三条路径，各两次；其他路径明确移出本轮",
+  "checks": [
+    "business-advice-pdf-generated-and-cache-stable",
+    "rejection-invalidates-prior-pdf",
+    "restart-and-missing-output-invalidate-warmed-cache",
+    "repair-pdf-keeps-historical-feedback-without-current-fault-advice"
+  ],
+  "files": [
+    {
+      "file": "01-advice.pdf",
+      "sha256": "63355aa8bff473617eb4fe4041780b0560785bdf818b6bb5f23365be7637ba15",
+      "adviceKind": "product-mismatch",
+      "decision": "pending",
+      "repair": null
+    },
+    {
+      "file": "02-rejected.pdf",
+      "sha256": "a3ebe9123079e13091c8e329b06e2730a378806e697fe0ceaf145c8b043b7ea1",
+      "adviceKind": "product-mismatch",
+      "decision": "reject",
+      "repair": null
+    },
+    {
+      "file": "03-missing-evidence.pdf",
+      "sha256": "441398c03eb04ea6845813207af762914ce178a216e2c75053450b93dc85961a",
+      "adviceKind": "evidence-gap",
+      "decision": "reject",
+      "repair": null
+    },
+    {
+      "file": "04-repair-history.pdf",
+      "sha256": "81eb9f28fc521d61afc3dd27debb1ed07a2a2adf4a6d991032181bca74643873",
+      "adviceKind": "none",
+      "decision": null,
+      "repair": "verified-repair"
+    }
+  ],
+  "checkCount": 3,
+  "repetitions": 2,
+  "userTimeSavedMs": null,
+  "pdfVisualReview": "pass: all 18 pages",
+  "pdfPages": {
+    "01-advice.pdf": 5,
+    "02-rejected.pdf": 5,
+    "03-missing-evidence.pdf": 4,
+    "04-repair-history.pdf": 4
+  },
+  "sourceSummarySha256": "144311e754287f5fa9399786274ca69d26e8ff9b0b7f553bf57de75ffb1930fb"
+}

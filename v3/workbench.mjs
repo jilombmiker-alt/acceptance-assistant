@@ -135,13 +135,14 @@ export async function startWorkbench({allowedRoot=base,stateDir=path.join(base,'
     const repair=demoOnly?null:await repairStatus(session,folder);if(current!==session)throw Error('任务已变化，请重新打开报告');
     const rows=coverageResults(current.task,r),evaluation={pass:rows.every(x=>['pass','outside-scope','not-applicable'].includes(x.status))};
     const html=genericReport({impacts:reportImpact(current.task,r),controlled:current.task.mode===businessMode,coverageOnly:true,generatedAt:r.generatedAt,title:'本轮验收报告',description:r.goal,cases:[{id:'evidence',result:r}]},evaluation);
-    const rendered=html.replace('<h2>路径覆盖</h2>',businessAdviceHTML(await advice(session,r),session.adviceFeedbackHistory)+repairHTML(repair)+'<section>'+helpEvaluationHTML(await helpEvaluation(r))+'</section>'+automaticReportHTML(experienceOutcomes(current.task,r))+coverageHTML(current.task,rows)+'<h2>路径覆盖</h2>');
+    const adviceForReport=await advice(session,r),adviceHistory=structuredClone(session.adviceFeedbackHistory||[]);
+    const rendered=html.replace('<h2>路径覆盖</h2>',businessAdviceHTML(adviceForReport,adviceHistory)+repairHTML(repair)+'<section>'+helpEvaluationHTML(await helpEvaluation(r))+'</section>'+automaticReportHTML(experienceOutcomes(current.task,r))+coverageHTML(current.task,rows)+'<h2>路径覆盖</h2>');
     if(req.url==='/report.pdf'){
      if(demoOnly)throw Error('公开演示未开放个人报告 PDF');
-     const key=current.task.digest+':'+bodyHash(JSON.stringify([r,current.measurements||null,repair])),task=structuredClone(current.task);
-     if(pdfCache?.key!==key){const promise=reportPDF(pdfSummaryHTML({task,result:r,automatic:experienceOutcomes(task,r),impacts:reportImpact(task,r),coverage:rows,helpEvaluation:await helpEvaluation(r),repair}),task);pdfCache={key,promise};promise.catch(()=>{if(pdfCache?.key===key)pdfCache=null;});}
+     const key=current.task.digest+':'+bodyHash(JSON.stringify([r,current.measurements||null,repair,adviceForReport,adviceHistory])),task=structuredClone(current.task);
+     if(pdfCache?.key!==key){const promise=reportPDF(pdfSummaryHTML({task,result:r,automatic:experienceOutcomes(task,r),impacts:reportImpact(task,r),coverage:rows,helpEvaluation:await helpEvaluation(r),repair,businessAdvice:adviceForReport,adviceFeedbackHistory:adviceHistory}),task);pdfCache={key,promise};promise.catch(()=>{if(pdfCache?.key===key)pdfCache=null;});}
      const pdf=await pdfCache.promise;
-     if(current!==session||current.task.digest!==task.digest||JSON.stringify(await repairStatus(session,folder))!==JSON.stringify(repair))throw Error('任务或证据在生成期间发生变化，请重新下载报告');
+     if(current!==session||current.task.digest!==task.digest||JSON.stringify(await repairStatus(session,folder))!==JSON.stringify(repair)||JSON.stringify(await advice(session,r))!==JSON.stringify(adviceForReport)||JSON.stringify(session.adviceFeedbackHistory||[])!==JSON.stringify(adviceHistory))throw Error('任务、建议反馈或证据在生成期间发生变化，请重新下载报告');
      res.setHeader('Content-Disposition','attachment; filename="acceptance-report.pdf"');res.setHeader('X-Report-SHA256',pdf.hash);return send(200,pdf.bytes,'application/pdf');
     }
     return send(200,rendered,'text/html');

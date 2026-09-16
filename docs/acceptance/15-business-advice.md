@@ -29,7 +29,7 @@
 
 实测先发现 3 条受影响的导出路径；采纳后仍为 3 条，效果为未测得。开发工具实际修改副本并复检后降为 0，修复关联通过；拒绝、纠正、采纳历史仍保留。此顺序不证明建议导致修复，也不能估算人工省时。
 
-本批接入 `/state`、`/business-advice.json`、HTML 报告和 Codex 交接。**PDF 暂未包含新增的业务建议和反馈段落**，仍保留原检查结果与复检关联；后续单独接入并验收。完整原始证据和反馈只保留本地；[公开摘要](evidence/business-advice.json)已脱敏。
+本批接入 `/state`、`/business-advice.json`、HTML 报告和 Codex 交接。PDF 后续已接入新增业务建议与反馈，并通过独立文件验收，见 [PDF 验收](16-business-advice-pdf.md)。完整原始证据和反馈只保留本地；[公开摘要](evidence/business-advice.json)已脱敏。
 
 复现：`node audit/check-business-advice.mjs <新的输出目录>`。`--inspect` 只供开发者停在故障结果页检查，检查完成需向该测试进程发送 SIGUSR1 后继续。
 
