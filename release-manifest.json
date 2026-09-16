@@ -102,6 +102,11 @@
       "sha256": "529cb8bc9d692b3b4ca6701a3b6303fa59c3c97eada7553439be656e1611fe8e"
     },
     {
+      "file": "audit/check-snapshot-draft.mjs",
+      "bytes": 7159,
+      "sha256": "3d8768847a6e31d0255b3ff8ea7c182a315a61d8cba73335ba9730295b1bdfd4"
+    },
+    {
       "file": "audit/check-snapshot-repair.mjs",
       "bytes": 4608,
       "sha256": "ab39ef734269bef5334bf6a3d9ea0de65a50795287234461eeef02eed56ab393"
@@ -153,8 +158,8 @@
     },
     {
       "file": "docs/acceptance/09-snapshot-repair.md",
-      "bytes": 2865,
-      "sha256": "111820e64cb0bb86a6f9eadba74a6fc0a5040400f97769b980394c589de927c1"
+      "bytes": 3229,
+      "sha256": "4fef0e18fa99b60fc30ea0bb39ba57de3e87c2ac7acecc250c769691bc5ffc73"
     },
     {
       "file": "docs/acceptance/10-release-20260916.md",
@@ -212,9 +217,14 @@
       "sha256": "a169d8b7015fc8ca01c58299baad9b03840947581b39869377a22654c5fddcd4"
     },
     {
+      "file": "docs/acceptance/21-snapshot-draft.md",
+      "bytes": 3023,
+      "sha256": "01bd4b74425d5744c24f565cea3a3fc1c11c0efd373ca563d1a277512a380234"
+    },
+    {
       "file": "docs/acceptance/README.md",
-      "bytes": 4619,
-      "sha256": "8ffe321185aad1f63cf32abc130136fb548ddeb5a29105f00c9e857551d4074b"
+      "bytes": 4780,
+      "sha256": "2cd7550a9dfa5354af617790db1325131419cc01e2653eec60476c10f5011287"
     },
     {
       "file": "docs/acceptance/evidence/business-advice-pdf.json",
@@ -312,6 +322,11 @@
       "sha256": "336aebe8fffcc1172fdb7444884ef11def154bf17cfc3d0bb5b68ee248f21f9f"
     },
     {
+      "file": "docs/acceptance/evidence/snapshot-draft.json",
+      "bytes": 2559,
+      "sha256": "dcf9c02d9556711310bee5ec0ed357610660c748b4f65954d879aeeb410ec80a"
+    },
+    {
       "file": "docs/acceptance/evidence/snapshot-repair.json",
       "bytes": 1693,
       "sha256": "7f1b4140d4a5bd5b19b9cf8b54a9a7b13c7c4dab011652127ff2e9524254b9b0"
@@ -368,8 +383,8 @@
     },
     {
       "file": "docs/next-version/04-iteration-checklist.md",
-      "bytes": 14721,
-      "sha256": "eecd9394f8421cc69a621628802b43f87b0cc43deb8c1d9c06a899b725a528f3"
+      "bytes": 14817,
+      "sha256": "44752ffcf6e66543c176303ea133422b60cb24ca5f146d4d648e40c4a70a0dbf"
     },
     {
       "file": "docs/subtitles.srt",
@@ -568,8 +583,8 @@
     },
     {
       "file": "v3/chat-entry.mjs",
-      "bytes": 15824,
-      "sha256": "62e50f9514bcac97ea352996de0784cb163b2a9dbbd6c06180e179aa45546439"
+      "bytes": 15961,
+      "sha256": "68237a6dd958e371ccd6e08f628be05c2115edca238c9e645ac1bdae2b2f8ad7"
     },
     {
       "file": "v3/cloud-page.mjs",
@@ -728,13 +743,13 @@
     },
     {
       "file": "v3/snapshot-repair.mjs",
-      "bytes": 1892,
-      "sha256": "54e77d8b16aa36453a89732cc5db9bc2d9affff2a827163cf54126e7795a1da5"
+      "bytes": 2775,
+      "sha256": "e8b52f7f9fd5ef57be782bdf7d420fc40f7295cddbd39562b875be54c45aad25"
     },
     {
       "file": "v3/snapshot-repair.test.mjs",
-      "bytes": 2124,
-      "sha256": "33f47cc93ac67b012c1de356018c756d51c905668302fba17dc503bafbb3ffab"
+      "bytes": 4029,
+      "sha256": "0aae0e6cd2f18f096398b4ee4fa545ab4b7d3bac89d3c902200771f408a2abd3"
     },
     {
       "file": "v3/workbench-page.mjs",
@@ -743,8 +758,8 @@
     },
     {
       "file": "v3/workbench.mjs",
-      "bytes": 38648,
-      "sha256": "18c1e7c7e9fd28bd4024b3630267bd958bc43477b95535d80b522e9d5a75f2d0"
+      "bytes": 39007,
+      "sha256": "fce03dfeb902c1f8c627358b18e41a8bd866aecf6a9f9acf1d17a525486d35a9"
     }
   ]
 }

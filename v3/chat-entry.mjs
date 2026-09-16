@@ -49,7 +49,7 @@ function renderChat(){
  const key=JSON.stringify([state.task.id,state.task.revision,state.automatic,state.impacts,state.control?.worker?.phase,state.control?.control?.status,state.control?.reportAvailable,state.coverage,state.repair,state.businessAdvice,state.executionCounts,state.resumeDraft?.available]);
  if(key===chatResultKey)return;chatResultKey=key;
  const t=state.task,s=state.control,ready=s?.reportAvailable,issues=state.impacts||[];
- if(state.resumeDraft?.kind==='snapshot'&&!state.resumeDraft.available&&!state.receipt){chatAnswer('<p>本地助手已重启，之前的网页服务已停止。请重新选择文件夹接入，再生成本轮检查。</p><a href="/connect">重新选择文件夹</a>');return;}
+ if(state.resumeDraft?.kind==='snapshot'&&!state.resumeDraft.available&&!state.receipt){chatAnswer('<p>本地助手已重启，之前的网页服务已停止。'+(state.snapshotRepairAvailable?'原标准仍保留。请重新选择文件夹，勾选同项目复检，再开始本轮检查。':'请重新选择文件夹接入，再生成本轮检查。')+'</p><a href="/connect">重新选择文件夹</a>');return;}
  if(s?.worker?.running||s?.worker?.phase==='starting'){chatAnswer('<p>正在检查。完成后会告诉你先改哪里。</p><a href="/workbench#execution">查看进度或暂停</a>');return;}
  if(ready){
   const basicIssues=[...new Set((state.coverage||[]).filter(r=>r.status==='issue').flatMap(r=>r.checkIds))];

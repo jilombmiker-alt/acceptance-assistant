@@ -1,0 +1,99 @@
+{
+  "scope": "Controlled local snapshots; unfinished drafts are not execution evidence",
+  "records": [
+    {
+      "case": "draft-restart",
+      "snapshotUnavailable": true,
+      "baselineRetained": true,
+      "choiceAvailable": true,
+      "receipt": false
+    },
+    {
+      "case": "changed-standard-and-tampered-baseline",
+      "rejected": true,
+      "priorTaskPreserved": true
+    },
+    {
+      "case": "repeated-draft-reupload",
+      "baseline": "original-completed-run",
+      "draftsExecuted": false,
+      "checks": [
+        {
+          "id": "entry",
+          "status": "pass",
+          "repetitions": 2
+        },
+        {
+          "id": "expected-text",
+          "status": "pass",
+          "repetitions": 2
+        },
+        {
+          "id": "input-0",
+          "status": "pass",
+          "repetitions": 2
+        },
+        {
+          "id": "layout",
+          "status": "pass",
+          "repetitions": 2
+        }
+      ],
+      "repair": "verified-repair",
+      "criteriaSame": true
+    },
+    {
+      "case": "report-and-codex",
+      "originalCompletedBaseline": true,
+      "repairConclusionConsistent": true
+    },
+    {
+      "case": "missing-control-retains-original-check",
+      "paths": [
+        {
+          "id": "entry",
+          "status": "pass",
+          "repetitions": 2
+        },
+        {
+          "id": "expected-text",
+          "status": "pass",
+          "repetitions": 2
+        },
+        {
+          "id": "input-0",
+          "status": "unverified",
+          "repetitions": 1
+        },
+        {
+          "id": "layout",
+          "status": "pass",
+          "repetitions": 2
+        }
+      ],
+      "repair": "unverified"
+    },
+    {
+      "case": "edited-draft",
+      "originalStandardReupload": false,
+      "changedDraftNotAccepted": true
+    }
+  ],
+  "userTimeSavedMs": null,
+  "date": "2026-09-16",
+  "moduleTests": 99,
+  "versions": {
+    "beforeProgramHash": "282ad537477736d5b8790dffa74d03c0faf0884117beaf5d48bcba2deec090c4",
+    "afterProgramHash": "564b0b504573809d198c359c74d0fc68924bd2db3ac26963867939389793bfde",
+    "beforeCriteriaHash": "2b55d47e924e7567225e323e5fa682f272ae9f6a29a8507f0836631a22603aa5",
+    "afterCriteriaHash": "2b55d47e924e7567225e323e5fa682f272ae9f6a29a8507f0836631a22603aa5",
+    "changedFiles": [
+      "index.html"
+    ]
+  },
+  "limitations": [
+    "Controlled local static project only",
+    "No arbitrary business execution, old-draft migration, PDF regeneration or independent accuracy claims",
+    "Human time saving remains unmeasured"
+  ]
+}
