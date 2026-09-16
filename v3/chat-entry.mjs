@@ -42,7 +42,7 @@ function renderChat(){
  if(!chatInitialized&&state){chatInitialized=true;chatActive=!!state.task;chatView='task';}
  el('chat-send').disabled=busy||chatCustomBusy||!state;el('chat-help').disabled=busy||chatCustomBusy||!state;
  if(!chatActive||chatView!=='task'||!state.task)return;
- const key=JSON.stringify([state.task.id,state.task.revision,state.automatic,state.impacts,state.control?.worker?.phase,state.control?.control?.status,state.control?.reportAvailable,state.coverage,state.repair,state.resumeDraft?.available]);
+ const key=JSON.stringify([state.task.id,state.task.revision,state.automatic,state.impacts,state.control?.worker?.phase,state.control?.control?.status,state.control?.reportAvailable,state.coverage,state.repair,state.businessAdvice,state.resumeDraft?.available]);
  if(key===chatResultKey)return;chatResultKey=key;
  const t=state.task,s=state.control,ready=s?.reportAvailable,issues=state.impacts||[];
  if(state.resumeDraft?.kind==='snapshot'&&!state.resumeDraft.available&&!state.receipt){chatAnswer('<p>本地助手已重启，之前的网页服务已停止。请重新选择文件夹接入，再生成本轮检查。</p><a href="/connect">重新选择文件夹</a>');return;}
@@ -50,7 +50,7 @@ function renderChat(){
  if(ready){
   const basicIssues=[...new Set((state.coverage||[]).filter(r=>r.status==='issue').flatMap(r=>r.checkIds))];
   const failed=(state.automatic?.decisions||[]).find(d=>d.outcome==='requirement-not-met');
-  chatAnswer('<p>'+(issues.length?'先处理这 '+issues.length+' 项偏差。'+(failed?esc(failed.summary):'打开证据，按位置修复问题。'):('本轮已结束，已覆盖检查发现 '+basicIssues.length+' 项问题。尚未覆盖的目标请在报告中核对。'))+'</p>'+(state.repair?'<p>复检：'+esc(state.repair.reason)+'</p><a href="/repair-comparison.json" download>下载复检关联记录</a>':'')+'<p>'+(state.resumeDraft?.kind==='snapshot'?'修改源码后，重新选择文件夹接入新版本，再按原目标复检。':'修改原目录中的代码后，保持运行地址不变，在这里输入“重新检查”。')+'</p><a href="/report">查看问题与证据</a><a href="/codex-context.md" download>把修改要求带回 Codex</a>');
+  chatAnswer('<p>'+(issues.length?'先处理这 '+issues.length+' 项偏差。'+(failed?esc(failed.summary):'打开证据，按位置修复问题。'):('本轮已结束，已覆盖检查发现 '+basicIssues.length+' 项问题。尚未覆盖的目标请在报告中核对。'))+'</p>'+(state.businessAdvice?.length?'<p>下一步：'+esc(state.businessAdvice[0].next)+'</p><details><summary>为什么这样建议</summary><p>'+esc(state.businessAdvice[0].impact)+'</p><p>'+esc(state.businessAdvice[0].unknown)+'</p><p>'+esc(state.businessAdvice[0].recheck)+'</p><p>可输入“采纳建议：说明”“拒绝建议：原因”或“纠正建议：要求”。记录选择不会算作建议有效。</p></details>':'')+(state.repair?'<p>复检：'+esc(state.repair.reason)+'</p><a href="/repair-comparison.json" download>下载复检关联记录</a>':'')+'<p>'+(state.resumeDraft?.kind==='snapshot'?'修改源码后，重新选择文件夹接入新版本，再按原目标复检。':'修改原目录中的代码后，保持运行地址不变，在这里输入“重新检查”。')+'</p><a href="/report">查看问题与证据</a><a href="/codex-context.md" download>把修改要求带回 Codex</a>');
  }else if(state.receipt){chatAnswer('<p>本轮尚未取得完整结果。先查看当前进度，再继续检查。</p><a href="/workbench#execution">继续处理本轮</a>');}
  else{
   const reminders=(state.automatic?.decisions||[]).filter(d=>d.decision==='apply');
@@ -79,6 +79,12 @@ if(el('chat-home')){
    chatAnswer(state.task?'<p>下载后，把文件附到 Codex 的下一条任务里，再说明你这次想修改什么。</p><a href="/codex-context.md" download>下载项目上下文</a>':'<p>先写下这次想完成的目标，生成计划后再导出。</p>');return;
   }
   if(/^(继续|下一步|查看结果|查看报告)[。！!]*$/.test(text)&&state.task){chatView='task';renderChat();return;}
+  const adviceFeedback=text.match(/^(采纳建议|拒绝建议|纠正建议)[：:]\s*([\s\S]+)$/);
+  if(adviceFeedback){
+   const item=state.businessAdvice?.[0];if(!item){chatAnswer('<p>本轮还没有可反馈的业务建议。先完成检查，再查看下一步。</p>');return;}
+   const count=state.opinions.length;await post('/opinion',{text:adviceFeedback[2],adviceId:item.id,adviceDecision:({'采纳建议':'accept','拒绝建议':'reject','纠正建议':'correct'})[adviceFeedback[1]]});
+   chatAnswer(state.opinions.length>count?'<p>已保存本轮建议反馈。采纳不等于有效；实际修改和原标准复检仍需分别验证。</p><p>输入“查看结果”可回到当前建议。</p>':'<p>反馈尚未保存，请按下方提示处理。</p>');return;
+  }
   const correction=text.match(/^(?:纠正|记住)[：:]\s*([\s\S]+)$/);
   if(correction){if(!state.task){chatAnswer('<p>先写下本次目标。建立任务后，我才能把这条纠正记到对应项目。</p>');return;}const count=state.opinions.length;await post('/opinion',{text:correction[1]});chatAnswer(state.opinions.length>count?'<p>已记到本项目。下一轮会重新判断它是否适用。</p>':'<p>这条纠正还没有保存，请按下方提示重试。</p>');return;}
   if(!el('project-path').value||!el('url').value){chatAnswer('<p>先告诉我需要检查哪个项目。</p><a href="/connect">选择我的代码文件夹</a>');return;}

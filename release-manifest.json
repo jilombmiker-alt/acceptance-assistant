@@ -32,6 +32,11 @@
       "sha256": "6661e7a54c99f0f13be852a46c3757528edf9206af50850caaee300d0f0aa8ad"
     },
     {
+      "file": "audit/check-business-advice.mjs",
+      "bytes": 4730,
+      "sha256": "dd8c05ddc349191962781c92089c14a8d10150cea4639e1cbc3e609743f9b9ae"
+    },
+    {
       "file": "audit/check-cloud-api.mjs",
       "bytes": 2850,
       "sha256": "216df06de186d6e29c7ce07d3652507514f584bf6360136a4515ef7405a4a334"
@@ -152,9 +157,19 @@
       "sha256": "f5d9c74fda559f9c69cafcad81d9daf6262844769e8ca07b6145fdde9631aa4d"
     },
     {
+      "file": "docs/acceptance/15-business-advice.md",
+      "bytes": 3463,
+      "sha256": "83966a137f49e67c9e01164b1e2370d9bc03e81276abae89a17c878868e046a7"
+    },
+    {
       "file": "docs/acceptance/README.md",
-      "bytes": 3641,
-      "sha256": "fbcdac63c75564c9871822db627e7ee47474592f560dcac5ea312dad7e826223"
+      "bytes": 3794,
+      "sha256": "9f184399cd6df6bbb0878970ed0f6fbd70bddf439e31ad66d428186341eaadde"
+    },
+    {
+      "file": "docs/acceptance/evidence/business-advice.json",
+      "bytes": 989,
+      "sha256": "2aef9b2c2d495edf5131214785343d73469177054da70e71d32d13971ba878fc"
     },
     {
       "file": "docs/acceptance/evidence/help-evaluation.json",
@@ -278,8 +293,8 @@
     },
     {
       "file": "docs/next-version/04-iteration-checklist.md",
-      "bytes": 12210,
-      "sha256": "7a43b20eae38bf55b05eab794209c78c70d6e6fb2b5e92dfe5c16d4562272030"
+      "bytes": 12674,
+      "sha256": "dc7bdad6e35012689f82949db5fef2c72354dedd40b246778d149a89af544055"
     },
     {
       "file": "docs/subtitles.srt",
@@ -457,6 +472,16 @@
       "sha256": "02d412f81553793e2e9ee7e88a521a3ff26298fe2f9beae2740ed8a84cc257be"
     },
     {
+      "file": "v3/business-advice.mjs",
+      "bytes": 3780,
+      "sha256": "b5f2188c18fb0b669e738519123e165f2b750f349e2b7a2d99157be933312162"
+    },
+    {
+      "file": "v3/business-advice.test.mjs",
+      "bytes": 2457,
+      "sha256": "4c21ff180a1c50c765727e0bb4030be014d1bfa05ceaff0650b9cde8fab41047"
+    },
+    {
       "file": "v3/business.mjs",
       "bytes": 6763,
       "sha256": "e1903da88903319012bd9a6d319e9b6302fa80155f7e1d3d2b053154e74ae56b"
@@ -468,8 +493,8 @@
     },
     {
       "file": "v3/chat-entry.mjs",
-      "bytes": 13012,
-      "sha256": "dcde391b4f591652cb836bc88b707e8c62cc917a98a17fbecc3b502cc483275d"
+      "bytes": 14247,
+      "sha256": "932a7ac650fabfd9dea0ae968ca67216dedf6f56ba460cfa78ddcd7323f1e244"
     },
     {
       "file": "v3/cloud-page.mjs",
@@ -478,8 +503,8 @@
     },
     {
       "file": "v3/codex-context.mjs",
-      "bytes": 4601,
-      "sha256": "585f9426c7276fe2be86ba7df00e4df35ecb3ab3115624a126dd086167b5f11c"
+      "bytes": 5154,
+      "sha256": "e44877689c4af074543116482531f4cbdd2f39301c9642d5f70be4fdc5e3bd17"
     },
     {
       "file": "v3/codex-context.test.mjs",
@@ -623,8 +648,8 @@
     },
     {
       "file": "v3/workbench.mjs",
-      "bytes": 35095,
-      "sha256": "d0c7164a45b9fc0d2e2f93b817cdd033637dbca8748de5e2b44c5dcab38e3856"
+      "bytes": 36598,
+      "sha256": "7d86c6d0427bc80310b1afbc87a5f0587d05812226b1c3bc7f48499189385d48"
     }
   ]
 }

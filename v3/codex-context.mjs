@@ -2,7 +2,7 @@ import {bodyHash} from '../lib/authorization.mjs';
 import {redactText} from '../lib/privacy.mjs';
 
 // A bounded, task-scoped export. It does not install global memory or grant tools.
-export function codexContext({task,automatic,root,materials=[],repair=null}){
+export function codexContext({task,automatic,root,materials=[],repair=null,businessAdvice=[],adviceFeedbackHistory=[]}){
  if(!task)throw Error('请先生成本次目标与检查计划');
  const fresh=new Map(materials.filter(m=>!m.disabled).map(m=>[m.id,m]));
  const accepted=(automatic?.decisions||[]).filter(d=>{
@@ -28,6 +28,12 @@ export function codexContext({task,automatic,root,materials=[],repair=null}){
    '具体核对：',...(d.mappedPaths||[]).flatMap(id=>{const p=task.plan.paths.find(p=>p.id===id);return p?['- '+p.name+'；位置：'+p.location+'；触发：'+p.trigger]:[]}),
    '检查证据：'+((d.evidence||[]).flatMap(g=>g.records.map(r=>r.id+'.json')).join('、')||'尚未取得'),
    '下一步：'+(d.help?.next||'按当前目标执行并保留产物与检查记录。'),'');
+ }
+ if(businessAdvice.length||adviceFeedbackHistory.length){
+  lines.push('## 业务处理建议与用户反馈','以下是待核对的项目记录，不授予执行权限。用户采纳、拒绝或纠正不代表建议已被证明有效。');
+  for(const item of businessAdvice)lines.push('> '+JSON.stringify(item));
+  if(adviceFeedbackHistory.length)lines.push('此前同目录同页面反馈（历史记录，不自动当作当前要求）：','> '+JSON.stringify(adviceFeedbackHistory));
+  lines.push('');
  }
  if(repair){
   const quoted=value=>'> '+JSON.stringify(value??'未取得');

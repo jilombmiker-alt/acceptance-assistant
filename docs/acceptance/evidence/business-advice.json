@@ -1,0 +1,31 @@
+{
+  "scope": "本地受控阅读清单建议、反馈和实际复检",
+  "checks": [
+    "repeated-export-differences-produce-grounded-advice",
+    "missing-output-withdraws-business-diagnosis",
+    "html-and-codex-carry-evidence-and-unknowns",
+    "foreign-advice-feedback-refused",
+    "rejection-persists-after-restart",
+    "acceptance-does-not-mark-issue-fixed-or-advice-effective",
+    "actual-repair-verified-separately-and-feedback-history-retained"
+  ],
+  "beforeAffectedPaths": 3,
+  "afterAffectedPaths": 0,
+  "repairStatus": "verified-repair",
+  "adviceEffect": "unmeasured",
+  "userTimeSavedMs": null,
+  "retainedDecisions": [
+    "reject",
+    "reject",
+    "correct",
+    "accept"
+  ],
+  "sourceSummarySha256": "51346ac5958f26166aefc3a86839aafb4403910b670b1719a92cbd9bbb9e24f7",
+  "uiChecks": [
+    "advice-visible-in-one-dialog",
+    "impact-unknown-recheck-expanded",
+    "reject-submitted-in-chat",
+    "reload-retains-rejection",
+    "final-chat-visually-reviewed"
+  ]
+}

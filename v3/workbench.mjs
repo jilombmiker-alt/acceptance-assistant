@@ -1,3 +1,4 @@
+import {businessAdvice,businessAdviceHTML} from './business-advice.mjs';
 import {snapshotRepairEligible,snapshotRepairTask} from './snapshot-repair.mjs';
 import {captureRepairSource,repairEvidenceFile,sealRepairEvidence,loadRepairEvidence,repairStatus,repairHTML} from './repair-evidence.mjs';
 import {connectPage,connectJS,connectCSS} from './connect-page.mjs';
@@ -89,8 +90,14 @@ export async function startWorkbench({allowedRoot=base,stateDir=path.join(base,'
        if(session.task.autoExperience){const r=JSON.parse(await readReportFile(state.worker.runId,'results.json'));await autoStore.outcome(session.intake.root,session.task,r);}
       }).catch(error=>{learningError='执行结果尚未写入后续记录：'+sanitize(error.message);});};
  const result=async()=>{if(!current?.receipt)return null;const state=(await getController()).state();if(!state.reportAvailable)return null;return JSON.parse(await readReportFile(state.worker.runId,'results.json'));};
+ const advice=async(session=current,r)=>{
+  if(demoOnly||!session)return [];r??=await result();let verified=false;
+  if(session.repairSealHash&&!session.repairError)try{await loadRepairEvidence(folder(session.task.id),session.repairSealHash,session.repairSealFile);verified=true;}catch{}
+  if(current!==session)return [];
+  return businessAdvice({task:session.task,result:r,evidenceVerified:verified,opinions:session.opinions});
+ };
  const helpEvaluation=async(r)=>current?buildHelpEvaluation({task:current.task,result:r,automatic:experienceOutcomes(current.task,r),coverage:coverageResults(current.task,r),measurements:current.measurements}):null;
- const view=async()=>({repair:demoOnly?null:await repairStatus(current,folder),helpEvaluation:await helpEvaluation(await result()),resumeDraft:current?{projectPath:current.intake.root,url:current.observation.url,kind:current.intake.root.startsWith(path.resolve(stateDir,'imports')+path.sep)?'snapshot':'directory',available:!current.intake.root.startsWith(path.resolve(stateDir,'imports')+path.sep)||importedProjects.has(current.intake.root)}:null,impacts:current?reportImpact(current.task,await result()):[],semantic:{available:semantic.available,name:semantic.name},learningError,automatic:current?experienceOutcomes(current.task,await result()):null,allowedRoot,examples,evidenceReports:evidenceReports.map(r=>({id:r.id,title:r.title,url:'/case-files/'+r.id+'/report.html'})),limits:plannerLimits,busy,task:current?.task||null,intake:current?{files:current.intake.files.map(x=>x.file),gaps:current.intake.gaps,coverage:current.intake.coverage}:null,observation:current?.observation||null,revisions:current?.revisions||[],receipt:!!current?.receipt,control:current?.receipt?(await getController()).state():null,coverage:current?coverageResults(current.task,await result()):[],opinions:current?.opinions||[]});
+ const view=async()=>({businessAdvice:await advice(),adviceFeedbackHistory:current?.adviceFeedbackHistory||[],repair:demoOnly?null:await repairStatus(current,folder),helpEvaluation:await helpEvaluation(await result()),resumeDraft:current?{projectPath:current.intake.root,url:current.observation.url,kind:current.intake.root.startsWith(path.resolve(stateDir,'imports')+path.sep)?'snapshot':'directory',available:!current.intake.root.startsWith(path.resolve(stateDir,'imports')+path.sep)||importedProjects.has(current.intake.root)}:null,impacts:current?reportImpact(current.task,await result()):[],semantic:{available:semantic.available,name:semantic.name},learningError,automatic:current?experienceOutcomes(current.task,await result()):null,allowedRoot,examples,evidenceReports:evidenceReports.map(r=>({id:r.id,title:r.title,url:'/case-files/'+r.id+'/report.html'})),limits:plannerLimits,busy,task:current?.task||null,intake:current?{files:current.intake.files.map(x=>x.file),gaps:current.intake.gaps,coverage:current.intake.coverage}:null,observation:current?.observation||null,revisions:current?.revisions||[],receipt:!!current?.receipt,control:current?.receipt?(await getController()).state():null,coverage:current?coverageResults(current.task,await result()):[],opinions:current?.opinions||[]});
  const server=http.createServer(async(req,res)=>{
   const send=(code,data,type='application/json')=>{res.writeHead(code,{'Content-Type':type+'; charset=utf-8','Cache-Control':'no-store','X-Content-Type-Options':'nosniff','Referrer-Policy':'no-referrer','Content-Security-Policy':"default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self'; media-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'"});res.end(typeof data==='string'||Buffer.isBuffer(data)?data:JSON.stringify(data));};
   if(req.headers.host!==new URL(origin).host)return send(403,{error:'入口不匹配'});
@@ -111,6 +118,7 @@ export async function startWorkbench({allowedRoot=base,stateDir=path.join(base,'
     res.writeHead(match?206:200,{'Content-Type':'video/mp4','Content-Length':end-start+1,'Accept-Ranges':'bytes','Cache-Control':'no-store',...(match?{'Content-Range':'bytes '+start+'-'+end+'/'+stat.size}:{})});createReadStream(file,{start,end}).pipe(res);return;
    }
    if(req.method==='GET'&&req.url==='/repair-comparison.json'&&!demoOnly){const comparison=await repairStatus(current,folder);return send(comparison?200:404,comparison||{error:'尚未关联同一项目的前后任务'});}
+   if(req.method==='GET'&&req.url==='/business-advice.json'&&!demoOnly)return send(200,{advice:await advice(),history:current?.adviceFeedbackHistory||[]});
    if(req.method==='GET'&&req.url==='/state')return send(200,await view());
    if(req.method==='GET'&&req.url==='/repair-case.json'){if(demoOnly)return send(404,{error:'此入口未提供'});try{return send(200,await readReportFile(base,'evaluation/report-repair-case.json'),'application/json');}catch{return send(404,{error:'尚未生成修复案例'});}}
    if(req.method==='GET'&&req.url==='/codex-context.md'){
@@ -118,7 +126,7 @@ export async function startWorkbench({allowedRoot=base,stateDir=path.join(base,'
     const session=current,r=await result();
     const fresh=await autoStore.collect(session.intake.root,session.task.autoExperience?.files||[],{remember:false});
     const repair=await repairStatus(session,folder);if(current!==session)throw Error('任务已变化，请重新下载交接材料');
-    const pack=codexContext({task:session.task,automatic:experienceOutcomes(session.task,r),root:session.intake.root,materials:fresh.materials,repair});
+    const pack=codexContext({task:session.task,automatic:experienceOutcomes(session.task,r),root:session.intake.root,materials:fresh.materials,repair,businessAdvice:await advice(session,r),adviceFeedbackHistory:session.adviceFeedbackHistory||[]});
     res.setHeader('Content-Disposition','attachment; filename="codex-project-context.md"');res.setHeader('X-Context-SHA256',pack.hash);return send(200,pack.text,'text/markdown');
    }
    if(req.method==='GET'&&req.url.startsWith('/case-files/')){const match=req.url.match(/^\/case-files\/([a-z0-9-]+)\/([a-z0-9-]+\.(?:json|png|html))$/),item=match&&evidenceReports.find(x=>x.id===match[1]);if(!item||!item.files.includes(match[2]))return send(404,{error:'此案例文件未提供'});return send(200,await readReportFile(item.root,match[2]),match[2].endsWith('.html')?'text/html':match[2].endsWith('.png')?'image/png':'application/json');}
@@ -127,7 +135,7 @@ export async function startWorkbench({allowedRoot=base,stateDir=path.join(base,'
     const repair=demoOnly?null:await repairStatus(session,folder);if(current!==session)throw Error('任务已变化，请重新打开报告');
     const rows=coverageResults(current.task,r),evaluation={pass:rows.every(x=>['pass','outside-scope','not-applicable'].includes(x.status))};
     const html=genericReport({impacts:reportImpact(current.task,r),controlled:current.task.mode===businessMode,coverageOnly:true,generatedAt:r.generatedAt,title:'本轮验收报告',description:r.goal,cases:[{id:'evidence',result:r}]},evaluation);
-    const rendered=html.replace('<h2>路径覆盖</h2>',repairHTML(repair)+'<section>'+helpEvaluationHTML(await helpEvaluation(r))+'</section>'+automaticReportHTML(experienceOutcomes(current.task,r))+coverageHTML(current.task,rows)+'<h2>路径覆盖</h2>');
+    const rendered=html.replace('<h2>路径覆盖</h2>',businessAdviceHTML(await advice(session,r),session.adviceFeedbackHistory)+repairHTML(repair)+'<section>'+helpEvaluationHTML(await helpEvaluation(r))+'</section>'+automaticReportHTML(experienceOutcomes(current.task,r))+coverageHTML(current.task,rows)+'<h2>路径覆盖</h2>');
     if(req.url==='/report.pdf'){
      if(demoOnly)throw Error('公开演示未开放个人报告 PDF');
      const key=current.task.digest+':'+bodyHash(JSON.stringify([r,current.measurements||null,repair])),task=structuredClone(current.task);
@@ -184,7 +192,7 @@ export async function startWorkbench({allowedRoot=base,stateDir=path.join(base,'
      if(data.automatic===true){if(data.contextNote?.trim()){if(demoOnly)throw Error('公开演示不读取个人资料');await autoStore.feedback(root,{task,text:data.contextNote});}if(demoOnly)throw Error('公开演示不读取个人资料');task=await enhance(task,intake,observation,data.materialFiles||[]);}
      const sameProject=!demoOnly&&current&&current.intake.root===root&&current.observation.url===observation.url;
      const repairBaseline=snapshotPrior?{taskId:snapshotPrior.task.id,hash:snapshotPrior.repairSealHash,file:snapshotPrior.repairSealFile}:sameProject&&current.repairSealHash?{taskId:current.task.id,hash:current.repairSealHash,file:current.repairSealFile}:sameProject&&current.repairError&&current.repairBaseline?structuredClone(current.repairBaseline):null;
-     await fs.mkdir(folder(id),{mode:0o700});current={repairBaseline,...(snapshotPrior?{repairProjectId:snapshotEvidence.projectId,repairCanonicalURL:snapshotPrior.repairCanonicalURL||snapshotPrior.observation.url,repairLinkKind:'user-confirmed-snapshot'}:repairBaseline&&current.repairProjectId?{repairProjectId:current.repairProjectId,repairCanonicalURL:current.repairCanonicalURL,repairLinkKind:current.repairLinkKind}:{}),task,intake,observation,revisions:[{revision:1,at:new Date().toISOString(),reason:'用户创建本次任务',goal:task.goal,digest:task.digest}],opinions:[],measurements:{version:1,events:[]}};controller=null;controllerPromise=null;
+     await fs.mkdir(folder(id),{mode:0o700});current={adviceFeedbackHistory:sameProject?[...(current.adviceFeedbackHistory||[]),...current.opinions.filter(o=>o.adviceId).map(o=>({...o,taskId:current.task.id}))].slice(-20):[],repairBaseline,...(snapshotPrior?{repairProjectId:snapshotEvidence.projectId,repairCanonicalURL:snapshotPrior.repairCanonicalURL||snapshotPrior.observation.url,repairLinkKind:'user-confirmed-snapshot'}:repairBaseline&&current.repairProjectId?{repairProjectId:current.repairProjectId,repairCanonicalURL:current.repairCanonicalURL,repairLinkKind:current.repairLinkKind}:{}),task,intake,observation,revisions:[{revision:1,at:new Date().toISOString(),reason:'用户创建本次任务',goal:task.goal,digest:task.digest}],opinions:[],measurements:{version:1,events:[]}};controller=null;controllerPromise=null;
      await save(path.join(folder(id),'revision-1.json'),task);await persist();
     }else{
      if(!current||data.taskId!==current.task.id||data.revision!==current.task.revision)throw Error('任务或版本已变化，请刷新后操作');
@@ -248,7 +256,12 @@ export async function startWorkbench({allowedRoot=base,stateDir=path.join(base,'
       }
      }else{
       if(typeof data.text!=='string'||!data.text.trim()||data.text.length>2000)throw Error('请填写具体纠正意见（最多 2000 字）');
-      current.opinions.push({at:new Date().toISOString(),revision:current.task.revision,actor:'user',text:data.text});
+      let adviceFeedback={};
+      if(data.adviceId!==undefined||data.adviceDecision!==undefined){
+       if(!['accept','reject','correct'].includes(data.adviceDecision)||(await advice()).every(a=>a.id!==data.adviceId))throw Error('建议已变化或不属于当前任务，请重新查看本轮建议');
+       adviceFeedback={adviceId:data.adviceId,adviceDecision:data.adviceDecision};
+      }
+      current.opinions.push({at:new Date().toISOString(),revision:current.task.revision,actor:'user',text:data.text,...adviceFeedback});
       if(current.task.autoExperience)await autoStore.feedback(current.intake.root,{task:current.task,text:data.text});await persist();
      }
     }
