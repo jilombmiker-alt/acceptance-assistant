@@ -30,7 +30,7 @@ el('connect').onsubmit=async e=>{e.preventDefault();if(working)return;working=tr
   if(!attachedProject){const files=[];for(const f of accepted){const bytes=new Uint8Array(await f.file.arrayBuffer());let text='';for(let i=0;i<bytes.length;i+=8192)text+=String.fromCharCode(...bytes.subarray(i,i+8192));files.push({path:f.path,data:btoa(text)});}
   attachedProject=await api('/import-project',{files});}
   const project=attachedProject;
-  el('status').textContent='已接入 '+project.files+' 个文件，正在打开网页并识别可检查项…';
+  el('status').textContent='已接入 '+project.files+' 个文件。'+(project.hasAcceptanceContract?'已识别项目验收契约，正在校验业务路径…':'正在打开网页并识别可检查项…');
   const state=await api('/prepare',{projectPath:project.projectPath,url:project.url,mode:'basic',goal,expectedText,normalRuns:frozen?frozen.normalRuns:2,...(frozen?{repairFrom:{taskId:frozen.taskId,revision:frozen.revision}}:{})});
   try{sessionStorage.setItem('project-intake-draft',JSON.stringify({goal,expectedText}));}catch{}
   location.href='/';

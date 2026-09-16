@@ -2,6 +2,10 @@ import {redactText} from '../lib/privacy.mjs';
 // Explain the existing executable plan; never infer or authorize business actions.
 export function scopeGuide(task){
  if(!task||task.mode==='reviewed-reading')return null;
+ if(task.mode==='project-contract'){
+  const checks=task.checks.filter(c=>!task.excludedPaths.includes(c.id)).map(c=>({id:c.id,name:c.module,expected:c.expected}));
+  return {kind:'project-contract',checks,uncovered:['契约外业务','后端与外部服务','主观质量'],excluded:task.checks.filter(c=>task.excludedPaths.includes(c.id)).map(c=>c.module),warnings:(task.gaps||[]).map(g=>g.reason),boundary:'已识别项目随代码提供的验收契约，将执行本轮保留的全部声明路径。契约完整性由项目声明，系统不据此推断未列出的真实需求。',next:checks.length?'开始后按契约逐项执行并保留实际结果；修改后使用同一契约复检。':'本轮没有保留可执行路径，请恢复范围或建立新任务。'};
+ }
  const active=new Set((task.plan?.paths||[]).map(p=>p.id));
  const checks=(task.checks||[]).filter(c=>active.has(c.id));
  const modules=new Set((task.checks||[]).map(c=>c.module));

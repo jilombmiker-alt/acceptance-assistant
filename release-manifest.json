@@ -2,6 +2,11 @@
   "scope": "Reviewed contest source, controlled fixtures and demo artifacts only",
   "files": [
     {
+      "file": ".agents/skills/acceptance-assistant/SKILL.md",
+      "bytes": 1173,
+      "sha256": "9afc092f99ecc2b33bae4aa362f0bed164dbd23863e8916dc025f490a575cf2c"
+    },
+    {
       "file": ".dockerignore",
       "bytes": 54,
       "sha256": "e0a1ec9a86b92f204e2a48b9d6f7380a130a34d71ab5ba182491fe2ef4a3751d"
@@ -18,8 +23,8 @@
     },
     {
       "file": "README.md",
-      "bytes": 6141,
-      "sha256": "d15df58c38db52a0dfd1ab20eda07dae8af60e2367c638cac614f381a7ff330b"
+      "bytes": 6791,
+      "sha256": "db34031bf0b7ee07b1cb22195b8552dbdfeb337460a8b496b720e76e23ee1bb8"
     },
     {
       "file": "audit/build-reading-repair-case.mjs",
@@ -50,6 +55,16 @@
       "file": "audit/check-cloud-api.mjs",
       "bytes": 2850,
       "sha256": "216df06de186d6e29c7ce07d3652507514f584bf6360136a4515ef7405a4a334"
+    },
+    {
+      "file": "audit/check-completion-tooling.mjs",
+      "bytes": 4179,
+      "sha256": "537f7232bc95673f510f65fe06d953c614b71814038bce3a3c64835fc1b17318"
+    },
+    {
+      "file": "audit/check-independent-contracts.mjs",
+      "bytes": 4948,
+      "sha256": "788d57c4ba167fa33dffc7025670e3a21bb342654ad7cc4187365def0416d1ec"
     },
     {
       "file": "audit/check-intake-scope.mjs",
@@ -242,9 +257,14 @@
       "sha256": "8945ddf8afb1af971b9dfe9ae2795c75052e09a95610eceada92d7c37b07d942"
     },
     {
+      "file": "docs/acceptance/24-project-contract-and-completion.md",
+      "bytes": 4439,
+      "sha256": "2c1fa9d730936fcf8c63761ffc3c6f8715ba9f6fc037feb51bcbc7770ba57d1c"
+    },
+    {
       "file": "docs/acceptance/README.md",
-      "bytes": 5108,
-      "sha256": "3d742b7c692160674a72405fa5d75fe5f5ce1083cf85229b64fb8b83a1c4a4a5"
+      "bytes": 5295,
+      "sha256": "a66d73d3d4d0e974ba1a04a971460dcb268811066e441a7ee875f3ae839c1942"
     },
     {
       "file": "docs/acceptance/evidence/business-advice-pdf.json",
@@ -260,6 +280,11 @@
       "file": "docs/acceptance/evidence/business-blockers.json",
       "bytes": 5562,
       "sha256": "c022fe00721b957d1acf0a1368d597263e976b0286dcb4369be7adc99fc167e5"
+    },
+    {
+      "file": "docs/acceptance/evidence/completion-five.json",
+      "bytes": 1292,
+      "sha256": "b7dc75c7871e0151fb0d5560c962b6ad442d7915b28a43dca9bcfa3cb5dd98a0"
     },
     {
       "file": "docs/acceptance/evidence/help-evaluation.json",
@@ -413,8 +438,8 @@
     },
     {
       "file": "docs/next-version/04-iteration-checklist.md",
-      "bytes": 15366,
-      "sha256": "09459591a65df25aeb216fc8647499541ac77d194296c3e49a4eaf6c97ee7ec9"
+      "bytes": 16828,
+      "sha256": "e87f489d7cbb16e4db37bcd7a4e0802bcecf62540204066d55d876fa59324184"
     },
     {
       "file": "docs/subtitles.srt",
@@ -430,6 +455,11 @@
       "file": "evaluation/report-repair-case.json",
       "bytes": 24652,
       "sha256": "1f81bb429fbf51a854161c35a1231529582b8c1826e722b533d031917db4173c"
+    },
+    {
+      "file": "examples/acceptance.spec.example.json",
+      "bytes": 1129,
+      "sha256": "9a0f8944641c8e23ecae918e346844a2249aff403445ad2defd9893526f2d078"
     },
     {
       "file": "lib/authorization.mjs",
@@ -473,8 +503,8 @@
     },
     {
       "file": "package.json",
-      "bytes": 605,
-      "sha256": "82d420a7303e7839efeb2e68e2538b8011113c98c21fc037f6211e7947cb4262"
+      "bytes": 712,
+      "sha256": "facfdd929d4d14ecba4ff81913f69e16fe2e36d039b733ef381e83b6d3fb749d"
     },
     {
       "file": "plans/reading-list.json",
@@ -522,9 +552,14 @@
       "sha256": "58b29a54109b8d46b9efa007f17bf4445513be0645a47a6ffb483d6c47203e04"
     },
     {
+      "file": "scripts/codex-context.mjs",
+      "bytes": 1464,
+      "sha256": "2bb19dcf828212f56a0420eae8468fa78ea9d1d92005cde80b87b06320782fd5"
+    },
+    {
       "file": "scripts/evaluate-help-pair.mjs",
-      "bytes": 2490,
-      "sha256": "5cca47b8985d4ab643cdf42b481fba960d2e50d2a883686aa7d933d77f6d3ed5"
+      "bytes": 4140,
+      "sha256": "8141cc599abbbd41aadfa08e830a19137497f112ebb9b1189ec6324ca36cf33e"
     },
     {
       "file": "v2/engine.mjs",
@@ -533,8 +568,8 @@
     },
     {
       "file": "v2/inspect.mjs",
-      "bytes": 5030,
-      "sha256": "c9b807d279d119c4bc7e3f06d9b5fb790228c0e9fc7359a1539a2b2079c601f8"
+      "bytes": 5064,
+      "sha256": "c82aafcc3c23b1790a9dc5bfc1b6c2ef736bf47b0daa32b14675019bbccec213"
     },
     {
       "file": "v2/plan-validation.mjs",
@@ -583,13 +618,13 @@
     },
     {
       "file": "v3/auto-experience.mjs",
-      "bytes": 17423,
-      "sha256": "c0fe4b0ce7ebecdc1ead50621e4ce353e4355bba7aac47854e911be6ea361939"
+      "bytes": 19255,
+      "sha256": "5bb66af71c068cc0784ff0d16c18fb8aabf71c74339b6550eadd31ea1c4cb955"
     },
     {
       "file": "v3/auto-experience.test.mjs",
-      "bytes": 5550,
-      "sha256": "02d412f81553793e2e9ee7e88a521a3ff26298fe2f9beae2740ed8a84cc257be"
+      "bytes": 6386,
+      "sha256": "17a6878c21ca2da67cd9bdabe3584b3193bb12fc127ea60f51aaf8adbe4d706d"
     },
     {
       "file": "v3/business-advice.mjs",
@@ -613,8 +648,8 @@
     },
     {
       "file": "v3/chat-entry.mjs",
-      "bytes": 15961,
-      "sha256": "68237a6dd958e371ccd6e08f628be05c2115edca238c9e645ac1bdae2b2f8ad7"
+      "bytes": 16041,
+      "sha256": "117fd0c7b3eabd39c16098266ee3a78137896dd5c8f0f4a173b181c49acc6dbe"
     },
     {
       "file": "v3/cloud-page.mjs",
@@ -633,8 +668,8 @@
     },
     {
       "file": "v3/connect-page.mjs",
-      "bytes": 9235,
-      "sha256": "c784e830e1c812856eebbca351cdb4d21af4031ab3afba48c60394b42d0ff740"
+      "bytes": 9330,
+      "sha256": "a1cc3d0f0d56c1dafa85d065f0f13e6ef24b98ca92886bb7789b7e7cb411a7d4"
     },
     {
       "file": "v3/discover.mjs",
@@ -687,14 +722,24 @@
       "sha256": "d73f92c39b6959fc62fcaa57330e3290c9270781a61f35f7f8fe13639b373074"
     },
     {
+      "file": "v3/project-contract.mjs",
+      "bytes": 11241,
+      "sha256": "c9cb569e8e76d132b7d6875137ef550a5a0e31211f6cea46ceb1bce91f0ec27d"
+    },
+    {
+      "file": "v3/project-contract.test.mjs",
+      "bytes": 3582,
+      "sha256": "667c89348aede102df6dc5ce52b9ce078417f50aaec73d208b6bc6ac039620a6"
+    },
+    {
       "file": "v3/project-import.mjs",
-      "bytes": 3511,
-      "sha256": "cd6cec22ff1caad76a517387eeefacb227c7d69bdcbfd39a34d88af317aef573"
+      "bytes": 3604,
+      "sha256": "96a1eee329dee0faf683c9f6b8c8859c5924d13b1f3630221f68ae35976204d4"
     },
     {
       "file": "v3/project-import.test.mjs",
-      "bytes": 2375,
-      "sha256": "e0de6035b83f3a36a8d36151d32bf60055ea6efc55b2c88abf68fe4a153524d5"
+      "bytes": 2522,
+      "sha256": "a29a8a6b431beccda66ca52c8ef0051a1fa8941aadda7e80a6e0161223ec7ced"
     },
     {
       "file": "v3/public-demo.mjs",
@@ -758,8 +803,8 @@
     },
     {
       "file": "v3/scope-guide.mjs",
-      "bytes": 2660,
-      "sha256": "356a80fdb272e282988c150203a8e6e29a624e886b61de8ba67985db84625ea9"
+      "bytes": 3438,
+      "sha256": "0c9baa777d3008c9ba5550b664e72d908e4fcb514bf239fa15ab98a7484cff72"
     },
     {
       "file": "v3/scope-guide.test.mjs",
@@ -788,13 +833,13 @@
     },
     {
       "file": "v3/workbench-page.mjs",
-      "bytes": 39087,
-      "sha256": "178f79141d3c10134e44784fd9bb931989be7783fd8f58ede7dad9688241d5d5"
+      "bytes": 39626,
+      "sha256": "3484261b22a664fd7ab18b8829b61f5a2f845965f9a9a729248dc606eedefb59"
     },
     {
       "file": "v3/workbench.mjs",
-      "bytes": 39007,
-      "sha256": "fce03dfeb902c1f8c627358b18e41a8bd866aecf6a9f9acf1d17a525486d35a9"
+      "bytes": 40650,
+      "sha256": "ca2a615fd5333fb57cb94bb72fb03183f0dfe61048d6cbf1b1561348cbd9318a"
     }
   ]
 }

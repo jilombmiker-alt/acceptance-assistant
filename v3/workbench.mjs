@@ -22,6 +22,7 @@ import {bodyHash} from '../lib/authorization.mjs';
 import {sanitize} from '../lib/privacy.mjs';
 import {discoverPage,localURL} from './discover.mjs';
 import {compileTask,coverageResults,plannerLimits} from './planner.mjs';
+import {compileProjectContractTask,loadProjectContract,projectContractFile,projectContractMode} from './project-contract.mjs';
 import {compileBusinessTask,businessMode} from './business.mjs';
 import {createExperienceStore} from './experience.mjs';
 import {createAutoExperienceStore,applyAnalysis,experienceOutcomes,automaticReportHTML} from './auto-experience.mjs';
@@ -138,6 +139,7 @@ export async function startWorkbench({allowedRoot=base,stateDir=path.join(base,'
     }catch{return unavailable(409,'上轮源码、标准或实际产物缺失、变化，无法通过核验；所请求的文件也必须属于已核验产物。');}
    }
    if(req.method==='GET'&&req.url==='/business-advice.json'&&!demoOnly)return send(200,{advice:await advice(),history:current?.adviceFeedbackHistory||[]});
+   if(req.method==='GET'&&req.url==='/experience-impact.json'&&!demoOnly){if(!current)return send(404,{error:'请先建立本地任务'});return send(200,await autoStore.impact(current.intake.root));}
    if(req.method==='GET'&&req.url==='/state')return send(200,await view());
    if(req.method==='GET'&&req.url==='/repair-case.json'){if(demoOnly)return send(404,{error:'此入口未提供'});try{return send(200,await readReportFile(base,'evaluation/report-repair-case.json'),'application/json');}catch{return send(404,{error:'尚未生成修复案例'});}}
    if(req.method==='GET'&&req.url==='/codex-context.md'){
@@ -188,7 +190,7 @@ export async function startWorkbench({allowedRoot=base,stateDir=path.join(base,'
      if(importedProjects.size>=8)throw Error('本次启动已接入 8 份快照；请完成当前任务后重启本地助手。');
      if(current?.receipt){const control=(await getController()).state();if(control.worker?.running||control.pending.length||control.canStart)throw Error('原任务还在运行，请先完成或结束当前任务，再接入新版本。');}
      const project=await importStaticProject(data.files,path.join(stateDir,'imports'));importedProjects.set(project.root,project);
-     return send(200,{projectPath:project.root,url:project.url,files:project.files,bytes:project.bytes,fingerprint:project.fingerprint,scope:'本机网页快照；未执行安装或后端启动脚本'});
+     return send(200,{projectPath:project.root,url:project.url,files:project.files,bytes:project.bytes,fingerprint:project.fingerprint,hasAcceptanceContract:project.hasAcceptanceContract,scope:project.hasAcceptanceContract?'本机网页快照；检测到 acceptance.spec.json，将按项目业务契约生成完整声明范围的检查':'本机网页快照；未执行安装或后端启动脚本'});
     }else if(['/suggest','/experience-adopt','/experience-brief'].includes(req.url)){
      const root=await checkedRoot(data.projectPath),mode=data.mode||'basic';
      return send(200,req.url==='/suggest'?{suggestions:await experiences.suggest({root,mode,goal:data.goal||''})}:req.url==='/experience-brief'?{brief:await experiences.brief({id:data.id,root,mode,goal:data.goal})}:{experience:await experiences.adopt({id:data.id,root,mode})});
@@ -205,9 +207,10 @@ export async function startWorkbench({allowedRoot=base,stateDir=path.join(base,'
      if(data.mode&&!['basic',businessMode].includes(data.mode))throw Error('此任务模式尚未支持');
      localURL(data.url);const intake=await inspectProject(root),observation=await discoverPage(data.url,intake,{semanticTargets:data.automatic===true});
      const experience=data.experienceId?await experiences.adopt({id:data.experienceId,root,mode:data.mode||'basic'}):null;
-     const id='task-'+crypto.randomUUID();let task=data.mode===businessMode?await compileBusinessTask({...businessSettings,id,normalRuns:data.normalRuns,intake,observation,excludedPaths:experience?.settings.excludedPaths||[]}):compileTask({id,goal:data.goal,endpoint:data.endpoint||'',expectedText:data.expectedText||'',normalRuns:data.normalRuns,intake,observation});
+     const id='task-'+crypto.randomUUID(),hasContract=data.mode!=='reviewed-reading'&&intake.files.some(file=>file.file===projectContractFile);
+     let task=data.mode===businessMode?await compileBusinessTask({...businessSettings,id,normalRuns:data.normalRuns,intake,observation,excludedPaths:experience?.settings.excludedPaths||[]}):hasContract?await compileProjectContractTask({id,normalRuns:data.normalRuns,intake,observation,userGoal:data.goal||'',excludedPaths:experience?.settings.excludedPaths||[]}):compileTask({id,goal:data.goal,endpoint:data.endpoint||'',expectedText:data.expectedText||'',normalRuns:data.normalRuns,intake,observation});
      if(snapshotPrior)task=snapshotRepairTask(snapshotPrior,{id,intake,observation,baselineTaskId:snapshotBaseline.taskId});
-     else if(task.mode!==businessMode)task=compileReportJourneys(task,observation);
+     else if(![businessMode,projectContractMode].includes(task.mode))task=compileReportJourneys(task,observation);
      if(experience){if(task.mode===businessMode&&experience.source.templateHash!==task.templateHash)throw Error('历史业务模板已变化，请重新选择本轮路径');task.sources.experience={id:experience.id,taskId:experience.source.taskId,revision:experience.source.revision,note:experience.note,versionChanged:experience.source.fingerprint!==task.fingerprint,adopted:'操作者主动采纳为本轮草稿；当前表单要求优先，旧授权与执行记录不复用'};task.digest=bodyHash(JSON.stringify({...task,digest:undefined}));}
      if(data.automatic===true){if(data.contextNote?.trim()){if(demoOnly)throw Error('公开演示不读取个人资料');await autoStore.feedback(root,{task,text:data.contextNote});}if(demoOnly)throw Error('公开演示不读取个人资料');task=await enhance(task,intake,observation,data.materialFiles||[]);}
      const sameProject=!demoOnly&&current&&current.intake.root===root&&current.observation.url===observation.url;
@@ -227,10 +230,10 @@ export async function startWorkbench({allowedRoot=base,stateDir=path.join(base,'
       if(current.receipt){
        if(old.excludedPaths.some(x=>!ex.includes(x))||['goal','endpoint','expectedText','normalRuns','fieldValues'].some(k=>data[k]!==undefined&&JSON.stringify(data[k])!==JSON.stringify(old[k])))throw Error('开始后本轮仅支持缩小检查范围；改变预期或扩大作用不能直接迁移原任务');
       }
-      if(old.mode===businessMode&&['goal','endpoint','expectedText','fieldValues'].some(k=>data[k]!==undefined&&JSON.stringify(data[k])!==JSON.stringify(old[k])))throw Error('已审核业务计划本轮只支持选择路径，不静默套用新的业务要求或样例');
+      if([businessMode,projectContractMode].includes(old.mode)&&['goal','endpoint','expectedText','fieldValues'].some(k=>data[k]!==undefined&&JSON.stringify(data[k])!==JSON.stringify(old[k])))throw Error('业务验收契约本轮只支持选择路径，不静默改写目标、动作或预期');
       const args={id:old.id,revision:old.revision+1,goal:data.goal??old.goal,endpoint:data.endpoint??old.endpoint,expectedText:data.expectedText??old.expectedText,normalRuns:data.normalRuns??old.normalRuns,fieldValues:data.fieldValues??old.fieldValues,excludedPaths:ex,intake:current.intake,observation:current.observation};
-      let task=old.mode===businessMode?await compileBusinessTask({...args,...businessSettings}):compileTask(args);
-      if(old.mode!==businessMode)task=compileReportJourneys(task,current.observation,{excludedPaths:ex});
+      let task=old.mode===businessMode?await compileBusinessTask({...args,...businessSettings}):old.mode===projectContractMode?await compileProjectContractTask({id:old.id,revision:old.revision+1,intake:current.intake,observation:current.observation,normalRuns:old.normalRuns,excludedPaths:ex,userGoal:old.contract?.userGoal||''}):compileTask(args);
+      if(![businessMode,projectContractMode].includes(old.mode))task=compileReportJourneys(task,current.observation,{excludedPaths:ex});
       if(old.autoExperience){
        if(current.receipt){task=structuredClone(old);task.revision=old.revision+1;}
        else task=await enhance(task,current.intake,current.observation,old.autoExperience.files||[]);
@@ -241,7 +244,7 @@ export async function startWorkbench({allowedRoot=base,stateDir=path.join(base,'
        task.digest=bodyHash(JSON.stringify({...task,digest:undefined}));
       }
       if(old.sources.experience){task.sources.experience=old.sources.experience;task.digest=bodyHash(JSON.stringify({...task,digest:undefined}));}
-      if(old.mode===businessMode&&task.templateHash!==old.templateHash)throw Error('审核模板已变化，请重新建立任务，不迁移原执行');
+      if([businessMode,projectContractMode].includes(old.mode)&&task.templateHash!==old.templateHash)throw Error('业务验收契约已变化，请重新建立任务，不迁移原执行');
       current.task=task;current.revisions.push({revision:task.revision,at:new Date().toISOString(),reason:current.receipt?'用户缩小范围；原执行版本和已发生动作保留':'用户纠正待执行计划',goal:task.goal,digest:task.digest});
       await save(path.join(folder(task.id),'revision-'+task.revision+'.json'),task);await persist();
      }else if(req.url==='/start'){
@@ -250,6 +253,7 @@ export async function startWorkbench({allowedRoot=base,stateDir=path.join(base,'
       if(data.confirmed!==true||data.digest!==current.task.digest)throw Error('请按页面当前资料、目标和操作范围开始');
       const fresh=await inspectProject(current.intake.root);if(fresh.fingerprint!==current.intake.fingerprint)throw Error('已扫描源码自规划后发生变化，请重新读取并规划，旧任务保留');
       if(current.task.mode===businessMode){const check=await compileBusinessTask({...businessSettings,id:current.task.id,intake:current.intake,observation:current.observation,normalRuns:current.task.normalRuns,excludedPaths:current.task.excludedPaths});if(check.templateHash!==current.task.templateHash)throw Error('审核模板已变化，请重新建立任务');}
+      if(current.task.mode===projectContractMode){const contract=await loadProjectContract(current.intake.root,current.intake);if(contract.hash!==current.task.templateHash)throw Error('项目验收契约已变化，请重新建立任务');}
       if(current.task.autoExperience){const freshMaterials=await autoStore.collect(current.intake.root,current.task.autoExperience.files||[]);const hashes=freshMaterials.materials.map(s=>({id:s.id,hash:s.hash,disabled:!!s.disabled}));if(JSON.stringify(hashes)!==JSON.stringify(current.task.autoExperience.materialHashes))throw Error('个人依据已变化，请重新生成本轮计划；尚未执行');}
       for(const doc of current.task.reportDocuments||[]){const bytes=await readReportFile(current.intake.root,doc.file,{maxBytes:256000});if(bodyHash(bytes)!==doc.hash)throw Error('证据文件已变化，请重新生成计划');}
       current.confirmedAuthorization=structuredClone(current.task.proposedScope);current.confirmedAuthorization.source=current.task.mode===businessMode?'用户在当前版本任务页明确开始：仅受控阅读清单样例，按列出的输入、点击、筛选、刷新、导出和次数上限执行；不外发、不修改原始资料':'用户在本机任务入口明确开始；普通输入仅使用页面列出的本轮测试样例；只读指定本机页面及资源，不提交、不外发';
@@ -265,6 +269,7 @@ export async function startWorkbench({allowedRoot=base,stateDir=path.join(base,'
        const fresh=await inspectProject(current.intake.root);if(fresh.fingerprint!==current.intake.fingerprint)throw Error('源码已变化，不能混用原检查点；请重新建立任务复检');
        if(!demoOnly)await captureRepairSource(current,folder(current.task.id));
        if(current.task.mode===businessMode){const check=await compileBusinessTask({...businessSettings,id:current.task.id,intake:current.intake,observation:current.observation,normalRuns:current.task.normalRuns,excludedPaths:current.task.excludedPaths});if(check.templateHash!==current.task.templateHash)throw Error('审核模板已变化，请重新建立任务');}
+       if(current.task.mode===projectContractMode){const contract=await loadProjectContract(current.intake.root,current.intake);if(contract.hash!==current.task.templateHash)throw Error('项目验收契约已变化，请重新建立任务');}
        if(current.task.autoExperience){const materials=await autoStore.collect(current.intake.root,current.task.autoExperience.files||[]);if(JSON.stringify(materials.materials.map(m=>({id:m.id,hash:m.hash,disabled:!!m.disabled})))!==JSON.stringify(current.task.autoExperience.materialHashes))throw Error('个人依据已变化，请重新建立任务');}
        for(const doc of current.task.reportDocuments||[]){if(bodyHash(await readReportFile(current.intake.root,doc.file,{maxBytes:256000}))!==doc.hash)throw Error('证据文件已变化，请重新建立任务');}
       }

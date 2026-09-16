@@ -1,0 +1,38 @@
+{
+  "date": "2026-09-16",
+  "scope": "Project-owned static web acceptance contracts, held-out controlled fixtures, longitudinal experience outcomes, localhost Codex handoff, and human-study preparation",
+  "moduleTests": {
+    "total": 108,
+    "passed": 108,
+    "failed": 0
+  },
+  "independentControlledProjects": {
+    "projects": 3,
+    "paths": 6,
+    "exactMatches": 6,
+    "falsePositive": 0,
+    "falseNegative": 0,
+    "unverifiedCorrectlyRetained": 1
+  },
+  "tooling": {
+    "codexContextVerified": true,
+    "studyDraftFromCompleteContractVerified": true,
+    "experienceImpactEndpointVerified": true,
+    "mobileWidthHorizontalOverflow": false,
+    "skillStructureVerified": true,
+    "officialSkillValidator": "not-run: PyYAML unavailable in bundled Python"
+  },
+  "humanBenefit": {
+    "status": "unmeasured",
+    "userActiveMs": null,
+    "repeatExplanationCount": null,
+    "correctionReworkCount": null
+  },
+  "limitations": [
+    "Controlled fixtures are not external customer projects",
+    "A project contract declares its coverage; the product cannot infer omitted real requirements",
+    "Backend and external services still require dedicated adapters",
+    "No real participants, retention data, or measured net savings",
+    "No global Codex skill installation"
+  ]
+}

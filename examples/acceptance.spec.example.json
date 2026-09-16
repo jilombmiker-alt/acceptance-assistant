@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "project": "示例记录工具",
+  "goal": "新增记录并确认列表显示",
+  "completeContract": true,
+  "paths": [
+    {
+      "id": "entry",
+      "name": "页面入口",
+      "dimension": "业务逻辑",
+      "trigger": "打开首页",
+      "basis": ["交付要求：首页必须可以打开"],
+      "steps": [{"type": "goto", "path": "/index.html"}],
+      "checks": [{"type": "visible", "target": {"css": "body"}, "expected": true, "label": "页面主体可见"}]
+    },
+    {
+      "id": "add",
+      "name": "新增记录",
+      "dimension": "数据正确性",
+      "trigger": "填写名称并点击新增",
+      "basis": ["交付要求：新增后列表显示该记录"],
+      "dependsOn": ["entry"],
+      "steps": [
+        {"type": "goto", "path": "/index.html"},
+        {"type": "fill", "target": {"label": "名称"}, "value": "验收样例"},
+        {"type": "click", "target": {"role": "button", "name": "新增"}}
+      ],
+      "checks": [{"type": "containsText", "target": {"css": "#items"}, "expected": "验收样例", "label": "列表显示新增记录"}]
+    }
+  ]
+}
+

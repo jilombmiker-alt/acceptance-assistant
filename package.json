@@ -13,6 +13,8 @@
     "test": "node --test v3/*.test.mjs",
     "verify:repair": "node audit/build-repair-case.mjs",
     "verify:reading-repair": "node audit/build-reading-repair-case.mjs",
+    "codex:context": "node scripts/codex-context.mjs",
+    "study": "node scripts/evaluate-help-pair.mjs",
     "start:repair": "node v3/reading-repair-demo.mjs"
   },
   "dependencies": {

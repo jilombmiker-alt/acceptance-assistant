@@ -19,14 +19,15 @@ test('reject traversal, hidden/configuration files and unsupported uploads',asyn
   assert.deepEqual(await fs.readdir(root),[]);
  }finally{await fs.rm(root,{recursive:true,force:true});}
 });
-test('serve the selected build and retain a distinct immutable version snapshot',async()=>{
+test('serve the selected build, retain its contract and keep immutable version snapshots',async()=>{
  const root=await fs.mkdtemp(path.join(os.tmpdir(),'intake-serve-'));let before,after;
  try{
-  before=await importStaticProject([file('index.html','source'),file('dist/index.html','<h1>Before</h1>'),file('dist/app.js','void 0')],root);
+  before=await importStaticProject([file('index.html','source'),file('dist/index.html','<h1>Before</h1>'),file('dist/app.js','void 0'),file('dist/acceptance.spec.json','{}')],root);
   after=await importStaticProject([file('index.html','<h1>After</h1>')],root);
   assert.equal(await(await fetch(before.url)).text(),'<h1>Before</h1>');
   assert.equal(await(await fetch(after.url)).text(),'<h1>After</h1>');
   assert.notEqual(before.fingerprint,after.fingerprint);assert.notEqual(before.root,after.root);
+  assert.equal(before.hasAcceptanceContract,true);assert.equal(after.hasAcceptanceContract,false);
   assert.equal((await fetch(before.url+'.env')).status,404);
  }finally{await Promise.all([before,after].filter(Boolean).map(s=>new Promise(r=>s.server.close(r))));await fs.rm(root,{recursive:true,force:true});}
 });

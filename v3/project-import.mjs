@@ -35,6 +35,6 @@ export async function importStaticProject(files,directory){
   const selected=entries.filter(f=>f.path.startsWith(prefix));
   for(const f of selected){const target=path.join(root,f.path.slice(prefix.length));await fs.mkdir(path.dirname(target),{recursive:true,mode:0o700});await fs.writeFile(target,f.bytes,{mode:0o600,flag:'wx'});}
   const site=await startStaticProject(root);
-  return {...site,files:selected.length,bytes:selected.reduce((n,f)=>n+f.bytes.length,0),fingerprint:crypto.createHash('sha256').update(JSON.stringify(selected.map(f=>[f.path,crypto.createHash('sha256').update(f.bytes).digest('hex')]))).digest('hex')};
+  return {...site,files:selected.length,bytes:selected.reduce((n,f)=>n+f.bytes.length,0),hasAcceptanceContract:selected.some(f=>f.path.slice(prefix.length)==='acceptance.spec.json'),fingerprint:crypto.createHash('sha256').update(JSON.stringify(selected.map(f=>[f.path,crypto.createHash('sha256').update(f.bytes).digest('hex')]))).digest('hex')};
  }catch(e){await fs.rm(root,{recursive:true,force:true});throw e;}
 }

@@ -15,7 +15,7 @@ export async function inspectProject(root){
    if(item.isSymbolicLink()){omit(file,'符号链接不读取');continue;}
    if(item.isDirectory()){await walk(f);continue;}
    if(!item.isFile()){omit(file,'非普通文件不读取');continue;}
-   if(!supported.test(item.name)&&item.name!=='package.json'){
+   if(!supported.test(item.name)&&!['package.json','acceptance.spec.json'].includes(item.name)){
     omit(file,'尚不支持此文件类型，未读取或计入指纹');gaps.push('存在未支持的文件类型，版本指纹只覆盖已扫描文件');continue;
    }
    if(files.length>=300){omit(file,'超过300个文件预算');gaps.push('文件数量超过本轮扫描上限');continue;}

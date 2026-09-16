@@ -12,6 +12,8 @@
 
 本地版已加入同目录修复关联、PDF/Codex 复检交接，以及基础网页重新上传时保留原标准。详见 [2026-09-16 发布说明](docs/acceptance/10-release-20260916.md)。公开魔搭仍只运行固定案例，自己的代码在本机接入。
 
+如果项目需要完整业务路径检查，可在网页根目录放入 [`acceptance.spec.json` 示例](examples/acceptance.spec.example.json)。上传后系统自动按契约执行声明的路径、操作和确定性结果检查；契约外业务、后端和外部服务仍需专用适配器。[契约与五项闭环说明](docs/acceptance/24-project-contract-and-completion.md)。
+
 [完整接入指南与支持范围](docs/acceptance/04-connect-your-project.md)
 
 本地任务中断后继续执行会保存对应复检证据，源码变化时提示新建任务。见 [恢复验收说明](docs/acceptance/12-interrupted-repair.md)。
@@ -59,6 +61,8 @@ npm start
 3. 修改源码后重新选择文件夹接入新版本；使用原目录及运行地址时，可输入“重新检查”。
 4. 用“纠正：具体要求”留下项目反馈；一次性例外不直接变成永久规则。
 5. 输入“带回 Codex”，把下载的上下文附到下一条 Codex 任务中。
+
+在本仓库使用 Codex 时，也可直接运行 `npm run codex:context` 读取当前本机任务，无需手工附加文件。运行 `npm run study -- --init-local http://127.0.0.1:4395 标准草稿.json` 可从当前任务开始准备真人 A/B 效果记录。
 
 视频入口：本地首页“怎么开始” → “看 3 分半使用演示”。也可打开 /guide-video。高级工作台保留在 /workbench。
 

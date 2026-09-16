@@ -101,6 +101,19 @@ export function automaticReportHTML(a){
  return '<section><h2>个人经验实际改变了什么</h2><p>判断、执行与收益分别记录；已执行不代表已证明减少返工。</p>'+a.decisions.map(d=>'<details><summary>'+esc(d.summary)+' · '+esc(names[d.outcome]||d.outcome)+'</summary><p>'+esc(d.reason)+'</p><p>'+esc(d.change)+'</p><p>来源：'+esc(d.source.label)+'</p><blockquote>'+esc(d.quote)+'</blockquote><p>检查编号：'+esc(d.mappedPaths.join('、')||'未新增')+'</p><p>'+esc(d.handoff)+'</p><p>帮助方向：'+esc(d.help?.intent||'效果待验证')+'</p><p>实际节省：未测得。</p><p>下一步：'+esc(d.help?.next||'先取得执行证据')+'</p></details>').join('')+'</section>';
 }
 
+export function summarizeExperienceImpact(entries){
+ const outcomes=entries.filter(row=>row.kind==='outcome').sort((a,b)=>a.at.localeCompare(b.at));
+ const disabled=new Set(entries.filter(row=>row.kind==='disabled').map(row=>row.sourceId)),sources=new Map();
+ for(const row of outcomes)for(const decision of row.outcomes?.decisions||[]){
+  const id=decision.source?.id;if(!id)continue;
+  const item=sources.get(id)||{sourceId:id,label:decision.source.label||'历史来源',tasks:new Set(),appliedTasks:0,executedPaths:0,outcomes:{'requirement-met':0,'requirement-not-met':0,unverified:0,'outside-scope':0,'not-applied':0,'handoff-only':0,'not-run':0},lastOutcome:null,lastAt:null};
+  item.tasks.add(row.taskId);if(decision.decision==='apply')item.appliedTasks++;item.executedPaths+=decision.executedPaths||0;
+  item.outcomes[decision.outcome]=(item.outcomes[decision.outcome]||0)+1;item.lastOutcome=decision.outcome;item.lastAt=row.at;sources.set(id,item);
+ }
+ const rows=[...sources.values()].map(item=>({...item,tasks:item.tasks.size,disabled:disabled.has(item.sourceId),status:disabled.has(item.sourceId)?'disabled':item.outcomes['requirement-not-met']?'needs-repair':item.outcomes.unverified||item.outcomes['not-run']?'needs-evidence':item.outcomes['requirement-met']?'observed-met':'no-executed-effect'}));
+ return {version:1,scope:'同一项目中个人历史的采用、执行和结果纵向记录；用于决定保留、修正或停用。没有无历史对照时，不宣称省时或因果收益。',tasks:outcomes.length,sources:rows.sort((a,b)=>(b.lastAt||'').localeCompare(a.lastAt||'')),humanBenefit:{status:'unmeasured',userActiveMs:null,repeatExplanationCount:null,correctionReworkCount:null,reason:'尚无经过复核的真人 A/B 行为对照'}};
+}
+
 export async function createAutoExperienceStore(dir){
  await fs.mkdir(dir,{recursive:true,mode:0o700});
  const folder=root=>path.join(dir,bodyHash(root));
@@ -118,7 +131,7 @@ export async function createAutoExperienceStore(dir){
   for(const row of entries.filter(x=>x.kind==='feedback').sort((a,b)=>a.at.localeCompare(b.at)).slice(-12))materials.push({id:row.id,hash:bodyHash(row.content),label:'任务反馈 '+row.taskId+' 第 '+row.revision+' 版',kind:'feedback',content:row.content,taskGoal:row.goal,taskId:row.taskId,at:row.at,disabled:disabled.has(row.id)});
   must(materials.reduce((n,m)=>n+m.content.length,0)<=24000,'本轮个人材料超过 24000 字符读取预算');const priorOutcomes=entries.filter(x=>x.kind==='outcome').sort((a,b)=>a.at.localeCompare(b.at)).slice(-4).map(x=>({taskId:x.taskId,at:x.at,decisions:x.outcomes.decisions.map(d=>({sourceId:d.source.id,summary:d.summary,outcome:d.outcome,executedPaths:d.executedPaths,benefit:'未验证长期增益'}))}));return {materials,gaps,files:selected,priorOutcomes};
  }
- return {collect,
+ return {collect,impact:async root=>summarizeExperienceImpact(await readAll(root)),
   feedback:async(root,{task,text:content})=>{must(text(content)&&content.trim(),'反馈为空、过长或包含疑似凭据');const id=bodyHash(JSON.stringify([task.id,task.revision,content]));return write(root,id,{kind:'feedback',taskId:task.id,revision:task.revision,goal:task.goal,content,at:new Date().toISOString()});},
   disable:async(root,sourceId)=>{const {materials}=await collect(root,[]);must(materials.some(x=>x.id===sourceId),'此经验来源不属于当前项目');return write(root,bodyHash('disabled:'+sourceId),{kind:'disabled',sourceId,at:new Date().toISOString()});},
   outcome:async(root,task,result)=>{const outcomes=experienceOutcomes(task,result);if(!outcomes)return;return write(root,bodyHash('outcome:'+task.id+':'+task.revision),{kind:'outcome',taskId:task.id,at:new Date().toISOString(),outcomes});},

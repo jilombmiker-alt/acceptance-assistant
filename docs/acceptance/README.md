@@ -60,3 +60,5 @@
 [重传时更新当前页面缺项](22-snapshot-observation.md)：资源与原输入定位提示随新版本刷新，补回资源撤回旧警告，冻结原检查标准。
 
 [PDF 与 Codex 的接入观察](23-observation-exports.md)：缺资源与恢复后的导出一致，原标准不变，两份 PDF 全部 8 页已核对。
+
+[项目契约、陌生项目、历史闭环、Codex 与效果实验](24-project-contract-and-completion.md)：五项缺口的产品机制、实际自测和仍需外部数据的边界。

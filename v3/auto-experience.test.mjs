@@ -4,7 +4,7 @@ import fs from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import {compileTask} from './planner.mjs';
-import {applyAnalysis,validateAnalysis,experienceOutcomes,createAutoExperienceStore} from './auto-experience.mjs';
+import {applyAnalysis,validateAnalysis,experienceOutcomes,createAutoExperienceStore,summarizeExperienceImpact} from './auto-experience.mjs';
 import {readReportFile} from '../lib/report-file.mjs';
 import {workbenchJS} from './workbench-page.mjs';
 const input=()=>({url:'http://127.0.0.1:4567/',materials:[{id:'source',hash:'hash',label:'纠正.md',kind:'project-material',content:'报告详情正文默认收起，需要时再展开。'}],observedTargets:[{id:'detail',target:{css:'#detail'}}]});
@@ -18,3 +18,9 @@ test('资料读取拒绝越界、符号链接及超限文件',async()=>{const di
 test('浏览器脚本可解析',()=>assert.doesNotThrow(()=>new Function(workbenchJS)));
 
 test('旧任务一次性例外不会因模型采用而进入新任务执行',()=>{const v=value(),i=input();v.items[0].kind='exception';i.materials[0].taskId='past-task';const t=applyAnalysis(task(),v,i,{});assert.equal(t.plan.paths.length,1);assert.equal(t.autoExperience.decisions[0].decision,'skip');assert.equal(t.autoExperience.decisions[0].policyOverride,'past-task-exception');});
+
+test('跨任务纵向记录区分实际结果与尚未测得的人类收益',()=>{const source={id:'source',label:'纠正.md'},decision=(outcome,executedPaths=1)=>({source,decision:'apply',outcome,executedPaths});const impact=summarizeExperienceImpact([
+ {kind:'outcome',taskId:'t1',at:'2026-09-16T01:00:00Z',outcomes:{decisions:[decision('requirement-not-met')]}},
+ {kind:'outcome',taskId:'t2',at:'2026-09-16T02:00:00Z',outcomes:{decisions:[decision('requirement-met')]}},
+ {kind:'disabled',sourceId:'other'}
+ ]);assert.equal(impact.tasks,2);assert.equal(impact.sources[0].tasks,2);assert.equal(impact.sources[0].outcomes['requirement-met'],1);assert.equal(impact.sources[0].status,'needs-repair');assert.equal(impact.humanBenefit.status,'unmeasured');assert.equal(impact.humanBenefit.userActiveMs,null);});

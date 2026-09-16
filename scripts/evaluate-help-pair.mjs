@@ -8,7 +8,14 @@ import {evaluateHelpPair,evaluationVersion} from '../v3/help-evaluation.mjs';
 const [mode,...args]=process.argv.slice(2);
 const read=async file=>JSON.parse(await fs.readFile(file,'utf8'));
 const write=async(file,value)=>fs.writeFile(file,JSON.stringify(value,null,2)+'\n',{flag:'wx',mode:0o600});
-if(mode==='--freeze'&&args.length===2){
+if(mode==='--init-local'&&args.length===2){
+ const source=new URL('/state',args[0]);if(!['127.0.0.1','localhost','[::1]'].includes(source.hostname))throw Error('只从本机验收助手生成效果实验草稿');
+ const response=await fetch(source,{redirect:'error',signal:AbortSignal.timeout(5000)});if(!response.ok)throw Error('无法读取当前本地任务：HTTP '+response.status);
+ const state=await response.json();if(!state.task)throw Error('请先建立本地验收任务');
+ const criteria=state.task.checks.filter(check=>!state.task.excludedPaths.includes(check.id)).map(check=>({id:check.id,severity:'major',label:check.module,expected:check.expected}));
+ const draft={completeRubric:state.task.contract?.declaredComplete===true,primaryMetric:'repeatExplanationCount',minimumReduction:1,maxExtra:{userActiveMs:300000,systemWaitMs:60000,costMinor:0},currency:'CNY',criteria,context:{taskHash:state.task.digest,initialRequestHash:bodyHash(state.task.goal),initialArtifactHash:state.task.fingerprint,modelConfigHash:bodyHash(JSON.stringify(state.semantic||{})),toolsHash:bodyHash(evaluationVersion),budgetHash:bodyHash(JSON.stringify(state.task.plan.policy))},notes:'开始 A/B 前复核标准、影响级别、最小改善值与额外负担上限。普通基础计划不会自动标为完整标准；项目验收契约明确声明完整时才为 true。'};
+ await write(args[1],draft);console.log(JSON.stringify({draftFile:args[1],criteria:criteria.length,completeRubric:draft.completeRubric,next:'复核后使用 --freeze；真人 A/B 记录须逐项引用实际证据。'}));
+}else if(mode==='--freeze'&&args.length===2){
  const spec=await read(args[0]);
  const protocol={...spec,version:evaluationVersion,frozenAt:new Date().toISOString(),context:{...spec.context,rubricHash:bodyHash(JSON.stringify(spec.criteria))}};
  await write(args[1],protocol);
@@ -31,5 +38,5 @@ if(mode==='--freeze'&&args.length===2){
  await write(output,{...assessment,evidenceChecks:checks,inputs:{protocol:bodyHash(JSON.stringify(protocol)),A:bodyHash(JSON.stringify(arms[0])),B:bodyHash(JSON.stringify(arms[1]))},limits:'核对本地证据完整性及审评规则；人工标注的真实性、完整性和历史因果关系仍需独立审查。受控数据不是真人收益。'});
  console.log(JSON.stringify({output,status:assessment.status,label:assessment.label}));
 }else{
- throw Error('用法：node scripts/evaluate-help-pair.mjs --freeze 标准草稿.json 冻结标准.json；或 --evaluate 冻结标准.json A.json B.json 新结果.json');
+ throw Error('用法：node scripts/evaluate-help-pair.mjs --init-local http://127.0.0.1:4395 标准草稿.json；--freeze 标准草稿.json 冻结标准.json；或 --evaluate 冻结标准.json A.json B.json 新结果.json');
 }
