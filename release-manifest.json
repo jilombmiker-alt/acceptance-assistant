@@ -107,6 +107,11 @@
       "sha256": "3d8768847a6e31d0255b3ff8ea7c182a315a61d8cba73335ba9730295b1bdfd4"
     },
     {
+      "file": "audit/check-snapshot-observation.mjs",
+      "bytes": 4761,
+      "sha256": "76ae513bf1dc0baa3ae50d04035b1beb8d1268793fcda53922bde9e356042df6"
+    },
+    {
       "file": "audit/check-snapshot-repair.mjs",
       "bytes": 4608,
       "sha256": "ab39ef734269bef5334bf6a3d9ea0de65a50795287234461eeef02eed56ab393"
@@ -158,8 +163,8 @@
     },
     {
       "file": "docs/acceptance/09-snapshot-repair.md",
-      "bytes": 3229,
-      "sha256": "4fef0e18fa99b60fc30ea0bb39ba57de3e87c2ac7acecc250c769691bc5ffc73"
+      "bytes": 3414,
+      "sha256": "45e5b8135df9ae4ff09782bb23a546ca5fb07a1574bd7bbf7b856055bfadf7cb"
     },
     {
       "file": "docs/acceptance/10-release-20260916.md",
@@ -222,9 +227,14 @@
       "sha256": "01bd4b74425d5744c24f565cea3a3fc1c11c0efd373ca563d1a277512a380234"
     },
     {
+      "file": "docs/acceptance/22-snapshot-observation.md",
+      "bytes": 2883,
+      "sha256": "a453cfe625555bce5e66dd963728570d3ee2b6a06dee6eb28e1b0ce1a1e7246b"
+    },
+    {
       "file": "docs/acceptance/README.md",
-      "bytes": 4780,
-      "sha256": "2cd7550a9dfa5354af617790db1325131419cc01e2653eec60476c10f5011287"
+      "bytes": 4953,
+      "sha256": "428dd14985efdbba2c9823c3e69e6368fad5ffadab9460e47c253284832e4253"
     },
     {
       "file": "docs/acceptance/evidence/business-advice-pdf.json",
@@ -327,6 +337,11 @@
       "sha256": "dcf9c02d9556711310bee5ec0ed357610660c748b4f65954d879aeeb410ec80a"
     },
     {
+      "file": "docs/acceptance/evidence/snapshot-observation.json",
+      "bytes": 2304,
+      "sha256": "6ae58c99f901c82e7c32da6e71ae2646c8db1d223a7792b64792b65867cb5104"
+    },
+    {
       "file": "docs/acceptance/evidence/snapshot-repair.json",
       "bytes": 1693,
       "sha256": "7f1b4140d4a5bd5b19b9cf8b54a9a7b13c7c4dab011652127ff2e9524254b9b0"
@@ -383,8 +398,8 @@
     },
     {
       "file": "docs/next-version/04-iteration-checklist.md",
-      "bytes": 14817,
-      "sha256": "44752ffcf6e66543c176303ea133422b60cb24ca5f146d4d648e40c4a70a0dbf"
+      "bytes": 14896,
+      "sha256": "446921cf35a95a3fb4594ac600b79b2ea8a043f6c5e266057e7e8038ab1251c1"
     },
     {
       "file": "docs/subtitles.srt",
@@ -743,13 +758,13 @@
     },
     {
       "file": "v3/snapshot-repair.mjs",
-      "bytes": 2775,
-      "sha256": "e8b52f7f9fd5ef57be782bdf7d420fc40f7295cddbd39562b875be54c45aad25"
+      "bytes": 4306,
+      "sha256": "89e707f28ac1c4cfb5af0253f99ab20912bea5b4959546ff72ed20524cca0f89"
     },
     {
       "file": "v3/snapshot-repair.test.mjs",
-      "bytes": 4029,
-      "sha256": "0aae0e6cd2f18f096398b4ee4fa545ab4b7d3bac89d3c902200771f408a2abd3"
+      "bytes": 6199,
+      "sha256": "c37e85c54b08e16396e72d066ef2957c35026f06b9f62bc671c21aa29b8d46e2"
     },
     {
       "file": "v3/workbench-page.mjs",

@@ -1,0 +1,94 @@
+{
+  "scope": "Controlled static reuploads; current observations change, frozen criteria do not",
+  "records": [
+    {
+      "case": "missing-resources-plan",
+      "blocked": [
+        "/app.css",
+        "/app.js"
+      ],
+      "observedFields": 0,
+      "warnings": [
+        "当前上传版本有未读取的请求（/app.css、/app.js）。请核对是否漏传资源或依赖超出读取范围；系统不会自动放开请求，原检查仍保留。",
+        "本次页面观察未对应原输入定位：输入：书名。原检查仍保留，需按原步骤核对；这不是已确认的业务失败。"
+      ],
+      "checks": [
+        "entry",
+        "expected-text",
+        "input-0",
+        "layout"
+      ]
+    },
+    {
+      "case": "missing-resources-run",
+      "repair": "unverified",
+      "paths": [
+        {
+          "id": "entry",
+          "status": "unverified",
+          "repetitions": 1
+        },
+        {
+          "id": "expected-text",
+          "status": "unverified",
+          "repetitions": 1
+        },
+        {
+          "id": "input-0",
+          "status": "unverified",
+          "repetitions": 1
+        },
+        {
+          "id": "layout",
+          "status": "unverified",
+          "repetitions": 1
+        }
+      ]
+    },
+    {
+      "case": "restored-resources",
+      "warnings": [],
+      "criteriaSame": true,
+      "repair": "unverified",
+      "paths": [
+        {
+          "id": "entry",
+          "status": "pass",
+          "repetitions": 2
+        },
+        {
+          "id": "expected-text",
+          "status": "pass",
+          "repetitions": 2
+        },
+        {
+          "id": "input-0",
+          "status": "pass",
+          "repetitions": 2
+        },
+        {
+          "id": "layout",
+          "status": "pass",
+          "repetitions": 2
+        }
+      ]
+    }
+  ],
+  "userTimeSavedMs": null,
+  "date": "2026-09-16",
+  "moduleTests": 101,
+  "beforeFix": {
+    "observedBlockedPaths": [
+      "/app.css",
+      "/app.js"
+    ],
+    "observedFields": 0,
+    "visibleWarnings": []
+  },
+  "limitations": [
+    "Controlled local snapshots only",
+    "Observation is not a confirmed business failure",
+    "PDF and Codex observation-gap exports not added or revalidated in this batch",
+    "No measured human savings"
+  ]
+}
