@@ -1,3 +1,4 @@
+import {observationNotes} from './scope-guide.mjs';
 import {bodyHash} from '../lib/authorization.mjs';
 import {redactText} from '../lib/privacy.mjs';
 
@@ -15,6 +16,8 @@ export function codexContext({task,automatic,root,materials=[],repair=null,busin
   '原任务指纹：'+task.digest,'',
   '使用顺序：核对本次目标 → 判断同一情境是否适用 → 执行必要修改或检查 → 保留前后版本与复检结果。',
   '当前明确要求优先；换项目、改目标、资料变化或一次性例外，不自动沿用。只复用有条件的经验，不推断用户永久偏好。',''];
+ const notes=observationNotes(task);
+ lines.push('## 本计划的接入观察',notes.scope,...(notes.items.length?notes.items.map(g=>'> '+JSON.stringify({类别:g.label,记录:g.reason})):['> '+notes.empty]),...(notes.omitted?['另有 '+notes.omitted+' 条接入说明，完整内容见当前计划。']:[]),'');
  if(!accepted.length)lines.push('本次没有可安全沿用的有效经验，按当前要求工作。已停用、变化、一次性例外和未明确采用的来源不会导出。','');
  for(const [i,d] of accepted.entries()){
   lines.push('## 情境提醒 '+(i+1),

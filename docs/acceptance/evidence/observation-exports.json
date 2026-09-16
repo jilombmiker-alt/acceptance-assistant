@@ -1,0 +1,93 @@
+{
+  "scope": "Two local basic paths; missing and restored resources with frozen criteria",
+  "records": [
+    {
+      "case": "missing",
+      "file": "missing.pdf",
+      "sha256": "5849e28aad45d11ee1535568869aa6b11dd93cb56a91d9a80b196022a68cf35a",
+      "codexHash": "3b7b7444cbb2d01854a6a1ea98bd9568f8aca4e02a609f439a29c673d57da9c4",
+      "notes": [
+        "当前上传版本有未读取的请求（/app.css、/app.js）。请核对是否漏传资源或依赖超出读取范围；系统不会自动放开请求，原检查仍保留。",
+        "本次页面观察未对应原输入定位：输入：书名。原检查仍保留，需按原步骤核对；这不是已确认的业务失败。"
+      ],
+      "repair": "unverified",
+      "criteriaSame": true,
+      "cacheStable": true,
+      "paths": [
+        {
+          "id": "entry",
+          "status": "unverified",
+          "repetitions": 1
+        },
+        {
+          "id": "input-0",
+          "status": "unverified",
+          "repetitions": 1
+        }
+      ]
+    },
+    {
+      "case": "restored",
+      "file": "restored.pdf",
+      "sha256": "2907ba7c5a5959c13bdfac5bdfdc0b17fe726a0b6006f1125948f31791ab4448",
+      "codexHash": "3ab9aa75ee79ce84b9aa6322cbd93ea7bec6870280172ae9a978c9010993d209",
+      "notes": [],
+      "repair": "unverified",
+      "criteriaSame": true,
+      "cacheStable": true,
+      "paths": [
+        {
+          "id": "entry",
+          "status": "pass",
+          "repetitions": 2
+        },
+        {
+          "id": "input-0",
+          "status": "pass",
+          "repetitions": 2
+        }
+      ]
+    }
+  ],
+  "userTimeSavedMs": null,
+  "pdfReview": "pass: all 8 pages inspected",
+  "date": "2026-09-16",
+  "moduleTests": 104,
+  "pdfs": [
+    {
+      "file": "missing.pdf",
+      "pages": 4,
+      "sha256": "5849e28aad45d11ee1535568869aa6b11dd93cb56a91d9a80b196022a68cf35a",
+      "textAndHashVerified": true,
+      "textNormalization": "NFKC and three observed CJK radical variants",
+      "visualReview": "pass",
+      "inspectedPages": [
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    {
+      "file": "restored.pdf",
+      "pages": 4,
+      "sha256": "2907ba7c5a5959c13bdfac5bdfdc0b17fe726a0b6006f1125948f31791ab4448",
+      "textAndHashVerified": true,
+      "textNormalization": "NFKC and three observed CJK radical variants",
+      "visualReview": "pass",
+      "inspectedPages": [
+        1,
+        2,
+        3,
+        4
+      ]
+    }
+  ],
+  "limitations": [
+    "Controlled local basic paths only",
+    "Observation is captured when this plan is generated, not refreshed at export",
+    "Prior incomplete execution keeps overall repair unverified",
+    "No measured human savings",
+    "Raw PDFs and original task data are not published"
+  ]
+}

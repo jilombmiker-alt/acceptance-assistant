@@ -62,6 +62,11 @@
       "sha256": "6f2c2a6dff7ea4e5cadddbe9cee597a4a3f58f0119b2a28dbef2412996aad517"
     },
     {
+      "file": "audit/check-observation-exports.mjs",
+      "bytes": 4058,
+      "sha256": "6608b9356f346c2ac4201442a1924fdb781cb072bd5187d8a7f93029aa236bb8"
+    },
+    {
       "file": "audit/check-project-import.mjs",
       "bytes": 2391,
       "sha256": "a22be90f9ace1a71e8e8b2b65c6bc931fcdc1bccb8a743d2c73be6a9f168f1fd"
@@ -232,9 +237,14 @@
       "sha256": "a453cfe625555bce5e66dd963728570d3ee2b6a06dee6eb28e1b0ce1a1e7246b"
     },
     {
+      "file": "docs/acceptance/23-observation-exports.md",
+      "bytes": 2154,
+      "sha256": "8945ddf8afb1af971b9dfe9ae2795c75052e09a95610eceada92d7c37b07d942"
+    },
+    {
       "file": "docs/acceptance/README.md",
-      "bytes": 4953,
-      "sha256": "428dd14985efdbba2c9823c3e69e6368fad5ffadab9460e47c253284832e4253"
+      "bytes": 5108,
+      "sha256": "3d742b7c692160674a72405fa5d75fe5f5ce1083cf85229b64fb8b83a1c4a4a5"
     },
     {
       "file": "docs/acceptance/evidence/business-advice-pdf.json",
@@ -275,6 +285,11 @@
       "file": "docs/acceptance/evidence/isolated-demo.json",
       "bytes": 2000,
       "sha256": "5a12cd3c416f882fd9f79bbf9e1f7b073ecd2e31de253eacdfcc4d37a4ec1e80"
+    },
+    {
+      "file": "docs/acceptance/evidence/observation-exports.json",
+      "bytes": 2778,
+      "sha256": "cc538e198dcec4bac680b38374750f2ba11d2bfdc01d18f24e5000cb9e3000c3"
     },
     {
       "file": "docs/acceptance/evidence/pdf-review.json",
@@ -398,8 +413,8 @@
     },
     {
       "file": "docs/next-version/04-iteration-checklist.md",
-      "bytes": 14896,
-      "sha256": "446921cf35a95a3fb4594ac600b79b2ea8a043f6c5e266057e7e8038ab1251c1"
+      "bytes": 15366,
+      "sha256": "09459591a65df25aeb216fc8647499541ac77d194296c3e49a4eaf6c97ee7ec9"
     },
     {
       "file": "docs/subtitles.srt",
@@ -608,8 +623,8 @@
     },
     {
       "file": "v3/codex-context.mjs",
-      "bytes": 5250,
-      "sha256": "5f7560808ace36316703519a38f0e4fb708f8049caf0982f26836bdc175982f2"
+      "bytes": 5615,
+      "sha256": "13b3b587b759acd6db4226af0d63c28500dba24846e2c9c5f448ab032e90b4da"
     },
     {
       "file": "v3/codex-context.test.mjs",
@@ -655,6 +670,11 @@
       "file": "v3/light-entry.mjs",
       "bytes": 9733,
       "sha256": "8c251ce9abe074b1501da1fc7445ec36f326e009bfe8fdf9a157b2e40beb6399"
+    },
+    {
+      "file": "v3/observation-export.test.mjs",
+      "bytes": 2308,
+      "sha256": "dc35523221571621b6d4d60bbf43d1386013ee1d88a6883239d59a084af1742b"
     },
     {
       "file": "v3/planner.mjs",
@@ -723,8 +743,8 @@
     },
     {
       "file": "v3/report-export.mjs",
-      "bytes": 6466,
-      "sha256": "6f47d82ed12c61e0eecf091f986b7bb3c82abfdc346dc1b8985b1fb20069f7cc"
+      "bytes": 6552,
+      "sha256": "9a88ac5816de9e27d1fa78a16035cf4b95f8e7fe73d5e221adcb0208e2bdba00"
     },
     {
       "file": "v3/report-journeys.mjs",
@@ -738,8 +758,8 @@
     },
     {
       "file": "v3/scope-guide.mjs",
-      "bytes": 1170,
-      "sha256": "d7054c31c763d557e3ec554c00123c2fa2d4c7435dd8db71dd562f7ad80817ed"
+      "bytes": 2660,
+      "sha256": "356a80fdb272e282988c150203a8e6e29a624e886b61de8ba67985db84625ea9"
     },
     {
       "file": "v3/scope-guide.test.mjs",
