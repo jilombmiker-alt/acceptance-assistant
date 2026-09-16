@@ -13,11 +13,19 @@ export const businessLimits='已审核阅读清单业务计划：新增、状态
 const esc=x=>x.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
 // The catalog is server-owned. Never derive permission to arbitrary UI actions
 // from an uploaded/model-generated plan. A task still needs its own start receipt.
-export async function compileBusinessTask({id,revision=1,intake,observation,normalRuns=2,excludedPaths=[]}){
+export async function compileBusinessTask({id,revision=1,intake,observation,normalRuns=2,excludedPaths=[],reviewedRoot,exportRegressions=false}){
  if(![2,3].includes(normalRuns))throw Error('本轮业务计划支持 2 或 3 次验证');
- const sourceRoot=await fs.realpath(path.join(base,'projects/reading-list'));
+ const sourceRoot=await fs.realpath(reviewedRoot||path.join(base,'projects/reading-list'));
  if(await fs.realpath(intake.root)!==sourceRoot)throw Error('此业务计划只适用于已审核阅读清单项目；不能套用到 Handy 或其他项目');
+ // reviewedRoot and exportRegressions are trusted launcher settings, never HTTP fields.
  const template=JSON.parse(await fs.readFile(path.join(base,'plans/reading-list.json'),'utf8'));
+ if(exportRegressions){
+  for(const [id,dependency,name] of [['export-filter','filter','筛选后仍导出全部书目'],['export-refresh','persist','刷新后导出当前状态'],['export-unread','unread','改回未读后导出']]){
+   const check=structuredClone(template.paths.find(p=>p.id==='export'));Object.assign(check,{id,name,dependsOn:[dependency],trigger:name+'，下载并核对全部记录'});
+   if(id==='export-unread')check.checks[0].expected.books[0].read=false;
+   template.paths.push(check);
+  }
+ }
  for(const file of ['README.md','index.html','app.js','help.html']){
   const row=intake.files.find(x=>x.file===file);
   if(!row||row.sha256!==bodyHash(await fs.readFile(path.join(sourceRoot,file))))throw Error('业务计划材料不完整或已变化，请重新读取');

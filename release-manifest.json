@@ -18,8 +18,8 @@
     },
     {
       "file": "README.md",
-      "bytes": 5825,
-      "sha256": "0ddc873479c86d8ebf73ff6a8102385fc757917c0a3da8023d06f6ffa6675bbf"
+      "bytes": 6141,
+      "sha256": "d15df58c38db52a0dfd1ab20eda07dae8af60e2367c638cac614f381a7ff330b"
     },
     {
       "file": "audit/build-reading-repair-case.mjs",
@@ -45,6 +45,11 @@
       "file": "audit/check-project-import.mjs",
       "bytes": 2391,
       "sha256": "a22be90f9ace1a71e8e8b2b65c6bc931fcdc1bccb8a743d2c73be6a9f168f1fd"
+    },
+    {
+      "file": "audit/check-reading-workflow.mjs",
+      "bytes": 6031,
+      "sha256": "eba3ef7d41271a69b276fa59daf101c268877c5a7b74c0bc780db2e13c6923dd"
     },
     {
       "file": "audit/check-repair-scope.mjs",
@@ -142,9 +147,14 @@
       "sha256": "201bce32aefb6f99a1db07e6a6f6aa0e7a6431b0067076cd4e93349a83340289"
     },
     {
+      "file": "docs/acceptance/14-reading-workflow.md",
+      "bytes": 3171,
+      "sha256": "f5d9c74fda559f9c69cafcad81d9daf6262844769e8ca07b6145fdde9631aa4d"
+    },
+    {
       "file": "docs/acceptance/README.md",
-      "bytes": 3496,
-      "sha256": "92981e63bd29a07d3c9070e5d4e09bffbc7a7451434dbaf012e4f06420712e3d"
+      "bytes": 3641,
+      "sha256": "fbcdac63c75564c9871822db627e7ee47474592f560dcac5ea312dad7e826223"
     },
     {
       "file": "docs/acceptance/evidence/help-evaluation.json",
@@ -185,6 +195,11 @@
       "file": "docs/acceptance/evidence/reading-repair.json",
       "bytes": 134158,
       "sha256": "15433d3ced95f8a532d846145cca5578ce241bfd2d733e8f5c833f1975ceafed"
+    },
+    {
+      "file": "docs/acceptance/evidence/reading-workflow.json",
+      "bytes": 7650,
+      "sha256": "014971de431f317b386d413ff6f2fcebc43661e8d326b0fbd438e01c6142543a"
     },
     {
       "file": "docs/acceptance/evidence/repair-exports.json",
@@ -263,8 +278,8 @@
     },
     {
       "file": "docs/next-version/04-iteration-checklist.md",
-      "bytes": 11673,
-      "sha256": "8ab47b55e3906f44ab8c3c983e4720ff356340024e1980198fe6f6cb8de6ba16"
+      "bytes": 12210,
+      "sha256": "7a43b20eae38bf55b05eab794209c78c70d6e6fb2b5e92dfe5c16d4562272030"
     },
     {
       "file": "docs/subtitles.srt",
@@ -323,8 +338,8 @@
     },
     {
       "file": "package.json",
-      "bytes": 550,
-      "sha256": "4b2fc7c492658c303b69ba286787ddb1be9b9dc6cdf9561f6f60ebcc65568e1e"
+      "bytes": 605,
+      "sha256": "82d420a7303e7839efeb2e68e2538b8011113c98c21fc037f6211e7947cb4262"
     },
     {
       "file": "plans/reading-list.json",
@@ -443,13 +458,18 @@
     },
     {
       "file": "v3/business.mjs",
-      "bytes": 6105,
-      "sha256": "a7f7093195a283eebc622587f89b48c8acbe4090200afeb9c9d65b89a89a3868"
+      "bytes": 6763,
+      "sha256": "e1903da88903319012bd9a6d319e9b6302fa80155f7e1d3d2b053154e74ae56b"
+    },
+    {
+      "file": "v3/business.test.mjs",
+      "bytes": 2062,
+      "sha256": "ab8efa33bd6604989271a2fe412e3e784906f8e9438840e0c093b6bef31f9e0a"
     },
     {
       "file": "v3/chat-entry.mjs",
-      "bytes": 12826,
-      "sha256": "d81d1834ebe19228a62bcc9f9fa2982c60e0b9071545ddbb3ab69683da7aeb5e"
+      "bytes": 13012,
+      "sha256": "dcde391b4f591652cb836bc88b707e8c62cc917a98a17fbecc3b502cc483275d"
     },
     {
       "file": "v3/cloud-page.mjs",
@@ -532,6 +552,11 @@
       "sha256": "1bfad49602fabbd564dc83af4bee814033edb326e5f2f35dbfa0c7fcdce0433f"
     },
     {
+      "file": "v3/reading-repair-demo.mjs",
+      "bytes": 2871,
+      "sha256": "bead3f3d737e3ac9bac283d571df089f6087f8e21f97e5c3b67526a1e99c1c23"
+    },
+    {
       "file": "v3/repair-comparison.mjs",
       "bytes": 2833,
       "sha256": "dfefb3b4b3e339cdafb3c812b5947f3c620b6d931d65a91b06fe7b153eda0bbe"
@@ -598,8 +623,8 @@
     },
     {
       "file": "v3/workbench.mjs",
-      "bytes": 34860,
-      "sha256": "b8045a1322d92d39682b5aab152bc45bdb93f68a01af2ca177aecfadd1444c1c"
+      "bytes": 35095,
+      "sha256": "d0c7164a45b9fc0d2e2f93b817cdd033637dbca8748de5e2b44c5dcab38e3856"
     }
   ]
 }

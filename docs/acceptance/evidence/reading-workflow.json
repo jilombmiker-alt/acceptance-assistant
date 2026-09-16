@@ -1,0 +1,314 @@
+{
+  "scope": "受控阅读清单独立副本，经真实工作台任务执行与关联；非陌生项目",
+  "checks": [
+    "launcher-prepares-eleven-paths-without-starting",
+    "http-cannot-expand-reviewed-root",
+    "one-export-defect-observed-on-three-paths",
+    "real-source-change-retested-through-workbench",
+    "sixteen-real-downloads-match-state-expectations",
+    "html-and-codex-export-match-repair",
+    "restart-preserves-edited-source-and-repair",
+    "changed-download-invalidates-repair",
+    "original-fixture-unchanged"
+  ],
+  "checkCount": 11,
+  "repetitions": 2,
+  "knownDefects": 1,
+  "affectedBefore": [
+    "export",
+    "export-filter",
+    "export-refresh"
+  ],
+  "afterIssues": 0,
+  "repairStatus": "verified-repair",
+  "criteriaHash": "dcc96177610d413083c6ec8599fadc04f1a82310363d2b006d7e926e501ff7b3",
+  "beforeProgramHash": "2154c8c976041044290c5ece1b3f5ef0734c384eae4c992b627d3edccc252ecc",
+  "afterProgramHash": "1135b08845cb95f57293e10c7c774d7db7f2ff9f038911698c2b0781b179e899",
+  "downloads": [
+    {
+      "phase": "before",
+      "check": "export",
+      "sha256": "f11de8b91f648aeed1dc093a240e0d2cdafc7cac31155e62ef0448b27eecad12",
+      "actual": {
+        "books": [
+          {
+            "title": "山海笔记",
+            "read": false
+          },
+          {
+            "title": "城市观察",
+            "read": false
+          }
+        ]
+      }
+    },
+    {
+      "phase": "before",
+      "check": "export",
+      "sha256": "f11de8b91f648aeed1dc093a240e0d2cdafc7cac31155e62ef0448b27eecad12",
+      "actual": {
+        "books": [
+          {
+            "title": "山海笔记",
+            "read": false
+          },
+          {
+            "title": "城市观察",
+            "read": false
+          }
+        ]
+      }
+    },
+    {
+      "phase": "before",
+      "check": "export-filter",
+      "sha256": "f11de8b91f648aeed1dc093a240e0d2cdafc7cac31155e62ef0448b27eecad12",
+      "actual": {
+        "books": [
+          {
+            "title": "山海笔记",
+            "read": false
+          },
+          {
+            "title": "城市观察",
+            "read": false
+          }
+        ]
+      }
+    },
+    {
+      "phase": "before",
+      "check": "export-filter",
+      "sha256": "f11de8b91f648aeed1dc093a240e0d2cdafc7cac31155e62ef0448b27eecad12",
+      "actual": {
+        "books": [
+          {
+            "title": "山海笔记",
+            "read": false
+          },
+          {
+            "title": "城市观察",
+            "read": false
+          }
+        ]
+      }
+    },
+    {
+      "phase": "before",
+      "check": "export-refresh",
+      "sha256": "f11de8b91f648aeed1dc093a240e0d2cdafc7cac31155e62ef0448b27eecad12",
+      "actual": {
+        "books": [
+          {
+            "title": "山海笔记",
+            "read": false
+          },
+          {
+            "title": "城市观察",
+            "read": false
+          }
+        ]
+      }
+    },
+    {
+      "phase": "before",
+      "check": "export-refresh",
+      "sha256": "f11de8b91f648aeed1dc093a240e0d2cdafc7cac31155e62ef0448b27eecad12",
+      "actual": {
+        "books": [
+          {
+            "title": "山海笔记",
+            "read": false
+          },
+          {
+            "title": "城市观察",
+            "read": false
+          }
+        ]
+      }
+    },
+    {
+      "phase": "before",
+      "check": "export-unread",
+      "sha256": "f11de8b91f648aeed1dc093a240e0d2cdafc7cac31155e62ef0448b27eecad12",
+      "actual": {
+        "books": [
+          {
+            "title": "山海笔记",
+            "read": false
+          },
+          {
+            "title": "城市观察",
+            "read": false
+          }
+        ]
+      }
+    },
+    {
+      "phase": "before",
+      "check": "export-unread",
+      "sha256": "f11de8b91f648aeed1dc093a240e0d2cdafc7cac31155e62ef0448b27eecad12",
+      "actual": {
+        "books": [
+          {
+            "title": "山海笔记",
+            "read": false
+          },
+          {
+            "title": "城市观察",
+            "read": false
+          }
+        ]
+      }
+    },
+    {
+      "phase": "after",
+      "check": "export",
+      "sha256": "405252df98ac906b53213f3922a9b06544d331564f1f728411abfa41304110a0",
+      "actual": {
+        "books": [
+          {
+            "title": "山海笔记",
+            "read": true
+          },
+          {
+            "title": "城市观察",
+            "read": false
+          }
+        ]
+      }
+    },
+    {
+      "phase": "after",
+      "check": "export",
+      "sha256": "405252df98ac906b53213f3922a9b06544d331564f1f728411abfa41304110a0",
+      "actual": {
+        "books": [
+          {
+            "title": "山海笔记",
+            "read": true
+          },
+          {
+            "title": "城市观察",
+            "read": false
+          }
+        ]
+      }
+    },
+    {
+      "phase": "after",
+      "check": "export-filter",
+      "sha256": "405252df98ac906b53213f3922a9b06544d331564f1f728411abfa41304110a0",
+      "actual": {
+        "books": [
+          {
+            "title": "山海笔记",
+            "read": true
+          },
+          {
+            "title": "城市观察",
+            "read": false
+          }
+        ]
+      }
+    },
+    {
+      "phase": "after",
+      "check": "export-filter",
+      "sha256": "405252df98ac906b53213f3922a9b06544d331564f1f728411abfa41304110a0",
+      "actual": {
+        "books": [
+          {
+            "title": "山海笔记",
+            "read": true
+          },
+          {
+            "title": "城市观察",
+            "read": false
+          }
+        ]
+      }
+    },
+    {
+      "phase": "after",
+      "check": "export-refresh",
+      "sha256": "405252df98ac906b53213f3922a9b06544d331564f1f728411abfa41304110a0",
+      "actual": {
+        "books": [
+          {
+            "title": "山海笔记",
+            "read": true
+          },
+          {
+            "title": "城市观察",
+            "read": false
+          }
+        ]
+      }
+    },
+    {
+      "phase": "after",
+      "check": "export-refresh",
+      "sha256": "405252df98ac906b53213f3922a9b06544d331564f1f728411abfa41304110a0",
+      "actual": {
+        "books": [
+          {
+            "title": "山海笔记",
+            "read": true
+          },
+          {
+            "title": "城市观察",
+            "read": false
+          }
+        ]
+      }
+    },
+    {
+      "phase": "after",
+      "check": "export-unread",
+      "sha256": "f11de8b91f648aeed1dc093a240e0d2cdafc7cac31155e62ef0448b27eecad12",
+      "actual": {
+        "books": [
+          {
+            "title": "山海笔记",
+            "read": false
+          },
+          {
+            "title": "城市观察",
+            "read": false
+          }
+        ]
+      }
+    },
+    {
+      "phase": "after",
+      "check": "export-unread",
+      "sha256": "f11de8b91f648aeed1dc093a240e0d2cdafc7cac31155e62ef0448b27eecad12",
+      "actual": {
+        "books": [
+          {
+            "title": "山海笔记",
+            "read": false
+          },
+          {
+            "title": "城市观察",
+            "read": false
+          }
+        ]
+      }
+    }
+  ],
+  "userTimeSavedMs": null,
+  "reworkSaved": null,
+  "sourceSummarySha256": "82315469d9984d15f0d245a744bdbf811c0967f064a95a657d81bc7a36bd562f",
+  "uiChecks": [
+    "result-page-visible",
+    "report-opened-and-version-details-inspected",
+    "chat-recheck-prepares-eleven-paths",
+    "chat-start-executes-task",
+    "same-version-repeat-not-repair",
+    "final-directory-guidance-confirmed-after-restart",
+    "final-chat-and-expanded-report-visual-inspection"
+  ],
+  "uiRepeatStatus": "same-version-repeat"
+}
