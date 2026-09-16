@@ -1,0 +1,214 @@
+{
+  "date": "2026-09-16",
+  "scope": "受控阅读清单5条路径；正常/已观察偏差各两次，执行不完整停止重放，依赖受阻不执行",
+  "moduleTests": 90,
+  "cases": [
+    {
+      "scenario": "add-mismatch",
+      "paths": [
+        {
+          "id": "add",
+          "status": "issue",
+          "attempts": 2
+        },
+        {
+          "id": "read",
+          "status": "blocked",
+          "attempts": 0
+        },
+        {
+          "id": "filter",
+          "status": "blocked",
+          "attempts": 0
+        },
+        {
+          "id": "export",
+          "status": "blocked",
+          "attempts": 0
+        },
+        {
+          "id": "export-filter",
+          "status": "blocked",
+          "attempts": 0
+        }
+      ],
+      "adviceKind": "prerequisite-blocked",
+      "next": "先处理前置「新增书目」的已观察偏差，再按原标准复查受阻路径。",
+      "attentionPoints": [
+        {
+          "checkId": "add",
+          "status": "issue",
+          "kind": "observed-mismatch"
+        }
+      ],
+      "executionCounts": {
+        "pass": 0,
+        "issue": 1,
+        "blocked": 4,
+        "unverified": 0
+      },
+      "tamperCheck": true
+    },
+    {
+      "scenario": "read-control-missing",
+      "paths": [
+        {
+          "id": "add",
+          "status": "pass",
+          "attempts": 2
+        },
+        {
+          "id": "read",
+          "status": "unverified",
+          "attempts": 1
+        },
+        {
+          "id": "filter",
+          "status": "blocked",
+          "attempts": 0
+        },
+        {
+          "id": "export",
+          "status": "blocked",
+          "attempts": 0
+        },
+        {
+          "id": "export-filter",
+          "status": "blocked",
+          "attempts": 0
+        }
+      ],
+      "adviceKind": "prerequisite-blocked",
+      "next": "先核对前置「标记已读」的控件定位、页面状态和执行记录，再重新检查受阻路径；目前不能判定导出内容有错。",
+      "attentionPoints": [
+        {
+          "checkId": "read",
+          "status": "unverified",
+          "kind": "execution-incomplete"
+        }
+      ],
+      "executionCounts": {
+        "pass": 1,
+        "issue": 0,
+        "blocked": 3,
+        "unverified": 1
+      },
+      "tamperCheck": true
+    },
+    {
+      "scenario": "download-missing",
+      "paths": [
+        {
+          "id": "add",
+          "status": "pass",
+          "attempts": 2
+        },
+        {
+          "id": "read",
+          "status": "pass",
+          "attempts": 2
+        },
+        {
+          "id": "filter",
+          "status": "pass",
+          "attempts": 2
+        },
+        {
+          "id": "export",
+          "status": "unverified",
+          "attempts": 1
+        },
+        {
+          "id": "export-filter",
+          "status": "unverified",
+          "attempts": 1
+        }
+      ],
+      "adviceKind": "execution-incomplete",
+      "next": "先核对导出控件、下载是否实际触发及执行记录；补齐运行条件后按原标准重新检查。",
+      "attentionPoints": [
+        {
+          "checkId": "export",
+          "status": "unverified",
+          "kind": "execution-incomplete"
+        },
+        {
+          "checkId": "export-filter",
+          "status": "unverified",
+          "kind": "execution-incomplete"
+        }
+      ],
+      "executionCounts": {
+        "pass": 3,
+        "issue": 0,
+        "blocked": 0,
+        "unverified": 2
+      },
+      "tamperCheck": "not-in-this-case"
+    },
+    {
+      "scenario": "export-mismatch",
+      "paths": [
+        {
+          "id": "add",
+          "status": "pass",
+          "attempts": 2
+        },
+        {
+          "id": "read",
+          "status": "pass",
+          "attempts": 2
+        },
+        {
+          "id": "filter",
+          "status": "pass",
+          "attempts": 2
+        },
+        {
+          "id": "export",
+          "status": "issue",
+          "attempts": 2
+        },
+        {
+          "id": "export-filter",
+          "status": "issue",
+          "attempts": 2
+        }
+      ],
+      "adviceKind": "product-mismatch",
+      "next": "交给开发核对导出读取的记录来源及 read 字段映射，再决定修改；建议本身不修改代码。",
+      "attentionPoints": [],
+      "executionCounts": {
+        "pass": 3,
+        "issue": 2,
+        "blocked": 0,
+        "unverified": 0
+      },
+      "tamperCheck": "not-in-this-case"
+    }
+  ],
+  "pdfReview": [
+    {
+      "case": "add-mismatch",
+      "pages": 5,
+      "sha256": "c6972b8dfab9f272ccd41d7b8831946c7b0fa3d8ad93eae1064ebbc92b658881",
+      "textChecks": "pass",
+      "visualReview": "pass: every page inspected; readable, no clipping or overlap; long records may continue across pages"
+    },
+    {
+      "case": "read-control-missing",
+      "pages": 4,
+      "sha256": "3023f1d86ca776ecc27a9fa1ff3008324d377e49d5b430935c93affa297cb69e",
+      "textChecks": "pass",
+      "visualReview": "pass: every page inspected; readable, no clipping or overlap; long records may continue across pages"
+    }
+  ],
+  "userTimeSavedMs": null,
+  "sourceSummarySha256": "56a58941593988b4bbbc035926b0dd8a09b33b47a190705772c8e7cc76651c6f",
+  "limitations": [
+    "controlled fault scenarios, not independent accuracy or real-user value",
+    "incomplete execution is not retried; blocked paths not executed",
+    "earlier run interrupted by local storage write failure, excluded from pass result",
+    "five paths, not the full eleven-path business suite"
+  ]
+}

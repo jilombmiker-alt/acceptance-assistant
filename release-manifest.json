@@ -42,6 +42,11 @@
       "sha256": "dd8c05ddc349191962781c92089c14a8d10150cea4639e1cbc3e609743f9b9ae"
     },
     {
+      "file": "audit/check-business-blockers.mjs",
+      "bytes": 5932,
+      "sha256": "60a68e60293efc29af21d30e1a28f3cdf332a20ba396f994a3f20f1c605215c7"
+    },
+    {
       "file": "audit/check-cloud-api.mjs",
       "bytes": 2850,
       "sha256": "216df06de186d6e29c7ce07d3652507514f584bf6360136a4515ef7405a4a334"
@@ -182,9 +187,14 @@
       "sha256": "7687f4ed03e2f0dabdde296b6dc54a7f66bc8a22f1a92ded6c7c1a2646d3bb7a"
     },
     {
+      "file": "docs/acceptance/18-business-blockers.md",
+      "bytes": 3864,
+      "sha256": "c529acc776a4d41996ae49bee27f907ef52901c3fcbce699500432327ec16f7d"
+    },
+    {
       "file": "docs/acceptance/README.md",
-      "bytes": 4099,
-      "sha256": "3894b43b0eb0cd15b58b4052e500eba2c1a6e7bf5700946113630e7079e8f223"
+      "bytes": 4292,
+      "sha256": "eeb17ee33a0319507d84579c4827155670e9c891b4f8e6093e23baa7d3d2c168"
     },
     {
       "file": "docs/acceptance/evidence/business-advice-pdf.json",
@@ -195,6 +205,11 @@
       "file": "docs/acceptance/evidence/business-advice.json",
       "bytes": 989,
       "sha256": "2aef9b2c2d495edf5131214785343d73469177054da70e71d32d13971ba878fc"
+    },
+    {
+      "file": "docs/acceptance/evidence/business-blockers.json",
+      "bytes": 5562,
+      "sha256": "c022fe00721b957d1acf0a1368d597263e976b0286dcb4369be7adc99fc167e5"
     },
     {
       "file": "docs/acceptance/evidence/help-evaluation.json",
@@ -323,8 +338,8 @@
     },
     {
       "file": "docs/next-version/04-iteration-checklist.md",
-      "bytes": 13610,
-      "sha256": "34ca7c7046366797f6cef9baad0c2810acd1344d8f084609c6840f9682c83f9f"
+      "bytes": 14109,
+      "sha256": "80b8f4eb22d429f50503ca9cf75a027bbb13902c42f13770553a5a89c705f866"
     },
     {
       "file": "docs/subtitles.srt",
@@ -503,13 +518,13 @@
     },
     {
       "file": "v3/business-advice.mjs",
-      "bytes": 3997,
-      "sha256": "e143942a9f89499ae43b4354256eda23e49256178f96221938824ae7eed9ae69"
+      "bytes": 8273,
+      "sha256": "6ba57a3d2297d00f5e2aad34986c4ae7c52eb1ec50ef23cac4cdd291cdd89a1c"
     },
     {
       "file": "v3/business-advice.test.mjs",
-      "bytes": 2457,
-      "sha256": "4c21ff180a1c50c765727e0bb4030be014d1bfa05ceaff0650b9cde8fab41047"
+      "bytes": 6270,
+      "sha256": "43dcf52b6c4d07d3350364acb33055668124c60809c804489d4072e9bd4b1def"
     },
     {
       "file": "v3/business.mjs",
@@ -523,8 +538,8 @@
     },
     {
       "file": "v3/chat-entry.mjs",
-      "bytes": 14366,
-      "sha256": "373732a085534f429039fd93ebf3ae3f506805fc99584486f2b165c7acf0fc2d"
+      "bytes": 14900,
+      "sha256": "e52a665256a8bcb75325ecaf3a48e7457ee52e82dfc7aef0df5d2cee113dcae1"
     },
     {
       "file": "v3/cloud-page.mjs",
@@ -688,8 +703,8 @@
     },
     {
       "file": "v3/workbench.mjs",
-      "bytes": 38501,
-      "sha256": "d0029db402a53596b5708e10234fb37f96806f6d966e1e97d41e95f934ea184f"
+      "bytes": 38565,
+      "sha256": "2eeb9267afc5478c62d5b79d354a724b833b6a0ed50797d8689ceb85dc120e7a"
     }
   ]
 }
