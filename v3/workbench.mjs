@@ -6,7 +6,6 @@ import {captureRepairSource,repairEvidenceFile,sealRepairEvidence,loadRepairEvid
 import {connectPage,connectJS,connectCSS} from './connect-page.mjs';
 import {cloudCSS} from './cloud-page.mjs';
 import {importStaticProject} from './project-import.mjs';
-import {createReadStream} from 'node:fs';
 import {chatPage} from './chat-entry.mjs';
 import {codexContext} from './codex-context.mjs';
 import fs from 'node:fs/promises';
@@ -112,14 +111,6 @@ export async function startWorkbench({allowedRoot=base,stateDir=path.join(base,'
    if(!demoOnly&&req.method==='GET'&&req.url==='/cloud.css')return send(200,cloudCSS+connectCSS,'text/css');
    if(req.method==='GET'&&req.url==='/style.css')return send(200,workbenchCSS,'text/css');
    if(req.method==='GET'&&req.url==='/app.js')return send(200,workbenchJS,'text/javascript');
-   if(req.method==='GET'&&req.url==='/guide-video'&&!demoOnly)return send(200,'<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>验收助手 · 使用演示</title><style>body{margin:0;background:white;color:#111;font:16px/1.7 system-ui}main{max-width:1120px;margin:40px auto;padding:0 24px}h1{font-size:26px}video{width:100%;background:#fff;border:2px solid #111;box-sizing:border-box}a{color:inherit;text-underline-offset:4px}p{color:#555}</style><main><a href="/">回到对话</a><h1>从一句目标，到修复复检</h1><video controls preload="metadata" src="/guide.mp4"></video><p>约 3 分半 · 中文合成旁白与字幕 · 实际界面截图讲解，包含独立受控修复对比。</p></main></html>','text/html');
-   if(req.method==='GET'&&req.url==='/guide.mp4'&&!demoOnly){
-    const file=path.resolve(base,'media/demo.mp4');
-    let stat;try{stat=await fs.stat(file);}catch{return send(404,{error:'视频正在准备，请稍后重试'});}
-    const match=req.headers.range?.match(/^bytes=(\d+)-(\d*)$/),start=match?Number(match[1]):0,end=match&&match[2]?Math.min(Number(match[2]),stat.size-1):stat.size-1;
-    if(start>end||start>=stat.size){res.writeHead(416,{'Content-Range':'bytes */'+stat.size});return res.end();}
-    res.writeHead(match?206:200,{'Content-Type':'video/mp4','Content-Length':end-start+1,'Accept-Ranges':'bytes','Cache-Control':'no-store',...(match?{'Content-Range':'bytes '+start+'-'+end+'/'+stat.size}:{})});createReadStream(file,{start,end}).pipe(res);return;
-   }
    if(req.method==='GET'&&req.url==='/repair-comparison.json'&&!demoOnly){const comparison=await repairStatus(current,folder);return send(comparison?200:404,comparison||{error:'尚未关联同一项目的前后任务'});}
    if(req.method==='GET'&&req.url.startsWith('/repair-before/')){
     if(demoOnly)return send(404,{error:'此入口未提供'});

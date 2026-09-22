@@ -1,5 +1,5 @@
 {
-  "scope": "Reviewed contest source, controlled fixtures and demo artifacts only",
+  "scope": "Reviewed contest source, controlled fixtures and public artifacts only",
   "files": [
     {
       "file": ".agents/skills/acceptance-assistant/SKILL.md",
@@ -23,8 +23,8 @@
     },
     {
       "file": "README.md",
-      "bytes": 6791,
-      "sha256": "db34031bf0b7ee07b1cb22195b8552dbdfeb337460a8b496b720e76e23ee1bb8"
+      "bytes": 6323,
+      "sha256": "e5bc6cfa156d1b1a2d0975fbd8b5ddd9cd3d3c11e5fbb6d6c38dcfaa216f90a3"
     },
     {
       "file": "audit/build-reading-repair-case.mjs",
@@ -397,19 +397,14 @@
       "sha256": "bc4ac7c732bd922b9ddf5765566beb7c2117c659d929e2d3ad8b55b2a50ead99"
     },
     {
-      "file": "docs/demo.mp4",
-      "bytes": 5180684,
-      "sha256": "487df45895a40b21f675a2661a34cb4eb8aa75a8d5ebcba4c87e49d37507bb2e"
-    },
-    {
       "file": "docs/home.png",
       "bytes": 23176,
       "sha256": "bbe0a05bb2a338e1edfbe5be3d5731a29221d335f1425ef5288f0d69b8de6278"
     },
     {
       "file": "docs/index.html",
-      "bytes": 2364,
-      "sha256": "ee05e8b54637cf6792eee037ac1e54080599072aaf361646fe16762e4b4ae79d"
+      "bytes": 981,
+      "sha256": "6b09f16ae3116967e3d59dfef482e90de19a2a865f8b6c057488cea6e1952ef0"
     },
     {
       "file": "docs/iterations.html",
@@ -440,16 +435,6 @@
       "file": "docs/next-version/04-iteration-checklist.md",
       "bytes": 16828,
       "sha256": "e87f489d7cbb16e4db37bcd7a4e0802bcecf62540204066d55d876fa59324184"
-    },
-    {
-      "file": "docs/subtitles.srt",
-      "bytes": 3210,
-      "sha256": "cb330b22d22cbe0252435ac48b14263783dfeaf68e9251986799bad4dbb73d24"
-    },
-    {
-      "file": "docs/video-script.md",
-      "bytes": 3623,
-      "sha256": "7ba3664cebb769933acdb843ffd3bfb5976065d5a6ebdcf7cd3962a0bd76e9f0"
     },
     {
       "file": "evaluation/report-repair-case.json",
@@ -490,11 +475,6 @@
       "file": "lib/screenshot-privacy.mjs",
       "bytes": 1688,
       "sha256": "6ce3106f5a4f49fef4d8db4202da68861c4d1dbc2ce2ce656f5fb86a5290f134"
-    },
-    {
-      "file": "media/demo.mp4",
-      "bytes": 5180684,
-      "sha256": "487df45895a40b21f675a2661a34cb4eb8aa75a8d5ebcba4c87e49d37507bb2e"
     },
     {
       "file": "ms_deploy.json",
@@ -653,8 +633,8 @@
     },
     {
       "file": "v3/cloud-page.mjs",
-      "bytes": 8860,
-      "sha256": "94dcb52b68270aee65e8b8114206a107f69afe232dbad02a455772c90a3eab38"
+      "bytes": 8221,
+      "sha256": "4ce4526cdd7775e76497495ef6d0881c2f15e94ec4a408a89f433366c6f2d33d"
     },
     {
       "file": "v3/codex-context.mjs",
@@ -743,8 +723,8 @@
     },
     {
       "file": "v3/public-demo.mjs",
-      "bytes": 11413,
-      "sha256": "1bfad49602fabbd564dc83af4bee814033edb326e5f2f35dbfa0c7fcdce0433f"
+      "bytes": 10447,
+      "sha256": "ce64b7e34a8ea08e7c7b933cfe79627456a1a8ce003a41a86b96035612f1a69d"
     },
     {
       "file": "v3/reading-repair-demo.mjs",
@@ -838,8 +818,8 @@
     },
     {
       "file": "v3/workbench.mjs",
-      "bytes": 40650,
-      "sha256": "ca2a615fd5333fb57cb94bb72fb03183f0dfe61048d6cbf1b1561348cbd9318a"
+      "bytes": 39020,
+      "sha256": "1be3bb7eabee325967b2e5420532c3fe6b534c6c447edd63a87b2966dbe3d2f5"
     }
   ]
 }

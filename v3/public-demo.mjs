@@ -2,8 +2,7 @@ import http from 'node:http';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import crypto from 'node:crypto';
-import {createReadStream} from 'node:fs';
-import {cloudPage,cloudCSS,cloudJS,videoPage} from './cloud-page.mjs';
+import {cloudPage,cloudCSS,cloudJS} from './cloud-page.mjs';
 import {fileURLToPath} from 'node:url';
 import {startWorkbench} from './workbench.mjs';
 import {startReadingServer} from '../v2/reading-server.mjs';
@@ -48,13 +47,7 @@ export async function startPublicDemo({port=0,host='127.0.0.1',publicOrigin,clou
    if(cloud&&req.method==='GET'){
     if(req.url==='/cloud.css')return send(200,cloudCSS,'text/css; charset=utf-8');
     if(req.url==='/cloud.js')return send(200,cloudJS,'text/javascript; charset=utf-8');
-    if(req.url==='/guide-video')return send(200,videoPage,'text/html; charset=utf-8',{'Content-Security-Policy':"default-src 'none'; style-src 'self' 'unsafe-inline'; media-src 'self'; frame-ancestors 'self' https://modelscope.cn https://www.modelscope.cn"});
     if(req.url==='/repair-case.json')return send(200,await fs.readFile(path.join(root,'evaluation/report-repair-case.json')));
-    if(req.url==='/guide.mp4'){
-     const file=path.join(root,'media/demo.mp4'),stat=await fs.stat(file),match=req.headers.range?.match(/^bytes=(\d+)-(\d*)$/),start=match?Number(match[1]):0,end=match&&match[2]?Math.min(Number(match[2]),stat.size-1):stat.size-1;
-     if(start>end||start>=stat.size)return send(416,'','video/mp4',{'Content-Range':'bytes */'+stat.size});
-     res.writeHead(match?206:200,{'Content-Type':'video/mp4','Content-Length':end-start+1,'Accept-Ranges':'bytes','Cache-Control':'public, max-age=3600',...(match?{'Content-Range':'bytes '+start+'-'+end+'/'+stat.size}:{})});createReadStream(file,{start,end}).pipe(res);return;
-    }
    }
    const evidence=req.method==='GET'&&/^\/evidence\/(?:[a-zA-Z0-9_-]+\/)*[a-zA-Z0-9_.-]+\.(?:png|json|csv|txt)$/.test(req.url)&&!req.url.includes('..');
    if(!(req.method==='GET'&&(getRoutes.has(req.url)||evidence||cloud&&req.url==='/workbench')||req.method==='POST'&&postRoutes.has(req.url)))return send(404,{error:'演示入口未提供'});

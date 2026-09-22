@@ -2,7 +2,7 @@
 
 **把个人经验变成可检查的下一步。** 中客松参赛作品，团队：默默无闻；队长及队员：杨海胜。
 
-[魔搭在线体验](https://modelscope.cn/studios/mlhx0808/acceptance-assistant) · [在线播放 3 分 30 秒演示视频](https://jilombmiker-alt.github.io/acceptance-assistant/) · [旁白与分镜](docs/video-script.md) · [修复对比记录](evaluation/report-repair-case.json)
+[魔搭在线体验](https://modelscope.cn/studios/mlhx0808/acceptance-assistant) · [修复对比记录](evaluation/report-repair-case.json)
 
 ![单对话框入口](docs/home.png)
 
@@ -36,7 +36,7 @@
 
 ## 在线体验
 
-打开上方魔搭链接，在对话框输入目标，选择内置版本，查看范围并开始检查。也可输入“查看案例”了解独立修复对比，或点击“看 3 分半视频”。线上使用受控阅读清单样例，实际在服务器运行检查；个人项目和历史资料通过下方本地版本接入。
+打开上方魔搭链接，在对话框输入目标，选择内置版本，查看范围并开始检查。也可输入“查看案例”了解独立修复对比。线上使用受控阅读清单样例，实际在服务器运行检查；个人项目和历史资料通过下方本地版本接入。
 
 ## 本地启动
 
@@ -64,7 +64,7 @@ npm start
 
 在本仓库使用 Codex 时，也可直接运行 `npm run codex:context` 读取当前本机任务，无需手工附加文件。运行 `npm run study -- --init-local http://127.0.0.1:4395 标准草稿.json` 可从当前任务开始准备真人 A/B 效果记录。
 
-视频入口：本地首页“怎么开始” → “看 3 分半使用演示”。也可打开 /guide-video。高级工作台保留在 /workbench。
+高级工作台保留在 /workbench。
 
 ## 已验证的结果与边界
 
@@ -72,7 +72,6 @@ npm start
 
 ![修复前后对比](docs/comparison.png)
 
-视频为实际界面截图与中文合成旁白讲解，非连续实时录屏。输入示范、已有真实任务和独立修复案例在旁白中分别说明。
 
 该结果证明此处受控修复有效，不代表修复了示例报告文字描述的导出业务，也没有证明真人时间、返工成本或经济损耗节省。更少检查或更多检查都不直接等于个人历史带来收益。
 
@@ -93,4 +92,4 @@ npm run verify:repair
 
 ## 发布范围
 
-此仓库只包含运行所需源代码、受控样例、相关测试、对比记录及演示视频。未包含原工作区私人运行历史、个人账号、凭据、其他项目源码或 node_modules。完整文件清单见 release-manifest.json。
+此仓库只包含运行所需源代码、受控样例、相关测试及对比记录。未包含原工作区私人运行历史、个人账号、凭据、其他项目源码或 node_modules。完整文件清单见 release-manifest.json。
